@@ -22,6 +22,7 @@ pub fn http_main_server(
     hsts_preload: bool,
     metrics_endpoint: Option<String>,
     metrics_dir: Option<PathBuf>,
+    metrics_secret: Option<String>,
 ) -> Result<tide::Server<State>> {
     let skip_compress_mime = skip_compress_mime.clone();
     let mut app = tide::with_state(initial_state);
@@ -50,6 +51,7 @@ pub fn http_main_server(
             app.at(&metrics_endpoint).get(ProduceMetrics::new(
                 metrics_endpoint,
                 metrics_dir,
+                metrics_secret,
                 immutable_path,
             ));
         }

@@ -69,6 +69,8 @@ struct Opts {
     #[clap(long)]
     metrics_endpoint: Option<String>,
     #[clap(long)]
+    metrics_secret: Option<String>,
+    #[clap(long)]
     backup_dir: Option<PathBuf>,
     #[clap(long)]
     backup_interval_min: Option<u32>,
@@ -221,6 +223,7 @@ fn main() -> Result<()> {
         opts.immutable_path,
         opts.metrics_endpoint,
         opts.metrics_dir,
+        opts.metrics_secret,
     ))?;
 
     Ok(())

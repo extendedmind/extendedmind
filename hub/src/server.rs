@@ -26,6 +26,7 @@ pub async fn start_server(
     immutable_path: Option<Vec<String>>,
     metrics_endpoint: Option<String>,
     metrics_dir: Option<PathBuf>,
+    metrics_secret: Option<String>,
 ) -> Result<()> {
     let engine = initial_state.engine.clone();
 
@@ -42,6 +43,7 @@ pub async fn start_server(
             hsts_preload,
             metrics_endpoint,
             metrics_dir,
+            metrics_secret,
         )
         .unwrap();
         if let Some(https_port) = https_port {

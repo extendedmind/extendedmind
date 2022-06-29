@@ -1,6 +1,6 @@
 use chrono::prelude::*;
 use moka::future::Cache;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::convert::TryInto;
 use std::ffi::OsStr;
@@ -221,8 +221,8 @@ struct MetricsEntry {
 
 #[derive(Clone)]
 pub struct ProduceMetrics {
-    metrics_endpoint: String,
     metrics_dir: PathBuf,
+    metrics_secret: Option<String>,
     immutable_path_wildmatch: Option<Vec<WildMatch>>,
     cache: Cache<String, MetricsResponse>,
 }
@@ -231,6 +231,7 @@ impl ProduceMetrics {
     pub fn new(
         metrics_endpoint: String,
         metrics_dir: PathBuf,
+        metrics_secret: Option<String>,
         immutable_path: Option<Vec<String>>,
     ) -> Self {
         let cache_ttl_sec = DEFAULT_METRICS_INTERVAL_SECONDS;
@@ -254,8 +255,8 @@ impl ProduceMetrics {
         };
 
         Self {
-            metrics_endpoint,
             metrics_dir,
+            metrics_secret,
             immutable_path_wildmatch,
             cache,
         }
@@ -274,15 +275,47 @@ impl ProduceMetrics {
     }
 }
 
+#[derive(Deserialize, Debug, Clone)]
+struct MetricsParams {
+    limit: Option<usize>,
+    secret: Option<String>,
+}
+
+impl Default for MetricsParams {
+    fn default() -> Self {
+        MetricsParams {
+            limit: None,
+            secret: None,
+        }
+    }
+}
+
 #[async_trait::async_trait]
 impl<State> tide::Endpoint<State> for ProduceMetrics
 where
     State: Clone + Send + Sync + 'static,
 {
     async fn call(&self, req: tide::Request<State>) -> tide::Result {
-        // TODO: This value could also be in a query param
-        let limit = DEFAULT_METRICS_LIMIT;
-        let query = format!("limit={}", limit);
+        let MetricsParams { limit, secret } = req.query().unwrap_or_default();
+        let correct_secret = if let Some(metrics_secret) = &self.metrics_secret {
+            if let Some(secret) = secret {
+                secret.eq(metrics_secret)
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+        let limit: usize = if let Some(limit) = limit {
+            if correct_secret {
+                limit
+            } else {
+                DEFAULT_METRICS_LIMIT
+            }
+        } else {
+            DEFAULT_METRICS_LIMIT
+        };
+        let query = format!("limit={}&correct_secret={}", limit, correct_secret);
         let url_path = &req.url().path();
         let cached_metrics_response = self.get_metrics_response_from_cache(query.clone());
         return if let Some(cached_metrics_response) = cached_metrics_response {
@@ -332,12 +365,14 @@ where
                                 .is_some(),
                             None => false,
                         };
-                        entries.push(MetricsEntry {
-                            path: url_path,
-                            status,
-                            count,
-                            immutable,
-                        })
+                        if correct_secret || (!immutable && status == 200) {
+                            entries.push(MetricsEntry {
+                                path: url_path,
+                                status,
+                                count,
+                                immutable,
+                            })
+                        }
                     }
                     metrics.push(MetricsRange {
                         end: get_timestamp_diff(&stem, 1),
