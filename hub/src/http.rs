@@ -9,6 +9,8 @@ mod websocket;
 use websocket::handle_hypercore;
 mod html;
 use html::ServeStaticFiles;
+mod cache;
+use cache::CacheMiddleware;
 
 pub fn http_main_server(
     initial_state: State,
@@ -33,8 +35,6 @@ pub fn http_main_server(
             "*".to_string(),
             static_root_dir,
             skip_compress_mime,
-            cache_ttl_sec,
-            cache_tti_sec,
             inline_css_path,
             immutable_path.clone(),
             hsts_max_age,
@@ -46,20 +46,35 @@ pub fn http_main_server(
         app.at("*").get(serve_static_files);
     }
 
-    if let Some(metrics_endpoint) = metrics_endpoint {
+    let skip_cache_path: Option<Vec<String>> = if let Some(metrics_endpoint) = metrics_endpoint {
         if let Some(metrics_dir) = metrics_dir {
             app.at(&metrics_endpoint).get(ProduceMetrics::new(
-                metrics_endpoint,
+                metrics_endpoint.clone(),
                 metrics_dir,
                 metrics_secret,
                 immutable_path,
             ));
+            Some(vec![metrics_endpoint])
+        } else {
+            None
         }
-    }
+    } else {
+        None
+    };
 
     app.at("/extendedmind/hypercore")
         .get(WebSocket::new(handle_hypercore));
 
+    if let Some(cache_ttl_sec) = cache_ttl_sec {
+        if let Some(cache_tti_sec) = cache_tti_sec {
+            app.with(CacheMiddleware::new(
+                "*".to_string(),
+                cache_ttl_sec,
+                cache_tti_sec,
+                skip_cache_path,
+            ));
+        }
+    }
     app.with(CompressMiddleware::new());
 
     return Ok(app);

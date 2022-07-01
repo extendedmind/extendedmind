@@ -1,8 +1,6 @@
 use async_std::io::ReadExt;
 use async_std::path::PathBuf as AsyncPathBuf;
-use moka::future::Cache;
 use std::path::{Path, PathBuf};
-use std::time::Duration;
 use std::{ffi::OsStr, io};
 use tide::http::mime::Mime;
 use tide::{Body, Endpoint, Request, Response, Result, StatusCode};
@@ -17,7 +15,6 @@ pub struct ServeStaticFiles {
     prefix: String,
     dir: PathBuf,
     skip_compress_mime: Option<Vec<String>>,
-    cache: Option<Cache<String, (Vec<u8>, Mime)>>,
     inline_css_wildmatch: Option<Vec<WildMatch>>,
     immutable_path_wildmatch: Option<Vec<WildMatch>>,
     hsts_max_age: Option<u64>,
@@ -29,35 +26,11 @@ impl ServeStaticFiles {
         prefix: String,
         dir: PathBuf,
         skip_compress_mime: Option<Vec<String>>,
-        cache_ttl_sec: Option<u64>,
-        cache_tti_sec: Option<u64>,
         inline_css_path: Option<Vec<String>>,
         immutable_path: Option<Vec<String>>,
         hsts_max_age: Option<u64>,
         hsts_preload: bool,
     ) -> Self {
-        let cache = if cache_ttl_sec.is_some() && cache_tti_sec.is_some() {
-            let cache_ttl_sec = cache_ttl_sec.unwrap();
-            let cache_tti_sec = cache_tti_sec.unwrap();
-            log::info!(
-                "Setting up cache for path {} with time-to-live: {}s and time-to-idle: {}s",
-                &prefix,
-                &cache_ttl_sec,
-                &cache_tti_sec,
-            );
-            Some(
-                Cache::builder()
-                    // TTL: 5 minutes
-                    .time_to_live(Duration::from_secs(cache_ttl_sec))
-                    // TTI: 1 minute
-                    .time_to_idle(Duration::from_secs(cache_tti_sec))
-                    .build(),
-            )
-        } else {
-            log::info!("Not caching path {}", &prefix);
-            None
-        };
-
         if let Some(paths) = &inline_css_path {
             log::info!("Inlining CSS for paths {:?}", &paths);
         }
@@ -101,7 +74,6 @@ impl ServeStaticFiles {
             prefix,
             dir,
             skip_compress_mime,
-            cache,
             inline_css_wildmatch,
             immutable_path_wildmatch,
             hsts_max_age,
@@ -150,24 +122,6 @@ impl ServeStaticFiles {
             None
         } else {
             Some(file_path_to_search)
-        }
-    }
-
-    fn get_body_from_cache(&self, path: &str) -> Option<(Vec<u8>, Mime)> {
-        match &self.cache {
-            Some(cache) => cache.get(&path.to_string()),
-            None => None,
-        }
-    }
-
-    async fn insert_body_to_cache(&self, path: &str, body_as_bytes: Vec<u8>, mime: Mime) {
-        match &self.cache {
-            Some(cache) => {
-                cache
-                    .insert(path.to_string(), (body_as_bytes.clone(), mime))
-                    .await
-            }
-            None => (),
         }
     }
 
@@ -299,45 +253,34 @@ where
 {
     async fn call(&self, req: Request<State>) -> Result {
         let url_path = &req.url().path();
-        let cached_body = self.get_body_from_cache(&url_path);
-        return if let Some(cached_body) = cached_body {
-            // The body for the URL was found from the cache, return it without any file IO
-            log::debug!("Cache hit: {}", &url_path);
-            ServeStaticFiles::log_access(url_path, 200, Some("cached"));
-            Ok(self.get_ok_response_from_body(url_path, cached_body.0, cached_body.1))
+        // Read the file from the file system
+        let file_path = self.get_file_path_from_url_path(url_path).await;
+        if file_path.is_none() {
+            log::warn!("Unauthorized attempt to read: {:?}", url_path);
+            ServeStaticFiles::log_access(url_path, 403, None);
+            Ok(Response::new(StatusCode::Forbidden))
         } else {
-            // Read the file from the file system
-            log::debug!("Cache miss: {}", &url_path);
-            let file_path = self.get_file_path_from_url_path(url_path).await;
-            if file_path.is_none() {
-                log::warn!("Unauthorized attempt to read: {:?}", url_path);
-                ServeStaticFiles::log_access(url_path, 403, None);
-                Ok(Response::new(StatusCode::Forbidden))
-            } else {
-                let file_path = file_path.unwrap();
-                match Body::from_file(&file_path).await {
-                    Ok(body) => {
-                        let body = self.process_body_inlining(&url_path, body).await;
-                        // For some reason this does not work by default, so add it here
-                        let mime = if file_path.extension() == Some(OsStr::new("atom")) {
-                            Mime::from("application/atom+xml")
-                        } else {
-                            body.mime().clone()
-                        };
-                        let body_as_bytes = body.into_bytes().await.unwrap();
-                        self.insert_body_to_cache(url_path, body_as_bytes.clone(), mime.clone())
-                            .await;
-                        ServeStaticFiles::log_access(url_path, 200, None);
-                        Ok(self.get_ok_response_from_body(url_path, body_as_bytes, mime))
-                    }
-                    Err(e) if e.kind() == io::ErrorKind::NotFound => {
-                        ServeStaticFiles::log_access(url_path, 404, None);
-                        log::info!("File not found: {:?}", &file_path);
-                        Ok(Response::new(StatusCode::NotFound))
-                    }
-                    Err(e) => Err(e.into()),
+            let file_path = file_path.unwrap();
+            match Body::from_file(&file_path).await {
+                Ok(body) => {
+                    let body = self.process_body_inlining(&url_path, body).await;
+                    // For some reason this does not work by default, so add it here
+                    let mime = if file_path.extension() == Some(OsStr::new("atom")) {
+                        Mime::from("application/atom+xml")
+                    } else {
+                        body.mime().clone()
+                    };
+                    let body_as_bytes = body.into_bytes().await.unwrap();
+                    ServeStaticFiles::log_access(url_path, 200, None);
+                    Ok(self.get_ok_response_from_body(url_path, body_as_bytes, mime))
                 }
+                Err(e) if e.kind() == io::ErrorKind::NotFound => {
+                    ServeStaticFiles::log_access(url_path, 404, None);
+                    log::info!("File not found: {:?}", &file_path);
+                    Ok(Response::new(StatusCode::NotFound))
+                }
+                Err(e) => Err(e.into()),
             }
-        };
+        }
     }
 }
