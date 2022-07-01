@@ -26,48 +26,54 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
+# Unsupported target "format_str" with type "bench" omitted
+
+# Unsupported target "parse_str" with type "bench" omitted
+
+# Unsupported target "v4" with type "bench" omitted
+
+# Unsupported target "random_uuid" with type "example" omitted
+
+# Unsupported target "uuid_macro" with type "example" omitted
+
+# Unsupported target "windows_guid" with type "example" omitted
+
 rust_library(
-    name = "async_session",
+    name = "uuid",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+        "@raze__getrandom__0_2_7//:getrandom": "private_getrandom",
+    },
     crate_features = [
+        "default",
+        "private_getrandom",
+        "rng",
+        "std",
+        "v4",
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
-    proc_macro_deps = [
-        "@raze__async_trait__0_1_56//:async_trait",
-    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=async-session",
+        "crate-name=uuid",
         "manual",
     ],
-    version = "2.0.1",
+    version = "1.1.2",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__anyhow__1_0_58//:anyhow",
-        "@raze__async_std__1_12_0//:async_std",
-        "@raze__base64__0_12_3//:base64",
-        "@raze__bincode__1_3_3//:bincode",
-        "@raze__blake3__0_3_8//:blake3",
-        "@raze__chrono__0_4_19//:chrono",
-        "@raze__hmac__0_8_1//:hmac",
-        "@raze__kv_log_macro__1_0_7//:kv_log_macro",
-        "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_137//:serde",
-        "@raze__serde_json__1_0_82//:serde_json",
-        "@raze__sha2__0_9_9//:sha2",
+        "@raze__getrandom__0_2_7//:getrandom",
     ],
 )
 
 
-# Unsupported target "test" with type "test" omitted
+# Unsupported target "macros" with type "test" omitted

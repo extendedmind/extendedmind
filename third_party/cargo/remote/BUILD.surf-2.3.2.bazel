@@ -85,7 +85,7 @@ rust_library(
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",
         "@raze__rustls__0_18_1//:rustls",
         "@raze__serde__1_0_137//:serde",
-        "@raze__serde_json__1_0_81//:serde_json",
+        "@raze__serde_json__1_0_82//:serde_json",
     ],
 )
 

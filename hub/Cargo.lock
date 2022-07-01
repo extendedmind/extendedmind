@@ -3647,9 +3647,9 @@ dependencies = [
 
 [[package]]
 name = "rustls-acme"
-version = "0.3.0-beta.4"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb9509feb64a9a699cccdafc3d0b985a1ccf4e2dd6f4beff1e29fd27b4dcb179"
+checksum = "e3d8f660d5a6dcef78e731b359784844cf79388d33a5e91c430f8efedd976741"
 dependencies = [
  "async-h1",
  "async-io",
@@ -4390,9 +4390,8 @@ dependencies = [
 
 [[package]]
 name = "tide-acme"
-version = "0.2.0-beta.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4bb506790853a1094053e2b36b0f6b81007edaf4704d7a9bbc044212dac7c05"
+version = "0.2.0"
+source = "git+https://github.com/ttiurani/tide-acme?rev=53c21b421b2443c3c02487b49f3c7f32c64febb0#53c21b421b2443c3c02487b49f3c7f32c64febb0"
 dependencies = [
  "async-std",
  "async-trait",
@@ -4424,8 +4423,7 @@ dependencies = [
 [[package]]
 name = "tide-rustls"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a85b568b611840ba794ae749d4fa8b345b9f71a9c02b82cf0c28ff076fde6b7"
+source = "git+https://github.com/http-rs/tide-rustls?rev=cbfb61f519238730b4d6318901fe2f2a8bfdb164#cbfb61f519238730b4d6318901fe2f2a8bfdb164"
 dependencies = [
  "async-dup",
  "async-h1",

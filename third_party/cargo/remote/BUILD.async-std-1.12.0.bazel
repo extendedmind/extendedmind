@@ -123,7 +123,7 @@ rust_library(
     deps = [
         "@raze__async_channel__1_6_1//:async_channel",
         "@raze__async_lock__2_5_0//:async_lock",
-        "@raze__crossbeam_utils__0_8_9//:crossbeam_utils",
+        "@raze__crossbeam_utils__0_8_10//:crossbeam_utils",
         "@raze__futures_core__0_3_21//:futures_core",
         "@raze__futures_io__0_3_21//:futures_io",
         "@raze__kv_log_macro__1_0_7//:kv_log_macro",

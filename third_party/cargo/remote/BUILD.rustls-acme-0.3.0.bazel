@@ -71,7 +71,7 @@ rust_library(
         "@raze__rcgen__0_9_2//:rcgen",
         "@raze__ring__0_16_20//:ring",
         "@raze__serde__1_0_137//:serde",
-        "@raze__serde_json__1_0_81//:serde_json",
+        "@raze__serde_json__1_0_82//:serde_json",
         "@raze__smol__1_2_5//:smol",
         "@raze__thiserror__1_0_31//:thiserror",
         "@raze__url__2_2_2//:url",

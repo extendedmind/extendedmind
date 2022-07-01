@@ -88,7 +88,7 @@ rust_library(
     deps = [
         ":crossbeam_queue_build_script",
         "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__crossbeam_utils__0_8_9//:crossbeam_utils",
+        "@raze__crossbeam_utils__0_8_10//:crossbeam_utils",
     ],
 )
 

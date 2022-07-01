@@ -51,7 +51,7 @@ rust_library(
         "crate-name=base-x",
         "manual",
     ],
-    version = "0.2.10",
+    version = "0.2.11",
 
     # buildifier: leave-alone
     deps = [

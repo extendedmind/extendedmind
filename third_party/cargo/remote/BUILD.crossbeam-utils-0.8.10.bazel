@@ -57,7 +57,7 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.8.9",
+    version = "0.8.10",
     visibility = ["//visibility:private"],
     deps = [
     ],
@@ -84,7 +84,7 @@ rust_library(
         "crate-name=crossbeam-utils",
         "manual",
     ],
-    version = "0.8.9",
+    version = "0.8.10",
 
     # buildifier: leave-alone
     deps = [

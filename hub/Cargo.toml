@@ -18,8 +18,8 @@ async-std = { version = "1.6.2", features = ["unstable"] }
 tide = "0.16.0"
 tide-websockets = "0.4.0"
 tide-compress = "0.10.2"
-tide-rustls = "0.3.0"
-tide-acme = "0.2.0-beta.1"
+tide-rustls = { git = "https://github.com/http-rs/tide-rustls", rev = "cbfb61f519238730b4d6318901fe2f2a8bfdb164" }
+tide-acme = { git = "https://github.com/ttiurani/tide-acme", rev = "53c21b421b2443c3c02487b49f3c7f32c64febb0" }
 thread-priority = "0.8.2"
 serde = "1.0.137"
 wildmatch = "2.1.0"

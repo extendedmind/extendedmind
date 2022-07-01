@@ -31,32 +31,28 @@ licenses([
 
 # Generated Targets
 
-rust_proc_macro(
-    name = "clap_derive",
+rust_library(
+    name = "either",
     srcs = glob(["**/*.rs"]),
     crate_features = [
         "default",
+        "use_std",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    compile_data = glob(["README.md"]),
-    edition = "2021",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=clap_derive",
+        "crate-name=either",
         "manual",
     ],
-    version = "3.2.5",
+    version = "1.7.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__heck__0_4_0//:heck",
-        "@raze__proc_macro2__1_0_40//:proc_macro2",
-        "@raze__proc_macro_error__1_0_4//:proc_macro_error",
-        "@raze__quote__1_0_20//:quote",
-        "@raze__syn__1_0_98//:syn",
     ],
 )
+

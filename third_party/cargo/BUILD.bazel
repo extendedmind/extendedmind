@@ -113,7 +113,7 @@ alias(
 
 alias(
     name = "clap",
-    actual = "@raze__clap__3_2_5//:clap",
+    actual = "@raze__clap__3_2_8//:clap",
     tags = [
         "cargo-raze",
         "manual",
@@ -248,7 +248,7 @@ alias(
 
 alias(
     name = "lettre",
-    actual = "@raze__lettre__0_10_0_rc_7//:lettre",
+    actual = "@raze__lettre__0_10_0//:lettre",
     tags = [
         "cargo-raze",
         "manual",
@@ -266,7 +266,7 @@ alias(
 
 alias(
     name = "moka",
-    actual = "@raze__moka__0_8_5//:moka",
+    actual = "@raze__moka__0_8_6//:moka",
     tags = [
         "cargo-raze",
         "manual",
@@ -365,7 +365,7 @@ alias(
 
 alias(
     name = "tide_compress",
-    actual = "@raze__tide_compress__0_10_2//:tide_compress",
+    actual = "@raze__tide_compress__0_10_3//:tide_compress",
     tags = [
         "cargo-raze",
         "manual",
@@ -410,7 +410,7 @@ alias(
 
 alias(
     name = "wildmatch",
-    actual = "@raze__wildmatch__2_1_0//:wildmatch",
+    actual = "@raze__wildmatch__2_1_1//:wildmatch",
     tags = [
         "cargo-raze",
         "manual",

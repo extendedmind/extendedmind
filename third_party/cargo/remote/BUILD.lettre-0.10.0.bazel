@@ -37,6 +37,8 @@ licenses([
 
 # Unsupported target "asyncstd1_smtp_tls" with type "example" omitted
 
+# Unsupported target "autoconfigure" with type "example" omitted
+
 # Unsupported target "basic_html" with type "example" omitted
 
 # Unsupported target "maud_html" with type "example" omitted
@@ -85,13 +87,13 @@ rust_library(
         "crate-name=lettre",
         "manual",
     ],
-    version = "0.10.0-rc.7",
+    version = "0.10.0",
 
     # buildifier: leave-alone
     deps = [
         "@raze__base64__0_13_0//:base64",
         "@raze__email_address__0_2_1//:email_address",
-        "@raze__email_encoding__0_1_2//:email_encoding",
+        "@raze__email_encoding__0_1_3//:email_encoding",
         "@raze__fastrand__1_7_0//:fastrand",
         "@raze__hostname__0_3_1//:hostname",
         "@raze__httpdate__1_0_2//:httpdate",

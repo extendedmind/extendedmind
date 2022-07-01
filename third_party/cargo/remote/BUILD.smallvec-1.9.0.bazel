@@ -31,28 +31,30 @@ licenses([
 
 # Generated Targets
 
+# Unsupported target "bench" with type "bench" omitted
+
 rust_library(
-    name = "email_encoding",
+    name = "smallvec",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2021",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=email-encoding",
+        "crate-name=smallvec",
         "manual",
     ],
-    version = "0.1.2",
+    version = "1.9.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__base64__0_13_0//:base64",
-        "@raze__memchr__2_5_0//:memchr",
     ],
 )
 
+
+# Unsupported target "macro" with type "test" omitted

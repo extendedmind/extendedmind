@@ -26,17 +26,19 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "patterns" with type "bench" omitted
+# Unsupported target "bench" with type "bench" omitted
 
 rust_library(
-    name = "wildmatch",
+    name = "unicode_normalization",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -46,13 +48,14 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=wildmatch",
+        "crate-name=unicode-normalization",
         "manual",
     ],
-    version = "2.1.0",
+    version = "0.1.20",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__tinyvec__1_6_0//:tinyvec",
     ],
 )
 
