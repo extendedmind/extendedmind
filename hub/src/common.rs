@@ -40,3 +40,14 @@ pub fn get_stem_from_path(path: &PathBuf) -> String {
         .into_string()
         .unwrap()
 }
+
+pub fn log_access(url_path: &str, code: &str, extra: Option<&str>) {
+    // This value should be
+    log::info!(
+        "{} {} {} {}",
+        crate::common::ACCESS_LOG_IDENTIFIER,
+        code,
+        &url_path,
+        extra.unwrap_or("")
+    );
+}

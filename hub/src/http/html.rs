@@ -6,6 +6,8 @@ use tide::http::mime::Mime;
 use tide::{Body, Endpoint, Request, Response, Result, StatusCode};
 use wildmatch::WildMatch;
 
+use crate::common::log_access;
+
 const CSS_NEEDLE: &str = "<link rel=\"stylesheet\" href=\"/";
 const CSS_ELEMENT_START: &str = "<style>";
 const CSS_ELEMENT_END: &str = "</style>";
@@ -233,17 +235,6 @@ impl ServeStaticFiles {
         path_with_extension.set_extension(extension);
         return path_with_extension;
     }
-
-    fn log_access(url_path: &str, code: u32, extra: Option<&str>) {
-        // This value should be
-        log::info!(
-            "{} {} {} {}",
-            crate::common::ACCESS_LOG_IDENTIFIER,
-            code,
-            &url_path,
-            extra.unwrap_or("")
-        );
-    }
 }
 
 #[async_trait::async_trait]
@@ -257,7 +248,7 @@ where
         let file_path = self.get_file_path_from_url_path(url_path).await;
         if file_path.is_none() {
             log::warn!("Unauthorized attempt to read: {:?}", url_path);
-            ServeStaticFiles::log_access(url_path, 403, None);
+            log_access(url_path, "403", None);
             Ok(Response::new(StatusCode::Forbidden))
         } else {
             let file_path = file_path.unwrap();
@@ -271,11 +262,11 @@ where
                         body.mime().clone()
                     };
                     let body_as_bytes = body.into_bytes().await.unwrap();
-                    ServeStaticFiles::log_access(url_path, 200, None);
+                    log_access(url_path, "200", None);
                     Ok(self.get_ok_response_from_body(url_path, body_as_bytes, mime))
                 }
                 Err(e) if e.kind() == io::ErrorKind::NotFound => {
-                    ServeStaticFiles::log_access(url_path, 404, None);
+                    log_access(url_path, "404", None);
                     log::info!("File not found: {:?}", &file_path);
                     Ok(Response::new(StatusCode::NotFound))
                 }

@@ -10,6 +10,8 @@ use tide::{
 };
 use wildmatch::WildMatch;
 
+use crate::common::log_access;
+
 #[derive(Clone)]
 pub struct CacheMiddleware {
     cache: Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>,
@@ -94,6 +96,7 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware
                 for (header_name, header_values) in headers {
                     res_builder = res_builder.header(header_name, header_values);
                 }
+                log_access(&url_path, &status.to_string(), Some("cached"));
                 return Ok(res_builder.build());
             }
         }
