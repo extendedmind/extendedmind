@@ -64,6 +64,8 @@ pub async fn start_server(
             let main_listener = main_server.listen(
                 tide_rustls::TlsListener::build()
                     .addrs(format!("0.0.0.0:{}", &https_port))
+                    .tcp_nodelay(true)
+                    .tcp_ttl(60)
                     .acme(
                         AcmeConfig::new(vec![domain])
                             .contact_push(format!("mailto:{}", acme_email))
