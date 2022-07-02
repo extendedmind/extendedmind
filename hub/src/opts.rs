@@ -1,9 +1,20 @@
 use clap::{ArgEnum, Parser};
-use std::path::PathBuf;
+use std::{convert::TryFrom, path::PathBuf};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum)]
+#[repr(u8)]
 pub enum AdminCommand {
-    BustCache,
+    BustCache = 1,
+}
+
+impl TryFrom<u8> for AdminCommand {
+    type Error = ();
+    fn try_from(input: u8) -> Result<Self, <Self as TryFrom<u8>>::Error> {
+        match input {
+            1u8 => Ok(Self::BustCache),
+            _ => Err(()),
+        }
+    }
 }
 
 #[derive(Parser)]
@@ -11,6 +22,8 @@ pub enum AdminCommand {
 pub struct Opts {
     #[clap(arg_enum)]
     pub admin_command: Option<AdminCommand>,
+    #[clap(long)]
+    pub admin_socket_file: Option<String>,
     #[clap(short, long)]
     pub verbose: Option<bool>,
     #[clap(short, long)]

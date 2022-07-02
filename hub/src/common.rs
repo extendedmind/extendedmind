@@ -11,6 +11,7 @@ pub const TIMESTAMP_SECONDS_FORMAT: &str = "%Y-%m-%d_%H.%M.%S";
 pub const TIMESTAMP_SECONDS_FORMAT_LEN: usize = 19;
 pub const TIMESTAMP_MINUTES_FORMAT: &str = "%Y-%m-%d_%H.%M";
 pub const TIMESTAMP_DAYS_FORMAT: &str = "%Y-%m-%d";
+pub const DEFAULT_ADMIN_SOCKET_FILE: &str = "/var/run/extendedmind_hub.sock";
 
 #[derive(Clone, Copy)]
 #[repr(u8)]

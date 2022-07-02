@@ -5,23 +5,28 @@ use async_std::sync::{Arc, Mutex};
 use async_std::task;
 use extendedmind_engine::{tcp, Bytes, Engine};
 use futures::stream::StreamExt;
+use moka::future::Cache;
 use std::path::PathBuf;
 use std::process;
 use std::sync::atomic::AtomicBool;
 use std::time::Duration;
+use tide::http::headers::{HeaderName, HeaderValues};
+use tide::http::Mime;
+use tide::StatusCode;
 use tide_acme::rustls_acme::caches::DirCache;
 use tide_acme::{AcmeConfig, TideRustlsExt};
 
+use crate::admin::listen_to_admin_socket;
 // Internal
 use crate::backup::{
     create_backup, get_next_backup_timestamp, get_next_backup_timestamp_on_launch, is_now_after,
 };
 use crate::common::{ChannelSenderReceiver, State, SystemCommand};
-use crate::http::{http_main_server, http_redirect_server};
+use crate::http::{create_cache, http_main_server, http_redirect_server};
 use crate::metrics::process_metrics;
 use crate::opts::Opts;
 
-pub fn start_server(opts: Opts) -> Result<()> {
+pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
     let data_root_dir = &opts.data_root_dir;
 
     // Initialize the engine blocking
@@ -44,6 +49,8 @@ pub fn start_server(opts: Opts) -> Result<()> {
     let disconnect_sender = system_command_sender.clone();
     let abort: Arc<Mutex<AtomicBool>> = Arc::new(Mutex::new(AtomicBool::new(false)));
     let abort_writer = abort.clone();
+
+    let admin_socket_file_to_shutdown = admin_socket_file.clone();
     task::spawn(async move {
         ctrlc.await;
         log::info!("Received termination signal, sending disconnect");
@@ -52,10 +59,28 @@ pub fn start_server(opts: Opts) -> Result<()> {
             .await
             .unwrap();
         *abort_writer.as_ref().lock().await = AtomicBool::new(true);
+        // Delete socket
+        std::fs::remove_file(&admin_socket_file_to_shutdown).unwrap_or_else(|_| {
+            log::warn!(
+                "Could not delete admin socket file {}",
+                admin_socket_file_to_shutdown,
+            );
+        });
+
         // Wait 200ms before killing, to allow time for file saving and closing sockets
         task::sleep(Duration::from_millis(200)).await;
         log::info!("Exiting process with 0");
         process::exit(0);
+    });
+
+    let cache = create_cache(opts.cache_ttl_sec, opts.cache_tti_sec);
+
+    // Listen to admin unix socket
+    let cache_for_admin = cache.clone();
+    task::spawn(async move {
+        listen_to_admin_socket(admin_socket_file, cache_for_admin)
+            .await
+            .unwrap();
     });
 
     // Need to start a system executor to send the WakeUp command, we send it once per second so
@@ -115,6 +140,7 @@ pub fn start_server(opts: Opts) -> Result<()> {
     // Block server with initial state
     futures::executor::block_on(start_server_async(
         initial_state,
+        cache,
         opts.static_root_dir,
         opts.http_port,
         opts.https_port,
@@ -127,8 +153,6 @@ pub fn start_server(opts: Opts) -> Result<()> {
         opts.hsts_preload.unwrap_or(false),
         opts.tcp_port,
         opts.skip_compress_mime,
-        opts.cache_ttl_sec,
-        opts.cache_tti_sec,
         opts.inline_css_path,
         opts.immutable_path,
         opts.metrics_endpoint,
@@ -141,6 +165,7 @@ pub fn start_server(opts: Opts) -> Result<()> {
 
 async fn start_server_async(
     initial_state: State,
+    cache: Option<Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>>,
     static_root_dir: Option<PathBuf>,
     http_port: Option<u16>,
     https_port: Option<u16>,
@@ -153,8 +178,6 @@ async fn start_server_async(
     hsts_preload: bool,
     tcp_port: Option<u16>,
     skip_compress_mime: Option<Vec<String>>,
-    cache_ttl_sec: Option<u64>,
-    cache_tti_sec: Option<u64>,
     inline_css_path: Option<Vec<String>>,
     immutable_path: Option<Vec<String>>,
     metrics_endpoint: Option<String>,
@@ -166,10 +189,9 @@ async fn start_server_async(
     if let Some(http_port) = http_port {
         let main_server = http_main_server(
             initial_state,
+            cache,
             static_root_dir,
             skip_compress_mime,
-            cache_ttl_sec,
-            cache_tti_sec,
             inline_css_path,
             immutable_path,
             hsts_max_age,

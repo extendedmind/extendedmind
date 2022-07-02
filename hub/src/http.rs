@@ -1,7 +1,14 @@
 use crate::{common::State, metrics::ProduceMetrics};
 use anyhow::Result;
+use moka::future::Cache;
 use std::path::PathBuf;
-use tide::{Redirect, Request};
+use tide::{
+    http::{
+        headers::{HeaderName, HeaderValues},
+        Mime,
+    },
+    Redirect, Request, StatusCode,
+};
 use tide_compress::CompressMiddleware;
 use tide_websockets::WebSocket;
 
@@ -10,14 +17,14 @@ use websocket::handle_hypercore;
 mod html;
 use html::ServeStaticFiles;
 mod cache;
+pub use cache::create_cache;
 use cache::CacheMiddleware;
 
 pub fn http_main_server(
     initial_state: State,
+    cache: Option<Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>>,
     static_root_dir: Option<PathBuf>,
     skip_compress_mime: Option<Vec<String>>,
-    cache_ttl_sec: Option<u64>,
-    cache_tti_sec: Option<u64>,
     inline_css_path: Option<Vec<String>>,
     immutable_path: Option<Vec<String>>,
     hsts_max_age: Option<u64>,
@@ -65,15 +72,12 @@ pub fn http_main_server(
     app.at("/extendedmind/hypercore")
         .get(WebSocket::new(handle_hypercore));
 
-    if let Some(cache_ttl_sec) = cache_ttl_sec {
-        if let Some(cache_tti_sec) = cache_tti_sec {
-            app.with(CacheMiddleware::new(
-                "*".to_string(),
-                cache_ttl_sec,
-                cache_tti_sec,
-                skip_cache_path,
-            ));
-        }
+    if let Some(cache) = cache {
+        app.with(CacheMiddleware::new(
+            "*".to_string(),
+            cache,
+            skip_cache_path,
+        ));
     }
     app.with(CompressMiddleware::new());
 

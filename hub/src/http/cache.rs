@@ -18,23 +18,33 @@ pub struct CacheMiddleware {
     skip_cache_wildmatch: Option<Vec<WildMatch>>,
 }
 
+pub fn create_cache(
+    cache_ttl_sec: Option<u64>,
+    cache_tti_sec: Option<u64>,
+) -> Option<Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>> {
+    let ttl_sec = cache_ttl_sec?;
+    let tti_sec = cache_tti_sec?;
+    log::info!(
+        "Creating cache with time-to-live: {}s and time-to-idle: {}s",
+        &ttl_sec,
+        &tti_sec,
+    );
+
+    Some(
+        Cache::builder()
+            .time_to_live(Duration::from_secs(ttl_sec))
+            .time_to_idle(Duration::from_secs(tti_sec))
+            .build(),
+    )
+}
+
 impl CacheMiddleware {
     pub fn new(
         prefix: String,
-        cache_ttl_sec: u64,
-        cache_tti_sec: u64,
+        cache: Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>,
         skip_cache_path: Option<Vec<String>>,
     ) -> Self {
-        log::info!(
-            "Setting up response cache for path {} with time-to-live: {}s and time-to-idle: {}s",
-            &prefix,
-            &cache_ttl_sec,
-            &cache_tti_sec,
-        );
-        let cache = Cache::builder()
-            .time_to_live(Duration::from_secs(cache_ttl_sec))
-            .time_to_idle(Duration::from_secs(cache_tti_sec))
-            .build();
+        log::info!("Setting up response cache for path {}", &prefix,);
         let skip_cache_wildmatch = match skip_cache_path {
             Some(skip_cache_path) => Some(
                 skip_cache_path
