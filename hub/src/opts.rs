@@ -1,9 +1,16 @@
-use clap::Parser;
+use clap::{ArgEnum, Parser};
 use std::path::PathBuf;
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum)]
+pub enum AdminCommand {
+    BustCache,
+}
 
 #[derive(Parser)]
 #[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
 pub struct Opts {
+    #[clap(arg_enum)]
+    pub admin_command: Option<AdminCommand>,
     #[clap(short, long)]
     pub verbose: Option<bool>,
     #[clap(short, long)]
