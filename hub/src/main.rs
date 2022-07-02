@@ -7,7 +7,6 @@ use clap::Parser;
 use extendedmind_engine::{Bytes, Engine};
 use futures::stream::StreamExt;
 use log::info;
-use std::path::PathBuf;
 use std::process;
 use std::sync::atomic::AtomicBool;
 use std::time::Duration;
@@ -17,6 +16,7 @@ mod common;
 mod http;
 mod logging;
 mod metrics;
+mod opts;
 mod server;
 
 use backup::{
@@ -25,82 +25,8 @@ use backup::{
 use common::{ChannelSenderReceiver, State, SystemCommand};
 use logging::setup_logging;
 use metrics::process_metrics;
+use opts::Opts;
 use server::start_server;
-
-#[derive(Parser)]
-#[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
-struct Opts {
-    #[clap(short, long)]
-    verbose: Option<bool>,
-    #[clap(short, long)]
-    data_root_dir: PathBuf,
-    #[clap(short, long)]
-    static_root_dir: Option<PathBuf>,
-    #[clap(short, long)]
-    http_port: Option<u16>,
-    #[clap(long)]
-    https_port: Option<u16>,
-    #[clap(long)]
-    domain: Option<String>,
-    #[clap(long)]
-    acme_email: Option<String>,
-    #[clap(long)]
-    acme_dir: Option<String>,
-    #[clap(long)]
-    acme_production: Option<bool>,
-    #[clap(long)]
-    hsts_max_age: Option<u64>,
-    #[clap(long)]
-    hsts_permanent_redirect: Option<bool>,
-    #[clap(long)]
-    hsts_preload: Option<bool>,
-    #[clap(short, long)]
-    tcp_port: Option<u16>,
-    #[clap(short, long)]
-    log_to_stderr: bool,
-    #[clap(long)]
-    log_dir: Option<PathBuf>,
-    #[clap(long)]
-    log_precision: Option<u8>,
-    #[clap(long)]
-    metrics_dir: Option<PathBuf>,
-    #[clap(long)]
-    metrics_precision: Option<u8>,
-    #[clap(long)]
-    metrics_endpoint: Option<String>,
-    #[clap(long)]
-    metrics_secret: Option<String>,
-    #[clap(long)]
-    backup_dir: Option<PathBuf>,
-    #[clap(long)]
-    backup_interval_min: Option<u32>,
-    #[clap(long)]
-    backup_ssh_recipients_file: Option<PathBuf>,
-    #[clap(long)]
-    backup_email_from: Option<String>,
-    #[clap(long)]
-    backup_email_to: Option<String>,
-    #[clap(long)]
-    backup_email_smtp_host: Option<String>,
-    #[clap(long)]
-    backup_email_smtp_username: Option<String>,
-    #[clap(long)]
-    backup_email_smtp_password: Option<String>,
-    #[clap(long)]
-    backup_email_smtp_tls_port: Option<u16>,
-    #[clap(long)]
-    backup_email_smtp_starttls_port: Option<u16>,
-    #[clap(long)]
-    skip_compress_mime: Option<Vec<String>>,
-    #[clap(long)]
-    cache_ttl_sec: Option<u64>,
-    #[clap(long)]
-    cache_tti_sec: Option<u64>,
-    #[clap(long)]
-    inline_css_path: Option<Vec<String>>,
-    #[clap(long)]
-    immutable_path: Option<Vec<String>>,
-}
 
 fn main() -> Result<()> {
     // Read in command line arguments and setup logging
