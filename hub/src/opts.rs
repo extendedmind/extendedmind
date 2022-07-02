@@ -27,7 +27,7 @@ pub struct Opts {
     #[clap(short, long)]
     pub verbose: Option<bool>,
     #[clap(short, long)]
-    pub data_root_dir: PathBuf,
+    pub data_root_dir: Option<PathBuf>,
     #[clap(short, long)]
     pub static_root_dir: Option<PathBuf>,
     #[clap(short, long)]

@@ -27,7 +27,9 @@ use crate::metrics::process_metrics;
 use crate::opts::Opts;
 
 pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
-    let data_root_dir = &opts.data_root_dir;
+    let data_root_dir = &opts
+        .data_root_dir
+        .expect("--data-root-dir is mandatory in server mode");
 
     // Initialize the engine blocking
     let engine =
