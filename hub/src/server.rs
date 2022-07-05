@@ -55,26 +55,24 @@ pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
     let admin_socket_file_to_shutdown = admin_socket_file.clone();
     task::spawn(async move {
         ctrlc.await;
-        log::info!("Received termination signal, sending disconnect");
-        disconnect_sender
-            .send(Ok(Bytes::from_static(&[SystemCommand::Disconnect as u8])))
-            .await
-            .unwrap();
-        log::info!("Writing to abort lock");
-        *abort_writer.as_ref().lock().await = AtomicBool::new(true);
-        // Delete socket
-        log::info!("Deleting admin socket");
+        log::info!("(1/5) Received termination signal, deleting admin socket");
         std::fs::remove_file(&admin_socket_file_to_shutdown).unwrap_or_else(|_| {
             log::warn!(
                 "Could not delete admin socket file {}",
                 admin_socket_file_to_shutdown,
             );
         });
-
+        log::info!("(2/5) Sending disconnect");
+        disconnect_sender
+            .send(Ok(Bytes::from_static(&[SystemCommand::Disconnect as u8])))
+            .await
+            .unwrap();
+        log::info!("(3/5) Writing to abort lock");
+        *abort_writer.as_ref().lock().await = AtomicBool::new(true);
         // Wait 200ms before killing, to allow time for file saving and closing sockets
-        log::info!("Sleeping for 200ms");
+        log::info!("(4/5) Sleeping for 200ms");
         task::sleep(Duration::from_millis(200)).await;
-        log::info!("Exiting process with 0");
+        log::info!("(5/5) Exiting process with 0");
         process::exit(0);
     });
 
