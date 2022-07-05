@@ -60,8 +60,10 @@ pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
             .send(Ok(Bytes::from_static(&[SystemCommand::Disconnect as u8])))
             .await
             .unwrap();
+        log::info!("Writing to abort lock");
         *abort_writer.as_ref().lock().await = AtomicBool::new(true);
         // Delete socket
+        log::info!("Deleting admin socket");
         std::fs::remove_file(&admin_socket_file_to_shutdown).unwrap_or_else(|_| {
             log::warn!(
                 "Could not delete admin socket file {}",
@@ -70,6 +72,7 @@ pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
         });
 
         // Wait 200ms before killing, to allow time for file saving and closing sockets
+        log::info!("Sleeping for 200ms");
         task::sleep(Duration::from_millis(200)).await;
         log::info!("Exiting process with 0");
         process::exit(0);
