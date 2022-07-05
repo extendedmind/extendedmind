@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - 'ui/**'
       - '.github/workflows/branch-crossbuild.yml'
-      - '.github/workflows/release-crossbuild.yml'
+      - '.github/workflows/release.yml'
       - '.github/workflows/test.yml'
       - '**.md'
       - '**.toml'
