@@ -10,12 +10,14 @@ use tide::{
 };
 use wildmatch::WildMatch;
 
-use crate::common::log_access;
+use crate::common::{is_inline_css, log_access};
 
 #[derive(Clone)]
 pub struct CacheMiddleware {
     cache: Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>,
     skip_cache_wildmatch: Option<Vec<WildMatch>>,
+    inline_css_wildmatch: Option<Vec<WildMatch>>,
+    inline_css_skip_domain_wildmatch: Option<Vec<WildMatch>>,
 }
 
 pub fn create_cache(
@@ -43,6 +45,8 @@ impl CacheMiddleware {
         prefix: String,
         cache: Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>,
         skip_cache_path: Option<Vec<String>>,
+        inline_css_wildmatch: Option<Vec<WildMatch>>,
+        inline_css_skip_domain_wildmatch: Option<Vec<WildMatch>>,
     ) -> Self {
         log::info!("Setting up response cache for path {}", &prefix,);
         let skip_cache_wildmatch = match skip_cache_path {
@@ -58,6 +62,8 @@ impl CacheMiddleware {
         Self {
             cache,
             skip_cache_wildmatch,
+            inline_css_wildmatch,
+            inline_css_skip_domain_wildmatch,
         }
     }
 }
@@ -79,7 +85,7 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware
                 }
             }
         };
-
+        let mut inline_css = false;
         let cache_key: Option<String> = if skip_cache {
             None
         } else {
@@ -91,8 +97,14 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware
             } else {
                 "".to_string()
             };
+            inline_css = is_inline_css(
+                &url_path,
+                req.header("Referer"),
+                &self.inline_css_wildmatch,
+                &self.inline_css_skip_domain_wildmatch,
+            );
 
-            Some(get_cache_key(&url_path, &encoding))
+            Some(get_cache_key(&url_path, &encoding, inline_css))
         };
 
         if let Some(cache_key) = &cache_key {
@@ -123,7 +135,7 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware
                 } else {
                     "".to_string()
                 };
-            let response_cache_key = get_cache_key(&url_path, &response_encoding);
+            let response_cache_key = get_cache_key(&url_path, &response_encoding, inline_css);
             if response_cache_key != cache_key {
                 // For some reason tide_compress didn't encode the way we thought it would
                 log::error!(
@@ -161,6 +173,6 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware
     }
 }
 
-fn get_cache_key(url_path: &str, encoding: &str) -> String {
-    format!("{} {}", url_path, encoding)
+fn get_cache_key(url_path: &str, encoding: &str, inline_css: bool) -> String {
+    format!("{} {} {}", url_path, encoding, inline_css)
 }

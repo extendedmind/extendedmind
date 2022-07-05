@@ -11,6 +11,7 @@ use tide::{
 };
 use tide_compress::CompressMiddleware;
 use tide_websockets::WebSocket;
+use wildmatch::WildMatch;
 
 mod websocket;
 use websocket::handle_hypercore;
@@ -26,6 +27,7 @@ pub fn http_main_server(
     static_root_dir: Option<PathBuf>,
     skip_compress_mime: Option<Vec<String>>,
     inline_css_path: Option<Vec<String>>,
+    inline_css_skip_referer: Option<Vec<String>>,
     immutable_path: Option<Vec<String>>,
     hsts_max_age: Option<u64>,
     hsts_preload: bool,
@@ -35,14 +37,43 @@ pub fn http_main_server(
 ) -> Result<tide::Server<State>> {
     let skip_compress_mime = skip_compress_mime.clone();
     let mut app = tide::with_state(initial_state);
+    let inline_css_wildmatch = match inline_css_path {
+        Some(inline_css_path) => {
+            log::info!("Inlining CSS for paths {:?}", &inline_css_path);
+            Some(
+                inline_css_path
+                    .iter()
+                    .map(|path| WildMatch::new(path))
+                    .collect(),
+            )
+        }
+        None => None,
+    };
+    let inline_css_skip_referer_wildmatch = match inline_css_skip_referer {
+        Some(inline_css_skip_referer) => {
+            log::info!(
+                "Skip inlining CSS for Referer header url {:?}",
+                &inline_css_skip_referer
+            );
+            Some(
+                inline_css_skip_referer
+                    .iter()
+                    .map(|referer| WildMatch::new(referer))
+                    .collect(),
+            )
+        }
+        None => None,
+    };
 
     if let Some(static_root_dir) = static_root_dir {
         let index_path = static_root_dir.join("index.html");
+
         let serve_static_files = ServeStaticFiles::new(
             "*".to_string(),
             static_root_dir,
             skip_compress_mime,
-            inline_css_path,
+            inline_css_wildmatch.clone(),
+            inline_css_skip_referer_wildmatch.clone(),
             immutable_path.clone(),
             hsts_max_age,
             hsts_preload,
@@ -77,6 +108,8 @@ pub fn http_main_server(
             "*".to_string(),
             cache,
             skip_cache_path,
+            inline_css_wildmatch,
+            inline_css_skip_referer_wildmatch,
         ));
     }
     app.with(CompressMiddleware::new());

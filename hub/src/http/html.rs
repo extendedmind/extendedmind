@@ -2,11 +2,12 @@ use async_std::io::ReadExt;
 use async_std::path::PathBuf as AsyncPathBuf;
 use std::path::{Path, PathBuf};
 use std::{ffi::OsStr, io};
+use tide::http::headers::HeaderValues;
 use tide::http::mime::Mime;
 use tide::{Body, Endpoint, Request, Response, Result, StatusCode};
 use wildmatch::WildMatch;
 
-use crate::common::log_access;
+use crate::common::{is_inline_css, log_access};
 
 const CSS_NEEDLE: &str = "<link rel=\"stylesheet\" href=\"/";
 const CSS_ELEMENT_START: &str = "<style>";
@@ -18,6 +19,7 @@ pub struct ServeStaticFiles {
     dir: PathBuf,
     skip_compress_mime: Option<Vec<String>>,
     inline_css_wildmatch: Option<Vec<WildMatch>>,
+    inline_css_skip_referer_wildmatch: Option<Vec<WildMatch>>,
     immutable_path_wildmatch: Option<Vec<WildMatch>>,
     hsts_max_age: Option<u64>,
     hsts_preload: bool,
@@ -28,24 +30,12 @@ impl ServeStaticFiles {
         prefix: String,
         dir: PathBuf,
         skip_compress_mime: Option<Vec<String>>,
-        inline_css_path: Option<Vec<String>>,
+        inline_css_wildmatch: Option<Vec<WildMatch>>,
+        inline_css_skip_referer_wildmatch: Option<Vec<WildMatch>>,
         immutable_path: Option<Vec<String>>,
         hsts_max_age: Option<u64>,
         hsts_preload: bool,
     ) -> Self {
-        if let Some(paths) = &inline_css_path {
-            log::info!("Inlining CSS for paths {:?}", &paths);
-        }
-        let inline_css_wildmatch = match inline_css_path {
-            Some(inline_css_path) => Some(
-                inline_css_path
-                    .iter()
-                    .map(|path| WildMatch::new(path))
-                    .collect(),
-            ),
-            None => None,
-        };
-
         if let Some(paths) = &immutable_path {
             log::info!("Using immutable response headers for paths {:?}", &paths);
         }
@@ -77,6 +67,7 @@ impl ServeStaticFiles {
             dir,
             skip_compress_mime,
             inline_css_wildmatch,
+            inline_css_skip_referer_wildmatch,
             immutable_path_wildmatch,
             hsts_max_age,
             hsts_preload,
@@ -127,16 +118,20 @@ impl ServeStaticFiles {
         }
     }
 
-    async fn process_body_inlining(&self, path: &str, body: Body) -> Body {
+    async fn process_body_inlining(
+        &self,
+        path: &str,
+        referer_header_value: Option<&HeaderValues>,
+        body: Body,
+    ) -> Body {
         let mime = body.mime().clone();
         if mime.essence() == "text/html" {
-            let inline_css: bool = match &self.inline_css_wildmatch {
-                Some(inline_css_wildmatch) => inline_css_wildmatch
-                    .iter()
-                    .find(|wildmatch_path| wildmatch_path.matches(path))
-                    .is_some(),
-                None => false,
-            };
+            let inline_css: bool = is_inline_css(
+                path,
+                referer_header_value,
+                &self.inline_css_wildmatch,
+                &self.inline_css_skip_referer_wildmatch,
+            );
             if inline_css {
                 log::debug!("Inlining CSS for path {}", path);
                 let body_as_string = body.into_string().await.unwrap();
@@ -254,7 +249,9 @@ where
             let file_path = file_path.unwrap();
             match Body::from_file(&file_path).await {
                 Ok(body) => {
-                    let body = self.process_body_inlining(&url_path, body).await;
+                    let body = self
+                        .process_body_inlining(&url_path, req.header("Referer"), body)
+                        .await;
                     // For some reason this does not work by default, so add it here
                     let mime = if file_path.extension() == Some(OsStr::new("atom")) {
                         Mime::from("application/atom+xml")

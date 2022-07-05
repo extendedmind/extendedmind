@@ -93,5 +93,7 @@ pub struct Opts {
     #[clap(long)]
     pub inline_css_path: Option<Vec<String>>,
     #[clap(long)]
+    pub inline_css_skip_referer: Option<Vec<String>>,
+    #[clap(long)]
     pub immutable_path: Option<Vec<String>>,
 }
