@@ -1,16 +1,11 @@
-name: Cross-build hub on the main branch
+name: Release a Cross-build of hub on the main branch
 on:
   push:
-    branches-ignore:
-      - 'main'
-    paths-ignore:
-      - 'ui/**'
-      - '**.md'
-      - '**.toml'
-      - '**.lock'
+    tags:
+      - 'hub_v*'
 jobs:
-  crossbuild_rpi3b:
-    name: Cross-build for Raspberry Pi 3B(+) with Bazel in a dev branch
+  release_crossbuild_for_rpi3b:
+    name: Release Cross-build for Raspberry Pi 3B(+) with Bazel
     runs-on: ubuntu-latest
     steps:
       - name: Cache bazel
@@ -31,3 +26,10 @@ jobs:
           ANDROID_NDK_HOME: '/usr/local/lib/android/sdk/ndk/21.4.7075529'
         with:
           command: 'build //hub:extendedmind_hub --platforms //hub:arm64_linux_rpi3b'
+      - name: Create a Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: false
+          title: 'Rasperry Pi 3B(+) Development Build'
+          files: bazel-bin/hub/extendedmind_hub
