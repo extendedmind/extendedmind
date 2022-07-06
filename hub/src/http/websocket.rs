@@ -76,6 +76,8 @@ pub async fn handle_hypercore(
                         break;
                     }
                     // Send ping message if enough time has elapsed
+                    // TODO: Something needs to send WakeUp to system_command_sender so that this
+                    // si triggered.
                     if now.elapsed().as_secs() > 30 {
                         debug!("sending ping");
                         ws_writer.send(Message::Ping(Vec::new())).await.unwrap();

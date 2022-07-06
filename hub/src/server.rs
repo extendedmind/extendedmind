@@ -48,7 +48,6 @@ pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
 
     // Listen to ctrlc in a separate task
     let ctrlc = CtrlC::new().expect("cannot create Ctrl+C handler?");
-    let disconnect_sender = system_command_sender.clone();
     let abort: Arc<Mutex<AtomicBool>> = Arc::new(Mutex::new(AtomicBool::new(false)));
     let abort_writer = abort.clone();
 
@@ -63,7 +62,7 @@ pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
             );
         });
         log::info!("(2/5) Sending disconnect");
-        disconnect_sender
+        system_command_sender
             .send(Ok(Bytes::from_static(&[SystemCommand::Disconnect as u8])))
             .await
             .unwrap();
@@ -86,8 +85,6 @@ pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
             .unwrap();
     });
 
-    // Need to start a system executor to send the WakeUp command, we send it once per second so
-    // that the listener will send a WS Ping when it wants to in a 1s delay.
     let backup_dir = opts.backup_dir.clone();
     let metrics_dir = opts.metrics_dir.clone();
     let backup_interval_min = opts.backup_interval_min.clone();
@@ -104,10 +101,6 @@ pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
         let mut next_backup_timestamp =
             get_next_backup_timestamp_on_launch(backup_dir.clone(), backup_interval_min);
         while interval.next().await.is_some() && !*abort.as_ref().lock().await.get_mut() {
-            system_command_sender
-                .send(Ok(Bytes::from_static(&[SystemCommand::WakeUp as u8])))
-                .await
-                .unwrap();
             if let Some(ref next_backup_timestamp_ref) = next_backup_timestamp {
                 if let Some(ref backup_dir) = backup_dir {
                     if let Some(ref metrics_dir) = metrics_dir {
