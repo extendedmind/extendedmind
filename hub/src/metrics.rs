@@ -365,7 +365,7 @@ where
                                 .is_some(),
                             None => false,
                         };
-                        if correct_secret || (!immutable && status == 200) {
+                        if correct_secret || status == 200 {
                             entries.push(MetricsEntry {
                                 path: url_path,
                                 status,
