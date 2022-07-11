@@ -1,7 +1,7 @@
 use async_std::channel::{Receiver, Sender};
 use extendedmind_engine::{Bytes, Engine, RandomAccessDisk};
 use std::{io, path::PathBuf};
-use tide::http::headers::HeaderValues;
+use tide::http::{headers::HeaderValues, Method};
 use wildmatch::WildMatch;
 
 // Identifies that the log entry belongs in the access log. Needs to be separate from actual paths,
@@ -44,15 +44,19 @@ pub fn get_stem_from_path(path: &PathBuf) -> String {
         .unwrap()
 }
 
-pub fn log_access(url_path: &str, code: &str, extra: Option<&str>) {
+pub fn log_access(method: &Method, url_path: &str, code: &str, extra: Option<&str>) {
     // This value should be
-    log::info!(
-        "{} {} {} {}",
-        crate::common::ACCESS_LOG_IDENTIFIER,
-        code,
-        &url_path,
-        extra.unwrap_or("")
-    );
+    if method == &Method::Get {
+        log::info!(
+            "{} {} {} {}",
+            crate::common::ACCESS_LOG_IDENTIFIER,
+            code,
+            &url_path,
+            extra.unwrap_or("")
+        );
+    } else {
+        log::debug!("{} {} {} {}", method, code, &url_path, extra.unwrap_or(""));
+    }
 }
 
 pub fn is_inline_css(

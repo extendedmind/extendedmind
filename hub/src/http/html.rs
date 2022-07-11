@@ -239,11 +239,12 @@ where
 {
     async fn call(&self, req: Request<State>) -> Result {
         let url_path = &req.url().path();
+        let method = &req.method();
         // Read the file from the file system
         let file_path = self.get_file_path_from_url_path(url_path).await;
         if file_path.is_none() {
             log::warn!("Unauthorized attempt to read: {:?}", url_path);
-            log_access(url_path, "403", None);
+            log_access(method, url_path, "403", None);
             Ok(Response::new(StatusCode::Forbidden))
         } else {
             let file_path = file_path.unwrap();
@@ -259,11 +260,11 @@ where
                         body.mime().clone()
                     };
                     let body_as_bytes = body.into_bytes().await.unwrap();
-                    log_access(url_path, "200", None);
+                    log_access(method, url_path, "200", None);
                     Ok(self.get_ok_response_from_body(url_path, body_as_bytes, mime))
                 }
                 Err(e) if e.kind() == io::ErrorKind::NotFound => {
-                    log_access(url_path, "404", None);
+                    log_access(method, url_path, "404", None);
                     log::info!("File not found: {:?}", &file_path);
                     Ok(Response::new(StatusCode::NotFound))
                 }

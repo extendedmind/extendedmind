@@ -72,8 +72,9 @@ impl CacheMiddleware {
 impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware {
     async fn handle(&self, req: Request<State>, next: Next<'_, State>) -> tide::Result {
         let url_path: String = req.url().path().to_string();
+        let method = &req.method();
         let skip_cache: bool = {
-            if req.method() != Method::Get {
+            if method != &Method::Get {
                 true
             } else {
                 match &self.skip_cache_wildmatch {
@@ -118,7 +119,7 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware
                 for (header_name, header_values) in headers {
                     res_builder = res_builder.header(header_name, header_values);
                 }
-                log_access(&url_path, &status.to_string(), Some("cached"));
+                log_access(method, &url_path, &status.to_string(), Some("cached"));
                 return Ok(res_builder.build());
             }
         }
