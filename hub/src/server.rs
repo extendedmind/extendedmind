@@ -155,6 +155,7 @@ pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
         opts.metrics_endpoint,
         opts.metrics_dir,
         opts.metrics_secret,
+        opts.metrics_skip_compress.unwrap_or(false),
     ))?;
 
     Ok(())
@@ -181,6 +182,7 @@ async fn start_server_async(
     metrics_endpoint: Option<String>,
     metrics_dir: Option<PathBuf>,
     metrics_secret: Option<String>,
+    metrics_skip_compress: bool,
 ) -> Result<()> {
     let engine = initial_state.engine.clone();
 
@@ -198,6 +200,7 @@ async fn start_server_async(
             metrics_endpoint,
             metrics_dir,
             metrics_secret,
+            metrics_skip_compress,
         )
         .unwrap();
         if let Some(https_port) = https_port {

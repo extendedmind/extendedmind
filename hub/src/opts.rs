@@ -65,6 +65,8 @@ pub struct Opts {
     #[clap(long)]
     pub metrics_secret: Option<String>,
     #[clap(long)]
+    pub metrics_skip_compress: Option<bool>,
+    #[clap(long)]
     pub backup_dir: Option<PathBuf>,
     #[clap(long)]
     pub backup_interval_min: Option<u32>,

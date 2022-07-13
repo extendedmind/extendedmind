@@ -11,6 +11,7 @@ use std::thread;
 use std::time;
 use std::time::Duration;
 use thread_priority::{set_current_thread_priority, ThreadPriority};
+use tide::{Body, Response};
 use wildmatch::WildMatch;
 
 use crate::common::{
@@ -269,6 +270,17 @@ impl ProduceMetrics {
         self.cache.get(&query)
     }
 
+    fn get_ok_response_from_body(&self, body: Body) -> Response {
+        let response_builder = tide::Response::builder(200).body(body);
+        if self.skip_compression {
+            response_builder
+                .header("Cache-Control", "no-transform")
+                .build()
+        } else {
+            response_builder.build()
+        }
+    }
+
     async fn insert_metrics_response_to_cache(
         &self,
         query: String,
@@ -325,7 +337,7 @@ where
             // The body for the URL was found from the cache, return it without any file IO
             log::debug!("Metrics cache hit: {}", &url_path);
             let body = tide::Body::from_json(&cached_metrics_response).unwrap();
-            Ok(tide::Response::builder(200).body(body).build())
+            Ok(self.get_ok_response_from_body(body))
         } else {
             // Read the file from the file system
             log::debug!("Metrics cache miss: {}", &url_path);
@@ -395,15 +407,7 @@ where
                 .await;
 
             let body = tide::Body::from_json(&metrics_response).unwrap();
-            let response_builder = tide::Response::builder(200).body(body);
-            let response = if self.skip_compression {
-                response_builder
-                    .header("Cache-Control", "no-transform")
-                    .build()
-            } else {
-                response_builder.build()
-            };
-            Ok(response)
+            Ok(self.get_ok_response_from_body(body))
         };
     }
 }

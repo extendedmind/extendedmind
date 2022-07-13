@@ -34,6 +34,7 @@ pub fn http_main_server(
     metrics_endpoint: Option<String>,
     metrics_dir: Option<PathBuf>,
     metrics_secret: Option<String>,
+    metrics_skip_compress: bool,
 ) -> Result<tide::Server<State>> {
     let skip_compress_mime = skip_compress_mime.clone();
     let mut app = tide::with_state(initial_state);
@@ -65,10 +66,13 @@ pub fn http_main_server(
         None => None,
     };
 
-    let skip_json_compression: bool = match &skip_compress_mime {
-        Some(skip_compress_mime) => skip_compress_mime.contains(&"application/json".to_string()),
-        None => false,
-    };
+    let metrics_skip_compress: bool = metrics_skip_compress
+        || match &skip_compress_mime {
+            Some(skip_compress_mime) => {
+                skip_compress_mime.contains(&"application/json".to_string())
+            }
+            None => false,
+        };
 
     if let Some(static_root_dir) = static_root_dir {
         let index_path = static_root_dir.join("index.html");
@@ -96,7 +100,7 @@ pub fn http_main_server(
                 metrics_dir,
                 metrics_secret,
                 immutable_path,
-                skip_json_compression,
+                metrics_skip_compress,
             ));
             Some(vec![metrics_endpoint])
         } else {
