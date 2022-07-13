@@ -225,6 +225,7 @@ pub struct ProduceMetrics {
     metrics_secret: Option<String>,
     immutable_path_wildmatch: Option<Vec<WildMatch>>,
     cache: Cache<String, MetricsResponse>,
+    skip_compression: bool,
 }
 
 impl ProduceMetrics {
@@ -233,6 +234,7 @@ impl ProduceMetrics {
         metrics_dir: PathBuf,
         metrics_secret: Option<String>,
         immutable_path: Option<Vec<String>>,
+        skip_compression: bool,
     ) -> Self {
         let cache_ttl_sec = DEFAULT_METRICS_INTERVAL_SECONDS;
         log::info!(
@@ -259,6 +261,7 @@ impl ProduceMetrics {
             metrics_secret,
             immutable_path_wildmatch,
             cache,
+            skip_compression,
         }
     }
 
@@ -392,7 +395,15 @@ where
                 .await;
 
             let body = tide::Body::from_json(&metrics_response).unwrap();
-            Ok(tide::Response::builder(200).body(body).build())
+            let response_builder = tide::Response::builder(200).body(body);
+            let response = if self.skip_compression {
+                response_builder
+                    .header("Cache-Control", "no-transform")
+                    .build()
+            } else {
+                response_builder.build()
+            };
+            Ok(response)
         };
     }
 }

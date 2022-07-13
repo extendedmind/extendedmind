@@ -65,6 +65,11 @@ pub fn http_main_server(
         None => None,
     };
 
+    let skip_json_compression: bool = match &skip_compress_mime {
+        Some(skip_compress_mime) => skip_compress_mime.contains(&"application/json".to_string()),
+        None => false,
+    };
+
     if let Some(static_root_dir) = static_root_dir {
         let index_path = static_root_dir.join("index.html");
 
@@ -91,6 +96,7 @@ pub fn http_main_server(
                 metrics_dir,
                 metrics_secret,
                 immutable_path,
+                skip_json_compression,
             ));
             Some(vec![metrics_endpoint])
         } else {

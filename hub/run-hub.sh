@@ -17,7 +17,8 @@ TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
     --admin-socket-file ${TARGET_PATH}/extendedmind_hub.sock \
     --data-root-dir ${TARGET_PATH} --http-port 3001 \
     ${STATIC_OPT} \
-    --skip-compress-mime application/wasm --cache-ttl-sec 5 --cache-tti-sec 5 \
+    --skip-compress-mime application/wasm --skip-compress-mime application/json \
+    --cache-ttl-sec 5 --cache-tti-sec 5 \
     --inline-css-path /blog/* --immutable-path /_app/*.css --immutable-path /_app/*.js \
     --inline-css-skip-referer http://localhost* \
     --verbose true --log-dir ${TARGET_PATH}/logs --log-precision 18 \
