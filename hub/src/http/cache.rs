@@ -91,10 +91,22 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware
             None
         } else {
             let accepts = AcceptEncoding::from_headers(&req)?;
+
             let encoding: String = if let Some(mut accepts) = accepts {
-                let encoding =
-                    accepts.negotiate(&[Encoding::Brotli, Encoding::Gzip, Encoding::Deflate])?;
-                encoding.to_string()
+                // TODO: tide-compress uses
+                // https://github.com/jshttp/mime-db/blob/master/db.json
+                // to find out if a mime type is compressible or not.
+                // Just fixing this for image/avif is a short-term hack.
+                if url_path.ends_with(".avif") {
+                    "".to_string()
+                } else {
+                    let encoding = accepts.negotiate(&[
+                        Encoding::Brotli,
+                        Encoding::Gzip,
+                        Encoding::Deflate,
+                    ])?;
+                    encoding.to_string()
+                }
             } else {
                 "".to_string()
             };
