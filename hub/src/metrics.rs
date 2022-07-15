@@ -23,7 +23,7 @@ use crate::common::{
 const DEFAULT_METRICS_FILE_PRECISION: u8 = 10;
 
 // The default time to sleep when trying to refresh metrics
-const DEFAULT_METRICS_INTERVAL_SECONDS: u64 = 10;
+const DEFAULT_METRICS_INTERVAL_SECONDS: u64 = 60;
 
 // Show 30 by default, maps to showing one month with DEFAULT_METRICS_FILE_PRECISION
 const DEFAULT_METRICS_LIMIT: usize = 30;
