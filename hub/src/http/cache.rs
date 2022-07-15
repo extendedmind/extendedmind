@@ -86,38 +86,29 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware
                 }
             }
         };
-        let mut inline_css = false;
         let cache_key: Option<String> = if skip_cache {
             None
         } else {
             let accepts = AcceptEncoding::from_headers(&req)?;
 
-            let encoding: String = if let Some(mut accepts) = accepts {
-                // TODO: tide-compress uses
-                // https://github.com/jshttp/mime-db/blob/master/db.json
-                // to find out if a mime type is compressible or not.
-                // Just fixing this for image/avif is a short-term hack.
-                if url_path.ends_with(".avif") {
-                    "".to_string()
-                } else {
-                    let encoding = accepts.negotiate(&[
-                        Encoding::Brotli,
-                        Encoding::Gzip,
-                        Encoding::Deflate,
-                    ])?;
-                    encoding.to_string()
-                }
+            // This encoding is not necessarily the one that is returned: e.g. AVIF files should
+            // not be re-compressed at all, so even though the cache key will se "br", that is not
+            // what the body is encoded with..
+            let requested_encoding: String = if let Some(mut accepts) = accepts {
+                let encoding =
+                    accepts.negotiate(&[Encoding::Brotli, Encoding::Gzip, Encoding::Deflate])?;
+                encoding.to_string()
             } else {
                 "".to_string()
             };
-            inline_css = is_inline_css(
+            let inline_css = is_inline_css(
                 &url_path,
                 req.header("Referer"),
                 &self.inline_css_wildmatch,
                 &self.inline_css_skip_domain_wildmatch,
             );
 
-            Some(get_cache_key(&url_path, &encoding, inline_css))
+            Some(get_cache_key(&url_path, &requested_encoding, inline_css))
         };
 
         if let Some(cache_key) = &cache_key {
@@ -140,22 +131,6 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware
         if let Some(cache_key) = cache_key {
             let status = res.status();
             if !status.is_success() {
-                return Ok(res);
-            }
-            let response_encoding =
-                if let Some(response_encoding) = ContentEncoding::from_headers(&res).unwrap() {
-                    response_encoding.to_string()
-                } else {
-                    "".to_string()
-                };
-            let response_cache_key = get_cache_key(&url_path, &response_encoding, inline_css);
-            if response_cache_key != cache_key {
-                // For some reason tide_compress didn't encode the way we thought it would
-                log::error!(
-                    "Encoding mismatch with cache, expected: '{}' but was '{}'",
-                    &cache_key,
-                    response_cache_key
-                );
                 return Ok(res);
             }
 
@@ -186,6 +161,6 @@ impl<State: Clone + Send + Sync + 'static> Middleware<State> for CacheMiddleware
     }
 }
 
-fn get_cache_key(url_path: &str, encoding: &str, inline_css: bool) -> String {
-    format!("{} {} {}", url_path, encoding, inline_css)
+fn get_cache_key(url_path: &str, requested_encoding: &str, inline_css: bool) -> String {
+    format!("{} {} {}", url_path, requested_encoding, inline_css)
 }
