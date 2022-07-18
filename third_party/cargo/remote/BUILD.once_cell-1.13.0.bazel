@@ -31,13 +31,27 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "bench" with type "bench" omitted
+# Unsupported target "bench" with type "example" omitted
+
+# Unsupported target "bench_acquire" with type "example" omitted
+
+# Unsupported target "bench_vs_lazy_static" with type "example" omitted
+
+# Unsupported target "lazy_static" with type "example" omitted
+
+# Unsupported target "reentrant_init_deadlocks" with type "example" omitted
+
+# Unsupported target "regex" with type "example" omitted
+
+# Unsupported target "test_synchronization" with type "example" omitted
 
 rust_library(
-    name = "unicode_normalization",
+    name = "once_cell",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
         "default",
+        "race",
         "std",
     ],
     crate_root = "src/lib.rs",
@@ -48,14 +62,15 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=unicode-normalization",
+        "crate-name=once_cell",
         "manual",
     ],
-    version = "0.1.20",
+    version = "1.13.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__tinyvec__1_6_0//:tinyvec",
     ],
 )
 
+
+# Unsupported target "it" with type "test" omitted

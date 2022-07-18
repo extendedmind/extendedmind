@@ -85,7 +85,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":camino_build_script",
-        "@raze__serde__1_0_137//:serde",
+        "@raze__serde__1_0_139//:serde",
     ],
 )
 

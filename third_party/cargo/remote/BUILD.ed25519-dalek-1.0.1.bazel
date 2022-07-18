@@ -37,7 +37,7 @@ rust_library(
     name = "ed25519_dalek",
     srcs = glob(["**/*.rs"]),
     aliases = {
-        "@raze__serde__1_0_137//:serde": "serde_crate",
+        "@raze__serde__1_0_139//:serde": "serde_crate",
     },
     crate_features = [
         "default",
@@ -64,7 +64,7 @@ rust_library(
         "@raze__curve25519_dalek__3_2_0//:curve25519_dalek",
         "@raze__ed25519__1_5_2//:ed25519",
         "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_137//:serde",
+        "@raze__serde__1_0_139//:serde",
         "@raze__sha2__0_9_9//:sha2",
         "@raze__zeroize__1_4_3//:zeroize",
     ],

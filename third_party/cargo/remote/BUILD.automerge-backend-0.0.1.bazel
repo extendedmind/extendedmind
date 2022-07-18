@@ -61,7 +61,7 @@ rust_library(
         "@raze__maplit__1_0_2//:maplit",
         "@raze__nonzero_ext__0_2_0//:nonzero_ext",
         "@raze__rand__0_8_5//:rand",
-        "@raze__serde__1_0_137//:serde",
+        "@raze__serde__1_0_139//:serde",
         "@raze__serde_json__1_0_82//:serde_json",
         "@raze__sha2__0_9_9//:sha2",
         "@raze__smol_str__0_1_23//:smol_str",

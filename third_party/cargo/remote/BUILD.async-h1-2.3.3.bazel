@@ -62,7 +62,7 @@ rust_library(
         "@raze__http_types__2_12_0//:http_types",
         "@raze__httparse__1_7_1//:httparse",
         "@raze__log__0_4_17//:log",
-        "@raze__pin_project__1_0_10//:pin_project",
+        "@raze__pin_project__1_0_11//:pin_project",
     ],
 )
 

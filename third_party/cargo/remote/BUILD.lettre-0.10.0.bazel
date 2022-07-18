@@ -100,12 +100,12 @@ rust_library(
         "@raze__idna__0_2_3//:idna",
         "@raze__mime__0_3_16//:mime",
         "@raze__nom__7_1_1//:nom",
-        "@raze__once_cell__1_12_0//:once_cell",
+        "@raze__once_cell__1_13_0//:once_cell",
         "@raze__quoted_printable__0_4_5//:quoted_printable",
         "@raze__rustls__0_20_6//:rustls",
         "@raze__rustls_pemfile__1_0_0//:rustls_pemfile",
         "@raze__socket2__0_4_4//:socket2",
-        "@raze__webpki_roots__0_22_3//:webpki_roots",
+        "@raze__webpki_roots__0_22_4//:webpki_roots",
     ],
 )
 

@@ -69,7 +69,7 @@ rust_library(
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
-            "@raze__nix__0_24_1//:nix",
+            "@raze__nix__0_24_2//:nix",
         ],
         "//conditions:default": [],
     }) + selects.with_or({

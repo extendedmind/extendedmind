@@ -26,18 +26,25 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
+# Unsupported target "spawn" with type "bench" omitted
+
+# Unsupported target "spawn" with type "example" omitted
+
+# Unsupported target "spawn-local" with type "example" omitted
+
+# Unsupported target "spawn-on-thread" with type "example" omitted
+
 rust_library(
-    name = "nix",
+    name = "async_task",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "fs",
-        "process",
-        "signal",
+        "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -47,28 +54,29 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=nix",
+        "crate-name=async-task",
         "manual",
     ],
-    version = "0.24.1",
+    version = "4.3.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__bitflags__1_3_2//:bitflags",
-        "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__libc__0_2_126//:libc",
     ],
 )
 
 
-# Unsupported target "test" with type "test" omitted
+# Unsupported target "basic" with type "test" omitted
 
-# Unsupported target "test-aio-drop" with type "test" omitted
+# Unsupported target "cancel" with type "test" omitted
 
-# Unsupported target "test-clearenv" with type "test" omitted
+# Unsupported target "join" with type "test" omitted
 
-# Unsupported target "test-lio-listio-resubmit" with type "test" omitted
+# Unsupported target "panic" with type "test" omitted
 
-# Unsupported target "test-mount" with type "test" omitted
+# Unsupported target "ready" with type "test" omitted
 
-# Unsupported target "test-ptymaster-drop" with type "test" omitted
+# Unsupported target "waker_panic" with type "test" omitted
+
+# Unsupported target "waker_pending" with type "test" omitted
+
+# Unsupported target "waker_ready" with type "test" omitted

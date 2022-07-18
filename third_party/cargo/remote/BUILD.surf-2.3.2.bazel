@@ -81,10 +81,10 @@ rust_library(
         "@raze__http_types__2_12_0//:http_types",
         "@raze__log__0_4_17//:log",
         "@raze__mime_guess__2_0_4//:mime_guess",
-        "@raze__once_cell__1_12_0//:once_cell",
+        "@raze__once_cell__1_13_0//:once_cell",
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",
         "@raze__rustls__0_18_1//:rustls",
-        "@raze__serde__1_0_137//:serde",
+        "@raze__serde__1_0_139//:serde",
         "@raze__serde_json__1_0_82//:serde_json",
     ],
 )

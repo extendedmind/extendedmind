@@ -31,20 +31,10 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "spawn" with type "bench" omitted
-
-# Unsupported target "spawn" with type "example" omitted
-
-# Unsupported target "spawn-local" with type "example" omitted
-
-# Unsupported target "spawn-on-thread" with type "example" omitted
-
-rust_library(
-    name = "async_task",
+rust_proc_macro(
+    name = "pin_project_internal",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "default",
-        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -54,29 +44,15 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=async-task",
+        "crate-name=pin-project-internal",
         "manual",
     ],
-    version = "4.2.0",
+    version = "1.0.11",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__proc_macro2__1_0_40//:proc_macro2",
+        "@raze__quote__1_0_20//:quote",
+        "@raze__syn__1_0_98//:syn",
     ],
 )
-
-
-# Unsupported target "basic" with type "test" omitted
-
-# Unsupported target "cancel" with type "test" omitted
-
-# Unsupported target "join" with type "test" omitted
-
-# Unsupported target "panic" with type "test" omitted
-
-# Unsupported target "ready" with type "test" omitted
-
-# Unsupported target "waker_panic" with type "test" omitted
-
-# Unsupported target "waker_pending" with type "test" omitted
-
-# Unsupported target "waker_ready" with type "test" omitted

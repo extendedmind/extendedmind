@@ -32,10 +32,16 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "chacha20poly1305",
+    name = "object",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "alloc",
+        "archive",
+        "coff",
+        "elf",
+        "macho",
+        "pe",
+        "read_core",
+        "unaligned",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -45,20 +51,18 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=chacha20poly1305",
+        "crate-name=object",
         "manual",
     ],
-    version = "0.9.0",
+    version = "0.29.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__aead__0_4_3//:aead",
-        "@raze__chacha20__0_8_1//:chacha20",
-        "@raze__cipher__0_3_0//:cipher",
-        "@raze__poly1305__0_7_2//:poly1305",
-        "@raze__zeroize__1_4_3//:zeroize",
+        "@raze__memchr__2_5_0//:memchr",
     ],
 )
 
 
-# Unsupported target "lib" with type "test" omitted
+# Unsupported target "integration" with type "test" omitted
+
+# Unsupported target "parse_self" with type "test" omitted

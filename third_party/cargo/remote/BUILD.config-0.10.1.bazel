@@ -53,7 +53,7 @@ rust_library(
     deps = [
         "@raze__lazy_static__1_4_0//:lazy_static",
         "@raze__nom__5_1_2//:nom",
-        "@raze__serde__1_0_137//:serde",
+        "@raze__serde__1_0_139//:serde",
     ],
 )
 

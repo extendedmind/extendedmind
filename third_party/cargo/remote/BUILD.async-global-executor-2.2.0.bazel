@@ -60,7 +60,7 @@ rust_library(
         "@raze__blocking__1_2_0//:blocking",
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__num_cpus__1_13_1//:num_cpus",
-        "@raze__once_cell__1_12_0//:once_cell",
+        "@raze__once_cell__1_13_0//:once_cell",
     ],
 )
 

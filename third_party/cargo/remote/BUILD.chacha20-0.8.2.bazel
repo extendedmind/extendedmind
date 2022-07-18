@@ -26,17 +26,26 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
+# Unsupported target "chacha12" with type "bench" omitted
+
+# Unsupported target "chacha20" with type "bench" omitted
+
+# Unsupported target "chacha8" with type "bench" omitted
+
 rust_library(
-    name = "filetime",
+    name = "chacha20",
     srcs = glob(["**/*.rs"]),
     aliases = {
     },
     crate_features = [
+        "cipher",
+        "default",
+        "zeroize",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -46,36 +55,30 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=filetime",
+        "crate-name=chacha20",
         "manual",
     ],
-    version = "0.2.16",
+    version = "0.8.2",
 
     # buildifier: leave-alone
     deps = [
         "@raze__cfg_if__1_0_0//:cfg_if",
+        "@raze__cipher__0_3_0//:cipher",
+        "@raze__zeroize__1_4_3//:zeroize",
     ] + selects.with_or({
-        # cfg(unix)
+        # cfg(any(target_arch = "x86_64", target_arch = "x86"))
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
+            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
-            "@rules_rust//rust/platform:aarch64-linux-android",
-            "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
-            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
-            "@raze__libc__0_2_126//:libc",
-        ],
-        "//conditions:default": [],
-    }) + selects.with_or({
-        # cfg(windows)
-        (
-            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
-        ): [
-            "@raze__winapi__0_3_9//:winapi",
+            "@raze__cpufeatures__0_2_2//:cpufeatures",
         ],
         "//conditions:default": [],
     }),
 )
 
+
+# Unsupported target "lib" with type "test" omitted

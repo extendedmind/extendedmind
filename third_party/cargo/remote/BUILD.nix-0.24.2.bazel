@@ -26,15 +26,18 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "concurrent_queue",
+    name = "nix",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "fs",
+        "process",
+        "signal",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -44,20 +47,28 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=concurrent-queue",
+        "crate-name=nix",
         "manual",
     ],
-    version = "1.2.2",
+    version = "0.24.2",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__cache_padded__1_2_0//:cache_padded",
+        "@raze__bitflags__1_3_2//:bitflags",
+        "@raze__cfg_if__1_0_0//:cfg_if",
+        "@raze__libc__0_2_126//:libc",
     ],
 )
 
 
-# Unsupported target "bounded" with type "test" omitted
+# Unsupported target "test" with type "test" omitted
 
-# Unsupported target "single" with type "test" omitted
+# Unsupported target "test-aio-drop" with type "test" omitted
 
-# Unsupported target "unbounded" with type "test" omitted
+# Unsupported target "test-clearenv" with type "test" omitted
+
+# Unsupported target "test-lio-listio-resubmit" with type "test" omitted
+
+# Unsupported target "test-mount" with type "test" omitted
+
+# Unsupported target "test-ptymaster-drop" with type "test" omitted

@@ -90,7 +90,7 @@ rust_library(
     deps = [
         ":crossbeam_utils_build_script",
         "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__once_cell__1_12_0//:once_cell",
+        "@raze__once_cell__1_13_0//:once_cell",
     ],
 )
 

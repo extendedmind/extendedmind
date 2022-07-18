@@ -33,12 +33,20 @@ licenses([
 
 # Unsupported target "bench" with type "bench" omitted
 
+# Unsupported target "dwarf-validate" with type "example" omitted
+
+# Unsupported target "dwarfdump" with type "example" omitted
+
+# Unsupported target "simple" with type "example" omitted
+
+# Unsupported target "simple_line" with type "example" omitted
+
 rust_library(
-    name = "ucd_trie",
+    name = "gimli",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "default",
-        "std",
+        "read",
+        "read-core",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -48,13 +56,17 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=ucd-trie",
+        "crate-name=gimli",
         "manual",
     ],
-    version = "0.1.3",
+    version = "0.26.2",
 
     # buildifier: leave-alone
     deps = [
     ],
 )
 
+
+# Unsupported target "convert_self" with type "test" omitted
+
+# Unsupported target "parse_self" with type "test" omitted

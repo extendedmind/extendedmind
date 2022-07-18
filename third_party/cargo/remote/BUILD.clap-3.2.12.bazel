@@ -63,7 +63,7 @@ rust_binary(
         "crate-name=stdio-fixture",
         "manual",
     ],
-    version = "3.2.8",
+    version = "3.2.12",
 
     # buildifier: leave-alone
     deps = [
@@ -72,7 +72,7 @@ rust_binary(
         "@raze__bitflags__1_3_2//:bitflags",
         "@raze__clap_lex__0_2_4//:clap_lex",
         "@raze__indexmap__1_9_1//:indexmap",
-        "@raze__once_cell__1_12_0//:once_cell",
+        "@raze__once_cell__1_13_0//:once_cell",
         "@raze__strsim__0_10_0//:strsim",
         "@raze__termcolor__1_1_3//:termcolor",
         "@raze__textwrap__0_15_0//:textwrap",
@@ -212,7 +212,7 @@ rust_library(
         "crate-name=clap",
         "manual",
     ],
-    version = "3.2.8",
+    version = "3.2.12",
 
     # buildifier: leave-alone
     deps = [
@@ -220,7 +220,7 @@ rust_library(
         "@raze__bitflags__1_3_2//:bitflags",
         "@raze__clap_lex__0_2_4//:clap_lex",
         "@raze__indexmap__1_9_1//:indexmap",
-        "@raze__once_cell__1_12_0//:once_cell",
+        "@raze__once_cell__1_13_0//:once_cell",
         "@raze__strsim__0_10_0//:strsim",
         "@raze__termcolor__1_1_3//:termcolor",
         "@raze__textwrap__0_15_0//:textwrap",

@@ -30,80 +30,72 @@ licenses([
 ])
 
 # Generated Targets
+# buildifier: disable=out-of-order-load
+# buildifier: disable=load-on-top
+load(
+    "@rules_rust//cargo:cargo_build_script.bzl",
+    "cargo_build_script",
+)
 
-rust_binary(
-    # Prefix bin name to disambiguate from (probable) collision with lib name
-    # N.B.: The exact form of this is subject to change.
-    name = "cargo_bin_rcgen",
+cargo_build_script(
+    name = "serde_build_script",
     srcs = glob(["**/*.rs"]),
+    build_script_env = {
+    },
     crate_features = [
+        "alloc",
         "default",
-        "pem",
+        "derive",
+        "rc",
+        "serde_derive",
+        "std",
     ],
-    crate_root = "src/main.rs",
-    data = [],
-    edition = "2018",
+    crate_root = "build.rs",
+    data = glob(["**"]),
+    edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=rcgen",
         "manual",
     ],
-    version = "0.9.2",
-
-    # buildifier: leave-alone
+    version = "1.0.139",
+    visibility = ["//visibility:private"],
     deps = [
-        ":rcgen",
-        "@raze__pem__1_0_2//:pem",
-        "@raze__ring__0_16_20//:ring",
-        "@raze__time__0_3_11//:time",
-        "@raze__yasna__0_5_0//:yasna",
     ],
 )
 
-
-# Unsupported target "rsa-irc" with type "example" omitted
-
-# Unsupported target "rsa-irc-openssl" with type "example" omitted
-
 rust_library(
-    name = "rcgen",
+    name = "serde",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
         "default",
-        "pem",
+        "derive",
+        "rc",
+        "serde_derive",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2015",
+    proc_macro_deps = [
+        "@raze__serde_derive__1_0_139//:serde_derive",
+    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=rcgen",
+        "crate-name=serde",
         "manual",
     ],
-    version = "0.9.2",
+    version = "1.0.139",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__pem__1_0_2//:pem",
-        "@raze__ring__0_16_20//:ring",
-        "@raze__time__0_3_11//:time",
-        "@raze__yasna__0_5_0//:yasna",
+        ":serde_build_script",
     ],
 )
 
-
-# Unsupported target "botan" with type "test" omitted
-
-# Unsupported target "generic" with type "test" omitted
-
-# Unsupported target "openssl" with type "test" omitted
-
-# Unsupported target "util" with type "test" omitted
-
-# Unsupported target "webpki" with type "test" omitted

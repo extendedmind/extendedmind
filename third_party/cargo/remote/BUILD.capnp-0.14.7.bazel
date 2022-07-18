@@ -26,15 +26,17 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
-rust_proc_macro(
-    name = "pin_project_internal",
+rust_library(
+    name = "capnp",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -44,15 +46,17 @@ rust_proc_macro(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=pin-project-internal",
+        "crate-name=capnp",
         "manual",
     ],
-    version = "1.0.10",
+    version = "0.14.7",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__proc_macro2__1_0_40//:proc_macro2",
-        "@raze__quote__1_0_20//:quote",
-        "@raze__syn__1_0_98//:syn",
     ],
 )
+
+
+# Unsupported target "canonicalize" with type "test" omitted
+
+# Unsupported target "total_size" with type "test" omitted

@@ -52,7 +52,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__base64__0_13_0//:base64",
-        "@raze__chacha20poly1305__0_9_0//:chacha20poly1305",
+        "@raze__chacha20poly1305__0_9_1//:chacha20poly1305",
         "@raze__cookie_factory__0_3_2//:cookie_factory",
         "@raze__hkdf__0_12_3//:hkdf",
         "@raze__io_tee__0_1_1//:io_tee",

@@ -26,34 +26,44 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "pem_benchmark" with type "bench" omitted
+# Unsupported target "bench" with type "bench" omitted
+
+# Unsupported target "insert_unique_unchecked" with type "bench" omitted
 
 rust_library(
-    name = "pem",
+    name = "hashbrown",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "raw",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2021",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=pem",
+        "crate-name=hashbrown",
         "manual",
     ],
-    version = "1.0.2",
+    version = "0.12.3",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__base64__0_13_0//:base64",
     ],
 )
 
+
+# Unsupported target "hasher" with type "test" omitted
+
+# Unsupported target "rayon" with type "test" omitted
+
+# Unsupported target "serde" with type "test" omitted
+
+# Unsupported target "set" with type "test" omitted

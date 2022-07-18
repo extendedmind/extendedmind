@@ -52,7 +52,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__hex__0_4_3//:hex",
-        "@raze__serde__1_0_137//:serde",
+        "@raze__serde__1_0_139//:serde",
         "@raze__smol_str__0_1_23//:smol_str",
         "@raze__strum__0_21_0//:strum",
         "@raze__thiserror__1_0_31//:thiserror",

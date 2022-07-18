@@ -102,7 +102,7 @@ rust_library(
         "@raze__infer__0_2_3//:infer",
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",
         "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_137//:serde",
+        "@raze__serde__1_0_139//:serde",
         "@raze__serde_json__1_0_82//:serde_json",
         "@raze__serde_qs__0_8_5//:serde_qs",
         "@raze__serde_urlencoded__0_7_1//:serde_urlencoded",

@@ -61,7 +61,7 @@ rust_library(
     deps = [
         "@raze__automerge_protocol__0_1_0//:automerge_protocol",
         "@raze__maplit__1_0_2//:maplit",
-        "@raze__serde__1_0_137//:serde",
+        "@raze__serde__1_0_139//:serde",
         "@raze__serde_json__1_0_82//:serde_json",
         "@raze__smol_str__0_1_23//:smol_str",
         "@raze__thiserror__1_0_31//:thiserror",

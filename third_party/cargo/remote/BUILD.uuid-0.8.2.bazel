@@ -68,7 +68,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__getrandom__0_2_7//:getrandom",
-        "@raze__serde__1_0_137//:serde",
+        "@raze__serde__1_0_139//:serde",
     ],
 )
 

@@ -30,6 +30,39 @@ licenses([
 ])
 
 # Generated Targets
+# buildifier: disable=out-of-order-load
+# buildifier: disable=load-on-top
+load(
+    "@rules_rust//cargo:cargo_build_script.bzl",
+    "cargo_build_script",
+)
+
+cargo_build_script(
+    name = "tokio_build_script",
+    srcs = glob(["**/*.rs"]),
+    build_script_env = {
+    },
+    crate_features = [
+        "default",
+        "sync",
+        "time",
+    ],
+    crate_root = "build.rs",
+    data = glob(["**"]),
+    edition = "2018",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+    version = "1.20.0",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@raze__autocfg__1_1_0//:autocfg",
+    ],
+)
 
 rust_library(
     name = "tokio",
@@ -50,10 +83,11 @@ rust_library(
         "crate-name=tokio",
         "manual",
     ],
-    version = "1.19.2",
+    version = "1.20.0",
 
     # buildifier: leave-alone
     deps = [
+        ":tokio_build_script",
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",
     ],
 )
@@ -98,6 +132,8 @@ rust_library(
 # Unsupported target "io_lines" with type "test" omitted
 
 # Unsupported target "io_mem_stream" with type "test" omitted
+
+# Unsupported target "io_panic" with type "test" omitted
 
 # Unsupported target "io_poll_aio" with type "test" omitted
 
@@ -173,6 +209,8 @@ rust_library(
 
 # Unsupported target "rt_metrics" with type "test" omitted
 
+# Unsupported target "rt_panic" with type "test" omitted
+
 # Unsupported target "rt_threaded" with type "test" omitted
 
 # Unsupported target "signal_ctrl_c" with type "test" omitted
@@ -188,6 +226,8 @@ rust_library(
 # Unsupported target "signal_no_rt" with type "test" omitted
 
 # Unsupported target "signal_notify_both" with type "test" omitted
+
+# Unsupported target "signal_panic" with type "test" omitted
 
 # Unsupported target "signal_twice" with type "test" omitted
 
@@ -210,6 +250,8 @@ rust_library(
 # Unsupported target "sync_once_cell" with type "test" omitted
 
 # Unsupported target "sync_oneshot" with type "test" omitted
+
+# Unsupported target "sync_panic" with type "test" omitted
 
 # Unsupported target "sync_rwlock" with type "test" omitted
 
@@ -254,6 +296,8 @@ rust_library(
 # Unsupported target "test_clock" with type "test" omitted
 
 # Unsupported target "time_interval" with type "test" omitted
+
+# Unsupported target "time_panic" with type "test" omitted
 
 # Unsupported target "time_pause" with type "test" omitted
 

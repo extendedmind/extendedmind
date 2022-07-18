@@ -53,7 +53,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__crypto_common__0_1_3//:crypto_common",
+        "@raze__crypto_common__0_1_6//:crypto_common",
         "@raze__inout__0_1_3//:inout",
     ],
 )

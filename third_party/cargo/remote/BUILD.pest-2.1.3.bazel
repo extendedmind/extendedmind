@@ -53,7 +53,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__ucd_trie__0_1_3//:ucd_trie",
+        "@raze__ucd_trie__0_1_4//:ucd_trie",
     ],
 )
 

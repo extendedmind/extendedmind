@@ -40,7 +40,7 @@ rust_library(
     srcs = glob(["**/*.rs"]),
     aliases = {
         "@raze__erased_serde__0_3_21//:erased_serde": "erased_serde1",
-        "@raze__serde__1_0_137//:serde": "serde1_lib",
+        "@raze__serde__1_0_139//:serde": "serde1_lib",
         "@raze__serde_fmt__1_0_1//:serde_fmt": "serde1_fmt",
         "@raze__sval__1_0_0_alpha_5//:sval": "sval1_lib",
         "@raze__version_check__0_9_4//:version_check": "rustc",
@@ -79,7 +79,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__erased_serde__0_3_21//:erased_serde",
-        "@raze__serde__1_0_137//:serde",
+        "@raze__serde__1_0_139//:serde",
         "@raze__serde_fmt__1_0_1//:serde_fmt",
         "@raze__sval__1_0_0_alpha_5//:sval",
     ],

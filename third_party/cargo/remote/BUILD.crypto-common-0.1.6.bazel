@@ -26,16 +26,15 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "capnp",
+    name = "crypto_common",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "default",
         "std",
     ],
     crate_root = "src/lib.rs",
@@ -46,17 +45,15 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=capnp",
+        "crate-name=crypto-common",
         "manual",
     ],
-    version = "0.14.6",
+    version = "0.1.6",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__generic_array__0_14_5//:generic_array",
+        "@raze__typenum__1_15_0//:typenum",
     ],
 )
 
-
-# Unsupported target "canonicalize" with type "test" omitted
-
-# Unsupported target "total_size" with type "test" omitted

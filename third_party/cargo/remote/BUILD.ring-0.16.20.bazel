@@ -172,7 +172,7 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
             "@raze__libc__0_2_126//:libc",
-            "@raze__once_cell__1_12_0//:once_cell",
+            "@raze__once_cell__1_13_0//:once_cell",
         ],
         "//conditions:default": [],
     }) + selects.with_or({

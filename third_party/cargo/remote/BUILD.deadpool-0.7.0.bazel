@@ -67,8 +67,8 @@ rust_library(
         "@raze__config__0_10_1//:config",
         "@raze__crossbeam_queue__0_3_5//:crossbeam_queue",
         "@raze__num_cpus__1_13_1//:num_cpus",
-        "@raze__serde__1_0_137//:serde",
-        "@raze__tokio__1_19_2//:tokio",
+        "@raze__serde__1_0_139//:serde",
+        "@raze__tokio__1_20_0//:tokio",
     ],
 )
 
