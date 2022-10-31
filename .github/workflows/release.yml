@@ -20,6 +20,8 @@ jobs:
           key: crossbuild_rpi3b-${{ runner.os }}-${{ env.cache-name }}-r4
       - name: Check out the repo
         uses: actions/checkout@v2
+      - name: Install Android build-tools and NDK
+        run: echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3" "ndk;21.4.7075529"
       - name: Run Bazel build of hub targeting Raspberry Pi 3B(+)
         uses: ttiurani/bazel-action@develop
         env:
