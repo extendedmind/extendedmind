@@ -24,7 +24,7 @@ jobs:
             ~/.cache/bazelisk
             ~/.cache/bazel
             ~/.cache/ms-playwright
-          key: test-${{ runner.os }}-${{ env.cache-name }}-r3
+          key: test-${{ runner.os }}-${{ env.cache-name }}-r4
       - name: Check out the repo
         uses: actions/checkout@v2
       # The ubuntu-latest runner already has Android SDK and the right NDK and build-tools:

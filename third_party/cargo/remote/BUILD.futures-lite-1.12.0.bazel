@@ -59,9 +59,9 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__fastrand__1_7_0//:fastrand",
-        "@raze__futures_core__0_3_21//:futures_core",
-        "@raze__futures_io__0_3_21//:futures_io",
+        "@raze__fastrand__1_8_0//:fastrand",
+        "@raze__futures_core__0_3_25//:futures_core",
+        "@raze__futures_io__0_3_25//:futures_io",
         "@raze__memchr__2_5_0//:memchr",
         "@raze__parking__2_0_0//:parking",
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",

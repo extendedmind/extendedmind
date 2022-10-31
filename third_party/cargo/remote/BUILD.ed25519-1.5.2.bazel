@@ -53,7 +53,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__signature__1_5_0//:signature",
+        "@raze__signature__1_6_4//:signature",
     ],
 )
 

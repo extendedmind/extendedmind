@@ -93,16 +93,16 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_channel__1_6_1//:async_channel",
+        "@raze__async_channel__1_7_1//:async_channel",
         "@raze__async_executor__1_4_1//:async_executor",
-        "@raze__async_fs__1_5_0//:async_fs",
-        "@raze__async_io__1_7_0//:async_io",
-        "@raze__async_lock__2_5_0//:async_lock",
-        "@raze__async_net__1_6_1//:async_net",
-        "@raze__async_process__1_4_0//:async_process",
+        "@raze__async_fs__1_6_0//:async_fs",
+        "@raze__async_io__1_10_0//:async_io",
+        "@raze__async_lock__2_6_0//:async_lock",
+        "@raze__async_net__1_7_0//:async_net",
+        "@raze__async_process__1_5_0//:async_process",
         "@raze__blocking__1_2_0//:blocking",
         "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__once_cell__1_13_0//:once_cell",
+        "@raze__once_cell__1_16_0//:once_cell",
     ],
 )
 

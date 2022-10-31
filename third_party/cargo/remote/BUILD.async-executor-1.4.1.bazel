@@ -56,11 +56,11 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__async_task__4_3_0//:async_task",
-        "@raze__concurrent_queue__1_2_3//:concurrent_queue",
-        "@raze__fastrand__1_7_0//:fastrand",
+        "@raze__concurrent_queue__1_2_4//:concurrent_queue",
+        "@raze__fastrand__1_8_0//:fastrand",
         "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__once_cell__1_13_0//:once_cell",
-        "@raze__slab__0_4_6//:slab",
+        "@raze__once_cell__1_16_0//:once_cell",
+        "@raze__slab__0_4_7//:slab",
     ],
 )
 

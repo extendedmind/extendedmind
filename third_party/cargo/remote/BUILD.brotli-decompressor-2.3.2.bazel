@@ -56,8 +56,8 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":brotli_decompressor",
-        "@raze__alloc_no_stdlib__2_0_3//:alloc_no_stdlib",
-        "@raze__alloc_stdlib__0_2_1//:alloc_stdlib",
+        "@raze__alloc_no_stdlib__2_0_4//:alloc_no_stdlib",
+        "@raze__alloc_stdlib__0_2_2//:alloc_stdlib",
     ],
 )
 
@@ -86,8 +86,8 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__alloc_no_stdlib__2_0_3//:alloc_no_stdlib",
-        "@raze__alloc_stdlib__0_2_1//:alloc_stdlib",
+        "@raze__alloc_no_stdlib__2_0_4//:alloc_no_stdlib",
+        "@raze__alloc_stdlib__0_2_2//:alloc_stdlib",
     ],
 )
 

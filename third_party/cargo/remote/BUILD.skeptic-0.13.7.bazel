@@ -55,7 +55,7 @@ rust_library(
         "@raze__cargo_metadata__0_14_2//:cargo_metadata",
         "@raze__error_chain__0_12_4//:error_chain",
         "@raze__glob__0_3_0//:glob",
-        "@raze__pulldown_cmark__0_9_1//:pulldown_cmark",
+        "@raze__pulldown_cmark__0_9_2//:pulldown_cmark",
         "@raze__tempfile__3_3_0//:tempfile",
         "@raze__walkdir__2_3_2//:walkdir",
     ],

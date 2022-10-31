@@ -63,7 +63,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__filetime__0_2_17//:filetime",
+        "@raze__filetime__0_2_18//:filetime",
     ] + selects.with_or({
         # cfg(unix)
         (
@@ -75,7 +75,7 @@ rust_library(
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
-            "@raze__libc__0_2_126//:libc",
+            "@raze__libc__0_2_137//:libc",
             "@raze__xattr__0_2_3//:xattr",
         ],
         "//conditions:default": [],

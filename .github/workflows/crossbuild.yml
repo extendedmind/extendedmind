@@ -24,7 +24,7 @@ jobs:
           path: |
             ~/.cache/bazelisk
             ~/.cache/bazel
-          key: crossbuild_rpi3b-${{ runner.os }}-${{ env.cache-name }}-r3
+          key: crossbuild_rpi3b-${{ runner.os }}-${{ env.cache-name }}-r4
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Run Bazel build of hub targeting Raspberry Pi 3B(+)

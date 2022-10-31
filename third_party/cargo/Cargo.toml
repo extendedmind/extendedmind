@@ -101,7 +101,7 @@ override_deps = """
             "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
             "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
         ): [
-            "@raze__libc__0_2_126//:libc",
+            "@raze__libc__0_2_137//:libc",
         ],
         "//conditions:default": [],
     }) + selects.with_or({
@@ -117,7 +117,7 @@ override_deps = """
 
 # Needed for clap to build
 [package.metadata.raze.crates.clap.'3.0.0-rc.5']
-compile_data_attr = "glob([\"README.md\"])"
+compile_data_attr = "glob([\"README.md\",\"examples/demo.md\"])"
 [package.metadata.raze.crates.clap_derive.'3.0.0-rc.5']
 compile_data_attr = "glob([\"README.md\"])"
 
@@ -133,6 +133,8 @@ compile_data_attr = "glob([\"README.md\"])"
 
 # Needed for hypercore to build
 [package.metadata.raze.crates.ed25519.'1.4.1']
+compile_data_attr = "glob([\"README.md\"])"
+[package.metadata.raze.crates.signature.'1.6.4']
 compile_data_attr = "glob([\"README.md\"])"
 
 # Needed for ring to build

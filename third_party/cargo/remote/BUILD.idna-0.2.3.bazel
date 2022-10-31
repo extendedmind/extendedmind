@@ -55,7 +55,7 @@ rust_library(
     deps = [
         "@raze__matches__0_1_9//:matches",
         "@raze__unicode_bidi__0_3_8//:unicode_bidi",
-        "@raze__unicode_normalization__0_1_21//:unicode_normalization",
+        "@raze__unicode_normalization__0_1_22//:unicode_normalization",
     ],
 )
 

@@ -59,7 +59,7 @@ cargo_build_script(
     version = "0.3.66",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__cc__1_0_73//:cc",
+        "@raze__cc__1_0_74//:cc",
     ],
 )
 
@@ -94,8 +94,8 @@ rust_library(
         ":backtrace_build_script",
         "@raze__addr2line__0_17_0//:addr2line",
         "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__libc__0_2_126//:libc",
-        "@raze__miniz_oxide__0_5_3//:miniz_oxide",
+        "@raze__libc__0_2_137//:libc",
+        "@raze__miniz_oxide__0_5_4//:miniz_oxide",
         "@raze__object__0_29_0//:object",
         "@raze__rustc_demangle__0_1_21//:rustc_demangle",
     ],

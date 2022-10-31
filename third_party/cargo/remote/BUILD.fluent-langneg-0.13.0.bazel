@@ -54,7 +54,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__unic_langid__0_9_0//:unic_langid",
+        "@raze__unic_langid__0_9_1//:unic_langid",
     ],
 )
 

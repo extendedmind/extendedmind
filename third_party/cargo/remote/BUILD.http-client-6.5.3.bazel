@@ -36,25 +36,13 @@ licenses([
 rust_library(
     name = "http_client",
     srcs = glob(["**/*.rs"]),
-    aliases = {
-        "@raze__rustls__0_18_1//:rustls": "rustls_crate",
-    },
     crate_features = [
-        "async-h1",
-        "async-std",
-        "async-tls",
-        "dashmap",
-        "deadpool",
-        "futures",
-        "h1_client",
-        "rustls",
-        "rustls_crate",
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_56//:async_trait",
+        "@raze__async_trait__0_1_58//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -68,24 +56,10 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_h1__2_3_3//:async_h1",
-        "@raze__async_std__1_12_0//:async_std",
-        "@raze__async_tls__0_10_0//:async_tls",
         "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__dashmap__5_3_4//:dashmap",
-        "@raze__deadpool__0_7_0//:deadpool",
-        "@raze__futures__0_3_21//:futures",
         "@raze__http_types__2_12_0//:http_types",
         "@raze__log__0_4_17//:log",
-        "@raze__rustls__0_18_1//:rustls",
-    ] + selects.with_or({
-        # cfg(target_arch = "wasm32")
-        (
-            "@rules_rust//rust/platform:wasm32-unknown-unknown",
-        ): [
-        ],
-        "//conditions:default": [],
-    }),
+    ],
 )
 
 

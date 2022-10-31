@@ -55,7 +55,7 @@ rust_library(
     deps = [
         "@raze__blowfish__0_9_1//:blowfish",
         "@raze__pbkdf2__0_10_1//:pbkdf2",
-        "@raze__sha2__0_10_2//:sha2",
+        "@raze__sha2__0_10_6//:sha2",
     ],
 )
 

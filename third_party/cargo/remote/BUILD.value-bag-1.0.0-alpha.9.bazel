@@ -39,8 +39,8 @@ rust_library(
     name = "value_bag",
     srcs = glob(["**/*.rs"]),
     aliases = {
-        "@raze__erased_serde__0_3_21//:erased_serde": "erased_serde1",
-        "@raze__serde__1_0_139//:serde": "serde1_lib",
+        "@raze__erased_serde__0_3_23//:erased_serde": "erased_serde1",
+        "@raze__serde__1_0_147//:serde": "serde1_lib",
         "@raze__serde_fmt__1_0_1//:serde_fmt": "serde1_fmt",
         "@raze__sval__1_0_0_alpha_5//:sval": "sval1_lib",
         "@raze__version_check__0_9_4//:version_check": "rustc",
@@ -59,7 +59,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__ctor__0_1_22//:ctor",
+        "@raze__ctor__0_1_26//:ctor",
     ],
     rustc_flags =     [ "--cap-lints=allow" ] +
     selects.with_or({
@@ -78,8 +78,8 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__erased_serde__0_3_21//:erased_serde",
-        "@raze__serde__1_0_139//:serde",
+        "@raze__erased_serde__0_3_23//:erased_serde",
+        "@raze__serde__1_0_147//:serde",
         "@raze__serde_fmt__1_0_1//:serde_fmt",
         "@raze__sval__1_0_0_alpha_5//:sval",
     ],

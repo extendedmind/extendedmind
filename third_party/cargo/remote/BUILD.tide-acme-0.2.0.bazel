@@ -40,7 +40,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_56//:async_trait",
+        "@raze__async_trait__0_1_58//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -58,7 +58,7 @@ rust_library(
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__rustls_acme__0_3_0//:rustls_acme",
         "@raze__tide_rustls__0_3_0//:tide_rustls",
-        "@raze__tracing__0_1_35//:tracing",
+        "@raze__tracing__0_1_37//:tracing",
     ],
 )
 

@@ -53,9 +53,9 @@ rust_library(
     deps = [
         "@raze__log__0_4_17//:log",
         "@raze__nom__7_1_1//:nom",
-        "@raze__percent_encoding__2_1_0//:percent_encoding",
+        "@raze__percent_encoding__2_2_0//:percent_encoding",
         "@raze__secrecy__0_8_0//:secrecy",
-        "@raze__which__4_2_5//:which",
+        "@raze__which__4_3_0//:which",
         "@raze__zeroize__1_4_3//:zeroize",
     ],
 )

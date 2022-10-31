@@ -40,7 +40,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__serde_derive__1_0_139//:serde_derive",
+        "@raze__serde_derive__1_0_147//:serde_derive",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -55,10 +55,10 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__log__0_4_17//:log",
-        "@raze__serde__1_0_139//:serde",
-        "@raze__thiserror__1_0_31//:thiserror",
+        "@raze__serde__1_0_147//:serde",
+        "@raze__thiserror__1_0_37//:thiserror",
         "@raze__toml__0_5_9//:toml",
-        "@raze__unic_langid__0_9_0//:unic_langid",
+        "@raze__unic_langid__0_9_1//:unic_langid",
     ],
 )
 

@@ -1,0 +1,79 @@
+"""
+@generated
+cargo-raze crate build file.
+
+DO NOT EDIT! Replaced on runs of cargo-raze
+"""
+
+# buildifier: disable=load
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+# buildifier: disable=load
+load(
+    "@rules_rust//rust:defs.bzl",
+    "rust_binary",
+    "rust_library",
+    "rust_proc_macro",
+    "rust_test",
+)
+
+package(default_visibility = [
+    # Public for visibility by "@raze__crate__version//" targets.
+    #
+    # Prefer access through "//third_party/cargo", which limits external
+    # visibility to explicit Cargo.toml dependencies.
+    "//visibility:public",
+])
+
+licenses([
+    "restricted",  # BlueOak-1.0.0 from expression "BlueOak-1.0.0"
+])
+
+# Generated Targets
+
+rust_library(
+    name = "tide_compress",
+    srcs = glob(["**/*.rs"]),
+    crate_features = [
+        "all",
+        "brotli",
+        "db-check",
+        "default",
+        "deflate",
+        "gzip",
+        "phf",
+        "regex",
+        "regex-check",
+    ],
+    crate_root = "src/lib.rs",
+    data = [],
+    edition = "2018",
+    rustc_flags = [
+        "--cap-lints=allow",
+    ],
+    tags = [
+        "cargo-raze",
+        "crate-name=tide-compress",
+        "manual",
+    ],
+    version = "0.10.6",
+
+    # buildifier: leave-alone
+    deps = [
+        "@raze__async_compression__0_3_15//:async_compression",
+        "@raze__futures_lite__1_12_0//:futures_lite",
+        "@raze__http_types__2_12_0//:http_types",
+        "@raze__phf__0_11_1//:phf",
+        "@raze__regex__1_6_0//:regex",
+        "@raze__tide__0_16_0//:tide",
+    ],
+)
+
+
+# Unsupported target "compressed" with type "test" omitted
+
+# Unsupported target "content_type" with type "test" omitted
+
+# Unsupported target "existing-encoding" with type "test" omitted
+
+# Unsupported target "unencoded" with type "test" omitted

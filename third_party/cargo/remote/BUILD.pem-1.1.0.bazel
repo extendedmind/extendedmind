@@ -53,7 +53,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__base64__0_13_0//:base64",
+        "@raze__base64__0_13_1//:base64",
     ],
 )
 

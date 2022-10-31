@@ -56,7 +56,7 @@ rust_library(
         "@raze__hmac__0_12_1//:hmac",
         "@raze__pbkdf2__0_10_1//:pbkdf2",
         "@raze__salsa20__0_10_2//:salsa20",
-        "@raze__sha2__0_10_2//:sha2",
+        "@raze__sha2__0_10_6//:sha2",
     ],
 )
 

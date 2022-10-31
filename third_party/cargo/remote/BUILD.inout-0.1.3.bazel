@@ -53,7 +53,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__block_padding__0_3_2//:block_padding",
-        "@raze__generic_array__0_14_5//:generic_array",
+        "@raze__generic_array__0_14_6//:generic_array",
     ],
 )
 

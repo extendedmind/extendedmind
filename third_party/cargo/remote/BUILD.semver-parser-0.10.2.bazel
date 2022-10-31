@@ -54,7 +54,7 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":semver_parser",
-        "@raze__pest__2_1_3//:pest",
+        "@raze__pest__2_4_0//:pest",
     ],
 )
 
@@ -79,7 +79,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__pest__2_1_3//:pest",
+        "@raze__pest__2_4_0//:pest",
     ],
 )
 

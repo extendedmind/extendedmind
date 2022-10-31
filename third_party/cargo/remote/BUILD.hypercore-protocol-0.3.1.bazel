@@ -86,7 +86,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_56//:async_trait",
+        "@raze__async_trait__0_1_58//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -101,12 +101,12 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":hypercore_protocol_build_script",
-        "@raze__async_channel__1_6_1//:async_channel",
+        "@raze__async_channel__1_7_1//:async_channel",
         "@raze__blake2_rfc__0_2_18//:blake2_rfc",
-        "@raze__bytes__1_1_0//:bytes",
+        "@raze__bytes__1_2_1//:bytes",
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__futures_timer__3_0_2//:futures_timer",
-        "@raze__getrandom__0_2_7//:getrandom",
+        "@raze__getrandom__0_2_8//:getrandom",
         "@raze__hex__0_4_3//:hex",
         "@raze__instant__0_1_12//:instant",
         "@raze__log__0_4_17//:log",

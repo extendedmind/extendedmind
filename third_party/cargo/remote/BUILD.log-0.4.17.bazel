@@ -96,7 +96,7 @@ rust_library(
     deps = [
         ":log_build_script",
         "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__serde__1_0_139//:serde",
+        "@raze__serde__1_0_147//:serde",
         "@raze__value_bag__1_0_0_alpha_9//:value_bag",
     ],
 )

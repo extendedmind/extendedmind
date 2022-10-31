@@ -63,8 +63,8 @@ rust_library(
         "@raze__nom__7_1_1//:nom",
         "@raze__num_traits__0_2_15//:num_traits",
         "@raze__rusticata_macros__4_1_0//:rusticata_macros",
-        "@raze__thiserror__1_0_31//:thiserror",
-        "@raze__time__0_3_11//:time",
+        "@raze__thiserror__1_0_37//:thiserror",
+        "@raze__time__0_3_16//:time",
     ],
 )
 

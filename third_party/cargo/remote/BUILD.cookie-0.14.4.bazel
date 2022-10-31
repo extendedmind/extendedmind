@@ -107,10 +107,10 @@ rust_library(
     deps = [
         ":cookie_build_script",
         "@raze__aes_gcm__0_8_0//:aes_gcm",
-        "@raze__base64__0_13_0//:base64",
+        "@raze__base64__0_13_1//:base64",
         "@raze__hkdf__0_10_0//:hkdf",
         "@raze__hmac__0_10_1//:hmac",
-        "@raze__percent_encoding__2_1_0//:percent_encoding",
+        "@raze__percent_encoding__2_2_0//:percent_encoding",
         "@raze__rand__0_8_5//:rand",
         "@raze__sha2__0_9_9//:sha2",
         "@raze__time__0_2_27//:time",
