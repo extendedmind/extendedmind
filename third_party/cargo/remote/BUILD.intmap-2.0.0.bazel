@@ -26,13 +26,15 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0"
+    "notice",  # MIT from expression "MIT"
 ])
 
 # Generated Targets
 
+# Unsupported target "basic_bench" with type "bench" omitted
+
 rust_library(
-    name = "prost_types",
+    name = "intmap",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
@@ -44,15 +46,15 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=prost-types",
+        "crate-name=intmap",
         "manual",
     ],
-    version = "0.6.1",
+    version = "2.0.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__bytes__0_5_6//:bytes",
-        "@raze__prost__0_6_1//:prost",
     ],
 )
 
+
+# Unsupported target "basic_test" with type "test" omitted

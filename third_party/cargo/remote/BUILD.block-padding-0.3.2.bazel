@@ -35,6 +35,7 @@ rust_library(
     name = "block_padding",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],

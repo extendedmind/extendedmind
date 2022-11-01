@@ -26,38 +26,42 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
 ])
 
 # Generated Targets
 
+# Unsupported target "dalek_benchmarks" with type "bench" omitted
+
 rust_library(
-    name = "rand_pcg",
+    name = "curve25519_dalek",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
+        "default",
+        "std",
+        "u64_backend",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2015",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=rand_pcg",
+        "crate-name=curve25519-dalek",
         "manual",
     ],
-    version = "0.2.1",
+    version = "4.0.0-pre.1",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__rand_core__0_5_1//:rand_core",
+        "@raze__byteorder__1_4_3//:byteorder",
+        "@raze__digest__0_9_0//:digest",
+        "@raze__rand_core__0_6_4//:rand_core",
+        "@raze__subtle__2_4_1//:subtle",
+        "@raze__zeroize__1_4_3//:zeroize",
     ],
 )
 
-
-# Unsupported target "lcg128xsl64" with type "test" omitted
-
-# Unsupported target "lcg64xsh32" with type "test" omitted
-
-# Unsupported target "mcg128xsl64" with type "test" omitted

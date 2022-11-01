@@ -211,15 +211,6 @@ alias(
 )
 
 alias(
-    name = "hypercore",
-    actual = "@raze__hypercore__0_11_1_beta_10//:hypercore",
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-)
-
-alias(
     name = "hypercore_protocol",
     actual = "@raze__hypercore_protocol__0_3_1//:hypercore_protocol",
     tags = [

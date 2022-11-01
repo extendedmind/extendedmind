@@ -58,6 +58,7 @@ rust_library(
     deps = [
         "@raze__anyhow__1_0_66//:anyhow",
         "@raze__futures__0_3_25//:futures",
+        "@raze__intmap__2_0_0//:intmap",
         "@raze__random_access_storage__4_0_0//:random_access_storage",
     ],
 )

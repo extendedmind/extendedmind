@@ -37,6 +37,9 @@ rust_library(
     name = "random_access_disk",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "default",
+        "libc",
+        "sparse",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -58,6 +61,7 @@ rust_library(
     deps = [
         "@raze__anyhow__1_0_66//:anyhow",
         "@raze__async_std__1_12_0//:async_std",
+        "@raze__libc__0_2_137//:libc",
         "@raze__mkdirp__1_0_0//:mkdirp",
         "@raze__random_access_storage__4_0_0//:random_access_storage",
     ],

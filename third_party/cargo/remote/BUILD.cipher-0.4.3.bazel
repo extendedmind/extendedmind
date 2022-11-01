@@ -37,6 +37,7 @@ rust_library(
     crate_features = [
         "alloc",
         "block-padding",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],

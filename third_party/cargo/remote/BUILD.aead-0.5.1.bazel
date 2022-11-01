@@ -31,28 +31,32 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "benches" with type "bench" omitted
-
 rust_library(
-    name = "fixedbitset",
+    name = "aead",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
+        "default",
+        "rand_core",
+        "stream",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2015",
+    edition = "2021",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=fixedbitset",
+        "crate-name=aead",
         "manual",
     ],
-    version = "0.2.0",
+    version = "0.5.1",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__crypto_common__0_1_6//:crypto_common",
+        "@raze__generic_array__0_14_6//:generic_array",
     ],
 )
 

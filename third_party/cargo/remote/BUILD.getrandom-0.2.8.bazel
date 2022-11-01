@@ -39,7 +39,6 @@ rust_library(
     aliases = {
     },
     crate_features = [
-        "custom",
         "js",
         "js-sys",
         "std",

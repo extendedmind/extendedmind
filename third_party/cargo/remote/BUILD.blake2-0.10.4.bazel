@@ -26,40 +26,42 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "varint" with type "bench" omitted
+# Unsupported target "mod" with type "bench" omitted
 
 rust_library(
-    name = "prost",
+    name = "blake2",
     srcs = glob(["**/*.rs"]),
     crate_features = [
         "default",
-        "prost-derive",
         "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
     edition = "2018",
-    proc_macro_deps = [
-        "@raze__prost_derive__0_7_0//:prost_derive",
-    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=prost",
+        "crate-name=blake2",
         "manual",
     ],
-    version = "0.7.0",
+    version = "0.10.4",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__bytes__1_2_1//:bytes",
+        "@raze__digest__0_10_5//:digest",
     ],
 )
 
+
+# Unsupported target "mac" with type "test" omitted
+
+# Unsupported target "mod" with type "test" omitted
+
+# Unsupported target "persona" with type "test" omitted

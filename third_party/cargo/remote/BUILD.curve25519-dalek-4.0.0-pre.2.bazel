@@ -26,37 +26,41 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # BSD-3-Clause from expression "BSD-3-Clause"
 ])
 
 # Generated Targets
 
-# Unsupported target "graphemes" with type "bench" omitted
-
-# Unsupported target "unicode_words" with type "bench" omitted
-
-# Unsupported target "word_bounds" with type "bench" omitted
+# Unsupported target "dalek_benchmarks" with type "bench" omitted
 
 rust_library(
-    name = "unicode_segmentation",
+    name = "curve25519_dalek",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
+        "default",
+        "std",
+        "u64_backend",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2021",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=unicode-segmentation",
+        "crate-name=curve25519-dalek",
         "manual",
     ],
-    version = "1.10.0",
+    version = "4.0.0-pre.2",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__digest__0_10_5//:digest",
+        "@raze__rand_core__0_6_4//:rand_core",
+        "@raze__subtle__2_4_1//:subtle",
+        "@raze__zeroize__1_4_3//:zeroize",
     ],
 )
 

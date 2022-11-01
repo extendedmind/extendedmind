@@ -43,6 +43,9 @@ cargo_build_script(
     build_script_env = {
     },
     crate_features = [
+        "crypto_secretstream",
+        "default",
+        "v10",
         "wasm-bindgen",
     ],
     crate_root = "build.rs",
@@ -58,7 +61,6 @@ cargo_build_script(
     version = "0.3.1",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__prost_build__0_6_1//:prost_build",
     ],
 )
 
@@ -72,6 +74,8 @@ cargo_build_script(
 
 # Unsupported target "hypercore" with type "example" omitted
 
+# Unsupported target "hypercore_v10" with type "example" omitted
+
 # Unsupported target "pipe" with type "example" omitted
 
 # Unsupported target "util" with type "example" omitted
@@ -80,6 +84,9 @@ rust_library(
     name = "hypercore_protocol",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "crypto_secretstream",
+        "default",
+        "v10",
         "wasm-bindgen",
     ],
     crate_root = "src/lib.rs",
@@ -104,18 +111,20 @@ rust_library(
         "@raze__async_channel__1_7_1//:async_channel",
         "@raze__blake2_rfc__0_2_18//:blake2_rfc",
         "@raze__bytes__1_2_1//:bytes",
+        "@raze__crypto_secretstream__0_1_0//:crypto_secretstream",
+        "@raze__curve25519_dalek__4_0_0_pre_2//:curve25519_dalek",
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__futures_timer__3_0_2//:futures_timer",
-        "@raze__getrandom__0_2_8//:getrandom",
+        "@raze__getrandom__0_1_16//:getrandom",
         "@raze__hex__0_4_3//:hex",
+        "@raze__hypercore__0_11_1_beta_10//:hypercore",
         "@raze__instant__0_1_12//:instant",
         "@raze__log__0_4_17//:log",
         "@raze__pretty_hash__0_4_1//:pretty_hash",
-        "@raze__prost__0_7_0//:prost",
-        "@raze__rand__0_7_3//:rand",
+        "@raze__rand__0_8_5//:rand",
         "@raze__salsa20__0_6_0//:salsa20",
-        "@raze__snow__0_8_0//:snow",
-        "@raze__varinteger__1_0_6//:varinteger",
+        "@raze__sha2__0_10_6//:sha2",
+        "@raze__snow__0_9_0//:snow",
     ],
 )
 
@@ -125,3 +134,5 @@ rust_library(
 # Unsupported target "basic" with type "test" omitted
 
 # Unsupported target "extension" with type "test" omitted
+
+# Unsupported target "js_interop" with type "test" omitted

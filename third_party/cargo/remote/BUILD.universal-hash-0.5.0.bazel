@@ -32,28 +32,28 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "rustc_version",
+    name = "universal_hash",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2021",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=rustc_version",
+        "crate-name=universal-hash",
         "manual",
     ],
-    version = "0.3.3",
+    version = "0.5.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__semver__0_11_0//:semver",
+        "@raze__crypto_common__0_1_6//:crypto_common",
+        "@raze__subtle__2_4_1//:subtle",
     ],
 )
 
-
-# Unsupported target "all" with type "test" omitted

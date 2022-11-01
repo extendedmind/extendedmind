@@ -45,6 +45,8 @@ rust_library(
     aliases = {
     },
     crate_features = [
+        "intmap",
+        "v10",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -66,9 +68,11 @@ rust_library(
         "@raze__bitfield_rle__0_2_0//:bitfield_rle",
         "@raze__blake2_rfc__0_2_18//:blake2_rfc",
         "@raze__byteorder__1_4_3//:byteorder",
+        "@raze__crc32fast__1_3_2//:crc32fast",
         "@raze__ed25519_dalek__1_0_1//:ed25519_dalek",
         "@raze__flat_tree__5_0_0//:flat_tree",
         "@raze__futures__0_3_25//:futures",
+        "@raze__intmap__2_0_0//:intmap",
         "@raze__lazy_static__1_4_0//:lazy_static",
         "@raze__memory_pager__0_9_0//:memory_pager",
         "@raze__merkle_tree_stream__0_12_1//:merkle_tree_stream",
@@ -101,9 +105,15 @@ rust_library(
 
 # Unsupported target "bitfield" with type "test" omitted
 
+# Unsupported target "compact_encoding" with type "test" omitted
+
 # Unsupported target "compat" with type "test" omitted
 
+# Unsupported target "core" with type "test" omitted
+
 # Unsupported target "feed" with type "test" omitted
+
+# Unsupported target "js_interop" with type "test" omitted
 
 # Unsupported target "model" with type "test" omitted
 
