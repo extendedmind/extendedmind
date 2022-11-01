@@ -8,6 +8,7 @@ use automerge::{
 };
 use futures::io::{AsyncRead, AsyncWrite};
 use futures::stream::{IntoAsyncRead, StreamExt, TryStreamExt};
+use hypercore_protocol::hypercore::{self, PartialKeypair};
 use log::*;
 use random_access_memory::RandomAccessMemory;
 use std::fmt::Debug;
@@ -26,17 +27,16 @@ pub use extendedmind_schema_rust::capnp;
 pub use extendedmind_schema_rust::model_capnp::model;
 pub use extendedmind_schema_rust::ui_protocol_capnp::ui_protocol;
 pub use extendedmind_schema_rust::wire_protocol_capnp::wire_protocol;
-pub use hypercore;
 pub use hypercore_protocol;
 #[cfg(not(target_arch = "wasm32"))]
 pub use random_access_disk::RandomAccessDisk;
 pub use random_access_storage::RandomAccess;
 
 mod communication;
-use communication::FeedStore;
+use communication::HypercoreStore;
 mod common;
 pub use common::EngineEvent;
-use common::FeedWrapper;
+use common::HypercoreWrapper;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod tcp;
 
@@ -48,7 +48,7 @@ where
 {
     pub data: Arc<Mutex<Option<Automerge>>>,
     pub is_initiator: bool,
-    pub feedstore: Arc<FeedStore<T>>,
+    pub hypercore_store: Arc<HypercoreStore<T>>,
 }
 
 fn get_initial_doc() -> Automerge {
@@ -81,24 +81,32 @@ impl Engine<RandomAccessDisk> {
         is_initiator: bool,
         public_key: Option<&str>,
     ) -> Engine<RandomAccessDisk> {
-        let mut feedstore: FeedStore<RandomAccessDisk> = FeedStore::new();
+        let mut hypercore_store: HypercoreStore<RandomAccessDisk> = HypercoreStore::new();
 
         // Create a hypercore
         let mut doc = get_initial_doc();
-        let feed_dir = data_root_dir.join(PathBuf::from(format!("{}.db", is_initiator)));
-        let primary_feed = if let Some(public_key) = public_key {
-            let storage = hypercore::Storage::new_disk(&feed_dir, false)
+        let hypercore_dir = data_root_dir.join(PathBuf::from(format!("{}.db", is_initiator)));
+        let primary_hypercore = if let Some(public_key) = public_key {
+            let storage = hypercore::Storage::new_disk(&hypercore_dir, false)
                 .await
                 .unwrap();
             debug!("Disk: Using given public key {}", &public_key);
             let public_key = get_public_key(&public_key);
-            hypercore::Feed::builder(public_key, storage)
-                .build()
-                .await
-                .unwrap()
+            hypercore::Hypercore::new_with_key_pair(
+                storage,
+                PartialKeypair {
+                    public: public_key,
+                    secret: None,
+                },
+            )
+            .await
+            .unwrap()
         } else {
-            let mut primary_feed = hypercore::Feed::open(&feed_dir).await.unwrap();
-            let public_key = hex::encode(primary_feed.public_key());
+            let storage = hypercore::Storage::new_disk(&hypercore_dir, false)
+                .await
+                .unwrap();
+            let mut primary_hypercore = hypercore::Hypercore::new(storage).await.unwrap();
+            let public_key = hex::encode(primary_hypercore.key_pair().public);
             let mut hub_key_file = std::fs::OpenOptions::new()
                 .create(true)
                 .read(true)
@@ -116,24 +124,24 @@ impl Engine<RandomAccessDisk> {
                 hub_key_file.write_all(&public_key.as_bytes()).unwrap();
                 hub_key_file.flush().unwrap();
                 let data = doc.save();
-                primary_feed.append(data.as_slice()).await.unwrap();
+                primary_hypercore.append(data.as_slice()).await.unwrap();
             }
 
             debug!(
                 "Disk: Reading public key, init: {} value: {}",
                 is_initiator, public_key
             );
-            primary_feed
+            primary_hypercore
         };
 
-        // Wrap it and add to the feed store.
-        let primary_feed_wrapper = FeedWrapper::from(primary_feed);
-        feedstore.add(primary_feed_wrapper);
+        // Wrap it and add to the hypercore store.
+        let primary_hypercore_wrapper = HypercoreWrapper::from(primary_hypercore);
+        hypercore_store.add(primary_hypercore_wrapper);
 
         Engine {
             data: Arc::new(Mutex::new(Some(doc))),
             is_initiator,
-            feedstore: Arc::new(feedstore),
+            hypercore_store: Arc::new(hypercore_store),
         }
     }
 }
@@ -143,32 +151,37 @@ impl Engine<RandomAccessMemory> {
         is_initiator: bool,
         public_key: Option<&str>,
     ) -> Engine<RandomAccessMemory> {
-        let mut feedstore: FeedStore<RandomAccessMemory> = FeedStore::new();
+        let mut hypercore_store: HypercoreStore<RandomAccessMemory> = HypercoreStore::new();
 
         let storage = hypercore::Storage::new_memory().await.unwrap();
-        let primary_feed = if let Some(public_key) = public_key {
+        let primary_hypercore = if let Some(public_key) = public_key {
             debug!("Memory: Using given public key {}", &public_key);
             let public_key = get_public_key(&public_key);
-            hypercore::Feed::builder(public_key, storage)
-                .build()
-                .await
-                .unwrap()
+            hypercore::Hypercore::new_with_key_pair(
+                storage,
+                PartialKeypair {
+                    public: public_key,
+                    secret: None,
+                },
+            )
+            .await
+            .unwrap()
         } else {
-            let primary_feed = hypercore::Feed::with_storage(storage).await.unwrap();
-            let public_key = hex::encode(primary_feed.public_key());
+            let primary_hypercore = hypercore::Hypercore::new(storage).await.unwrap();
+            let public_key = hex::encode(primary_hypercore.key_pair().public);
             debug!(
                 "Memory: Reading public key, init: {} value: {}",
                 is_initiator, public_key
             );
-            primary_feed
+            primary_hypercore
         };
-        let primary_feed_wrapper = FeedWrapper::from(primary_feed);
-        feedstore.add(primary_feed_wrapper);
+        let primary_hypercore_wrapper = HypercoreWrapper::from(primary_hypercore);
+        hypercore_store.add(primary_hypercore_wrapper);
 
         Engine {
             data: Arc::new(Mutex::new(None)),
             is_initiator,
-            feedstore: Arc::new(feedstore),
+            hypercore_store: Arc::new(hypercore_store),
         }
     }
 }
@@ -225,7 +238,7 @@ where
     }
 
     pub fn get_discovery_keys(&self) -> Vec<String> {
-        self.feedstore.feeds.keys().cloned().collect()
+        self.hypercore_store.hypercores.keys().cloned().collect()
     }
 
     pub async fn connect_passive(
@@ -290,32 +303,41 @@ where
     where
         IO: AsyncWrite + AsyncRead + Send + Unpin + 'static,
     {
-        debug!("poll_protocol");
-        let feedstore = self.feedstore.clone();
-        debug!("waiting for protocol event");
+        let hypercore_store = self.hypercore_store.clone();
+        debug!(
+            "is_initiator={}, waiting for protocol event",
+            self.is_initiator
+        );
         while let Some(event) = protocol.next().await {
-            debug!("got protocol event {:?}", &event);
             let event = event?;
-            debug!("protocol event {:?}", event);
+            debug!(
+                "is_initiator={}, protocol event {:?}",
+                self.is_initiator, event
+            );
             match event {
                 hypercore_protocol::Event::Handshake(_) => {
                     if self.is_initiator {
-                        for feed in feedstore.feeds.values() {
-                            let feed_key = feed.key().clone();
-                            debug!("Opening feed with key length {}", &feed_key.len());
-                            protocol.open(feed_key).await?;
+                        for hypercore in hypercore_store.hypercores.values() {
+                            let hypercore_key = hypercore.key().clone();
+                            debug!("Opening hypercore with key length {}", &hypercore_key.len());
+                            protocol.open(hypercore_key).await?;
                         }
                     }
                 }
                 hypercore_protocol::Event::DiscoveryKey(dkey) => {
-                    if let Some(feed) = feedstore.get(&dkey) {
-                        let feed_key = feed.key().clone();
-                        protocol.open(feed_key).await?;
+                    if let Some(hypercore) = hypercore_store.get(&dkey) {
+                        let hypercore_key = hypercore.key().clone();
+                        protocol.open(hypercore_key).await?;
                     }
                 }
                 hypercore_protocol::Event::Channel(channel) => {
-                    if let Some(feed) = feedstore.get(&channel.discovery_key()) {
-                        communication::on_peer(feed, channel, engine_event_sender.clone(), active);
+                    if let Some(hypercore) = hypercore_store.get(&channel.discovery_key()) {
+                        communication::on_peer(
+                            hypercore,
+                            channel,
+                            engine_event_sender.clone(),
+                            active,
+                        );
                     }
                 }
                 hypercore_protocol::Event::Close(_dkey) => {}

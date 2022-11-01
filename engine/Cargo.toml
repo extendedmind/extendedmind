@@ -15,10 +15,10 @@ bytes = "0.5.0"
 async-std = "1.9.0"
 async-attributes = "1.1.2"
 futures = "^0.3.5"
-hypercore = { git = "https://github.com/ttiurani/hypercore", rev = "f9cd0fcf190ff892529678e9249197f0b14969d1" }
-hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs", rev = "4ef9856762b21e1bcaf1e5ba70d115a3bbbff5e4", features = ["wasm-bindgen"] }
-random-access-storage = { git = "https://github.com/ttiurani/random-access-storage", rev = "16412bab28f8f8d0c4b6b71a25f6646e0910180b" }
-random-access-memory = { git = "https://github.com/ttiurani/random-access-memory", rev = "e48f2a9040656724327ae30d12ab636c3bf0a074" }
+hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs", branch = "v10", features = ["wasm-bindgen"] }
+random-access-storage = { git = "https://github.com/ttiurani/random-access-storage", branch = "v10" }
+random-access-memory = { git = "https://github.com/ttiurani/random-access-memory", branch = "v10" }
+
 hex = "0.4"
 anyhow = "1.0.28"
 log = "0.4.14"
@@ -29,4 +29,4 @@ wasm-bindgen = "=0.2.78"
 wasm-bindgen-futures = "0.4.28"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-random-access-disk = { git = "https://github.com/ttiurani/random-access-disk", rev = "6b17771d174722bff442dba9aaf633aae4f3e40f" }
+random-access-disk = { git = "https://github.com/ttiurani/random-access-disk", branch = "v10" }

@@ -15,7 +15,7 @@ const loadUiProtocol = (buffer: ArrayBuffer): UiProtocol => {
 const syncWithHub = async (
     storedHubKey: string,
     setContent: (newContent: Object) => void,
-): void => {
+): Promise<void> => {
     window['jsUiProtocol'] = (data: Uint8Array): Promise<void> => {
         return new Promise((resolve) => {
             const uiProtocol = loadUiProtocol(data);
@@ -43,5 +43,5 @@ export const content = readable(null, function start(setContent: (newContent: Ob
             });
         }
     });
-    return function stop() {};
+    return function stop() { };
 });

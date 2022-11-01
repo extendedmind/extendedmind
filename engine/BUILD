@@ -8,7 +8,6 @@ rust_library(
     deps = [
         "//schema:extendedmind_schema_rust",
         "//third_party/cargo:automerge",
-        "//third_party/cargo:hypercore",
         "//third_party/cargo:hypercore_protocol",
         "//third_party/cargo:async_std",
         "//third_party/cargo:bytes",
