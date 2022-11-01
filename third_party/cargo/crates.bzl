@@ -503,37 +503,10 @@ def raze_fetch_remote_crates():
 
     maybe(
         new_git_repository,
-        name = "raze__automerge__0_0_2",
+        name = "raze__automerge__0_1_0",
         remote = "https://github.com/automerge/automerge-rs.git",
-        commit = "e72571962b51c2f0726fb534890ef3b4f7c74dfc",
-        build_file = Label("//third_party/cargo/remote:BUILD.automerge-0.0.2.bazel"),
-        init_submodules = True,
-    )
-
-    maybe(
-        new_git_repository,
-        name = "raze__automerge_backend__0_0_1",
-        remote = "https://github.com/automerge/automerge-rs.git",
-        commit = "e72571962b51c2f0726fb534890ef3b4f7c74dfc",
-        build_file = Label("//third_party/cargo/remote:BUILD.automerge-backend-0.0.1.bazel"),
-        init_submodules = True,
-    )
-
-    maybe(
-        new_git_repository,
-        name = "raze__automerge_frontend__0_1_0",
-        remote = "https://github.com/automerge/automerge-rs.git",
-        commit = "e72571962b51c2f0726fb534890ef3b4f7c74dfc",
-        build_file = Label("//third_party/cargo/remote:BUILD.automerge-frontend-0.1.0.bazel"),
-        init_submodules = True,
-    )
-
-    maybe(
-        new_git_repository,
-        name = "raze__automerge_protocol__0_1_0",
-        remote = "https://github.com/automerge/automerge-rs.git",
-        commit = "e72571962b51c2f0726fb534890ef3b4f7c74dfc",
-        build_file = Label("//third_party/cargo/remote:BUILD.automerge-protocol-0.1.0.bazel"),
+        commit = "bba4fe2c36a165f0513d0c2751b35a5cb1acbda5",
+        build_file = Label("//third_party/cargo/remote:BUILD.automerge-0.1.0.bazel"),
         init_submodules = True,
     )
 
@@ -2247,6 +2220,16 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
+        name = "raze__itertools__0_10_5",
+        url = "https://crates.io/api/v1/crates/itertools/0.10.5/download",
+        type = "tar.gz",
+        sha256 = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473",
+        strip_prefix = "itertools-0.10.5",
+        build_file = Label("//third_party/cargo/remote:BUILD.itertools-0.10.5.bazel"),
+    )
+
+    maybe(
+        http_archive,
         name = "raze__itertools__0_8_2",
         url = "https://crates.io/api/v1/crates/itertools/0.8.2/download",
         type = "tar.gz",
@@ -2393,16 +2376,6 @@ def raze_fetch_remote_crates():
         sha256 = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e",
         strip_prefix = "log-0.4.17",
         build_file = Label("//third_party/cargo/remote:BUILD.log-0.4.17.bazel"),
-    )
-
-    maybe(
-        http_archive,
-        name = "raze__maplit__1_0_2",
-        url = "https://crates.io/api/v1/crates/maplit/1.0.2/download",
-        type = "tar.gz",
-        sha256 = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d",
-        strip_prefix = "maplit-1.0.2",
-        build_file = Label("//third_party/cargo/remote:BUILD.maplit-1.0.2.bazel"),
     )
 
     maybe(
@@ -2563,16 +2536,6 @@ def raze_fetch_remote_crates():
         sha256 = "a8903e5a29a317527874d0402f867152a3d21c908bb0b933e416c65e301d4c36",
         strip_prefix = "nom-7.1.1",
         build_file = Label("//third_party/cargo/remote:BUILD.nom-7.1.1.bazel"),
-    )
-
-    maybe(
-        http_archive,
-        name = "raze__nonzero_ext__0_2_0",
-        url = "https://crates.io/api/v1/crates/nonzero_ext/0.2.0/download",
-        type = "tar.gz",
-        sha256 = "44a1290799eababa63ea60af0cbc3f03363e328e58f32fb0294798ed3e85f444",
-        strip_prefix = "nonzero_ext-0.2.0",
-        build_file = Label("//third_party/cargo/remote:BUILD.nonzero_ext-0.2.0.bazel"),
     )
 
     maybe(
@@ -3970,26 +3933,6 @@ def raze_fetch_remote_crates():
         sha256 = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623",
         strip_prefix = "strsim-0.10.0",
         build_file = Label("//third_party/cargo/remote:BUILD.strsim-0.10.0.bazel"),
-    )
-
-    maybe(
-        http_archive,
-        name = "raze__strum__0_21_0",
-        url = "https://crates.io/api/v1/crates/strum/0.21.0/download",
-        type = "tar.gz",
-        sha256 = "aaf86bbcfd1fa9670b7a129f64fc0c9fcbbfe4f1bc4210e9e98fe71ffc12cde2",
-        strip_prefix = "strum-0.21.0",
-        build_file = Label("//third_party/cargo/remote:BUILD.strum-0.21.0.bazel"),
-    )
-
-    maybe(
-        http_archive,
-        name = "raze__strum_macros__0_21_1",
-        url = "https://crates.io/api/v1/crates/strum_macros/0.21.1/download",
-        type = "tar.gz",
-        sha256 = "d06aaeeee809dbc59eb4556183dd927df67db1540de5be8d3ec0b6636358a5ec",
-        strip_prefix = "strum_macros-0.21.1",
-        build_file = Label("//third_party/cargo/remote:BUILD.strum_macros-0.21.1.bazel"),
     )
 
     maybe(

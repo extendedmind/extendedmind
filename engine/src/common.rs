@@ -1,11 +1,11 @@
 use async_std::sync::{Arc, Mutex};
-use automerge::Backend;
+use automerge::Automerge;
 use random_access_storage::RandomAccess;
 use std::fmt::Debug;
 
 #[derive(Clone, Debug)]
 pub enum EngineEvent {
-    BackendLoaded(Backend),
+    DocumentLoaded(Automerge),
 }
 
 /// A PeerState stores the head seq of the remote.

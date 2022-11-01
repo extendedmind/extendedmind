@@ -77,7 +77,7 @@ alias(
 
 alias(
     name = "automerge",
-    actual = "@raze__automerge__0_0_2//:automerge",
+    actual = "@raze__automerge__0_1_0//:automerge",
     tags = [
         "cargo-raze",
         "manual",

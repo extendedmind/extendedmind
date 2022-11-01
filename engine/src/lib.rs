@@ -2,12 +2,14 @@ mod channel_writer;
 
 use async_std::channel::{Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
+use automerge::{
+    transaction::{CommitOptions, Transactable},
+    Automerge, AutomergeError, ROOT,
+};
 use futures::io::{AsyncRead, AsyncWrite};
 use futures::stream::{IntoAsyncRead, StreamExt, TryStreamExt};
 use log::*;
 use random_access_memory::RandomAccessMemory;
-use smol_str::SmolStr;
-use std::collections::HashMap;
 use std::fmt::Debug;
 #[cfg(not(target_arch = "wasm32"))]
 use std::io::Write;
@@ -44,30 +46,22 @@ pub struct Engine<T>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
-    pub data: Arc<Mutex<Option<automerge::Backend>>>,
+    pub data: Arc<Mutex<Option<Automerge>>>,
     pub is_initiator: bool,
     pub feedstore: Arc<FeedStore<T>>,
 }
 
-fn get_initial_backend() -> automerge::Backend {
-    let mut backend = automerge::Backend::new();
-    let mut frontend = automerge::Frontend::new();
-    let (_output, change) = frontend
-        .change(Some("init".into()), |doc| {
-            let mut initial_value = HashMap::<SmolStr, automerge::Value>::new();
-            initial_value.insert(
-                "version".into(),
-                automerge::Value::Primitive(automerge::Primitive::Uint(2)),
-            );
-            let initial_value = automerge::Value::Map(initial_value);
-            doc.add_change(automerge::LocalChange::set(
-                automerge::Path::root(),
-                initial_value,
-            ))
-        })
-        .unwrap();
-    backend.apply_local_change(change.unwrap()).unwrap();
-    backend
+fn get_initial_doc() -> Automerge {
+    let mut doc = Automerge::new();
+    doc.transact_with::<_, _, AutomergeError, _>(
+        |_| CommitOptions::default().with_message("init".to_owned()),
+        |tx| {
+            tx.put(ROOT, "version", 2).unwrap();
+            Ok(())
+        },
+    )
+    .unwrap();
+    doc
 }
 
 pub fn get_public_key(public_key: &str) -> hypercore::PublicKey {
@@ -90,7 +84,7 @@ impl Engine<RandomAccessDisk> {
         let mut feedstore: FeedStore<RandomAccessDisk> = FeedStore::new();
 
         // Create a hypercore
-        let backend = get_initial_backend();
+        let mut doc = get_initial_doc();
         let feed_dir = data_root_dir.join(PathBuf::from(format!("{}.db", is_initiator)));
         let primary_feed = if let Some(public_key) = public_key {
             let storage = hypercore::Storage::new_disk(&feed_dir, false)
@@ -121,7 +115,7 @@ impl Engine<RandomAccessDisk> {
                 hub_key_file.seek(SeekFrom::Start(0)).unwrap();
                 hub_key_file.write_all(&public_key.as_bytes()).unwrap();
                 hub_key_file.flush().unwrap();
-                let data = backend.save().unwrap();
+                let data = doc.save();
                 primary_feed.append(data.as_slice()).await.unwrap();
             }
 
@@ -137,7 +131,7 @@ impl Engine<RandomAccessDisk> {
         feedstore.add(primary_feed_wrapper);
 
         Engine {
-            data: Arc::new(Mutex::new(Some(backend))),
+            data: Arc::new(Mutex::new(Some(doc))),
             is_initiator,
             feedstore: Arc::new(feedstore),
         }
@@ -183,9 +177,9 @@ impl<T: 'static> Engine<T>
 where
     T: RandomAccess<Error = Box<dyn std::error::Error + Send + Sync>> + Debug + Send,
 {
-    pub async fn set_data(&self, backend: automerge::Backend) {
+    pub async fn set_data(&self, doc: Automerge) {
         let mut state = self.data.lock().await;
-        *state = Some(backend);
+        *state = Some(doc);
     }
 
     // TODO: Remove demo function for something more useful

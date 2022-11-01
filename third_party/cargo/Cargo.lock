@@ -594,71 +594,24 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "automerge"
-version = "0.0.2"
-source = "git+https://github.com/automerge/automerge-rs.git?rev=e72571962b51c2f0726fb534890ef3b4f7c74dfc#e72571962b51c2f0726fb534890ef3b4f7c74dfc"
+version = "0.1.0"
+source = "git+https://github.com/automerge/automerge-rs.git?rev=bba4fe2c36a165f0513d0c2751b35a5cb1acbda5#bba4fe2c36a165f0513d0c2751b35a5cb1acbda5"
 dependencies = [
- "automerge-backend",
- "automerge-frontend",
- "automerge-protocol",
- "serde",
- "serde_json",
- "thiserror",
- "uuid 0.8.2",
-]
-
-[[package]]
-name = "automerge-backend"
-version = "0.0.1"
-source = "git+https://github.com/automerge/automerge-rs.git?rev=e72571962b51c2f0726fb534890ef3b4f7c74dfc#e72571962b51c2f0726fb534890ef3b4f7c74dfc"
-dependencies = [
- "automerge-protocol",
  "flate2",
  "fxhash",
  "hex",
- "itertools 0.9.0",
+ "itertools 0.10.5",
  "js-sys",
  "leb128",
- "maplit",
- "nonzero_ext",
- "rand 0.8.5",
  "serde",
- "serde_json",
- "sha2 0.9.9",
+ "sha2 0.10.6",
  "smol_str",
- "thiserror",
- "tracing",
- "wasm-bindgen",
- "web-sys",
-]
-
-[[package]]
-name = "automerge-frontend"
-version = "0.1.0"
-source = "git+https://github.com/automerge/automerge-rs.git?rev=e72571962b51c2f0726fb534890ef3b4f7c74dfc#e72571962b51c2f0726fb534890ef3b4f7c74dfc"
-dependencies = [
- "automerge-protocol",
- "getrandom 0.2.8",
- "maplit",
- "serde",
- "serde_json",
- "smol_str",
- "thiserror",
- "unicode-segmentation",
- "uuid 0.8.2",
-]
-
-[[package]]
-name = "automerge-protocol"
-version = "0.1.0"
-source = "git+https://github.com/automerge/automerge-rs.git?rev=e72571962b51c2f0726fb534890ef3b4f7c74dfc#e72571962b51c2f0726fb534890ef3b4f7c74dfc"
-dependencies = [
- "hex",
- "serde",
- "smol_str",
- "strum",
  "thiserror",
  "tinyvec",
+ "tracing",
  "uuid 0.8.2",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
@@ -2437,6 +2390,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.10.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2559,12 +2521,6 @@ dependencies = [
  "serde",
  "value-bag",
 ]
-
-[[package]]
-name = "maplit"
-version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d"
 
 [[package]]
 name = "match_cfg"
@@ -2698,12 +2654,6 @@ dependencies = [
  "memchr",
  "minimal-lexical",
 ]
-
-[[package]]
-name = "nonzero_ext"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44a1290799eababa63ea60af0cbc3f03363e328e58f32fb0294798ed3e85f444"
 
 [[package]]
 name = "num-bigint"
@@ -4094,27 +4044,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
-name = "strum"
-version = "0.21.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aaf86bbcfd1fa9670b7a129f64fc0c9fcbbfe4f1bc4210e9e98fe71ffc12cde2"
-dependencies = [
- "strum_macros",
-]
-
-[[package]]
-name = "strum_macros"
-version = "0.21.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d06aaeeee809dbc59eb4556183dd927df67db1540de5be8d3ec0b6636358a5ec"
-dependencies = [
- "heck 0.3.3",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "subtle"
 version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4439,7 +4368,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ce8c33a8d48bd45d624a6e523445fd21ec13d3653cd51f681abf67418f54eb8"
 dependencies = [
  "cfg-if 1.0.0",
- "log",
  "pin-project-lite 0.2.9",
  "tracing-attributes",
  "tracing-core",

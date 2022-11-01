@@ -2,7 +2,7 @@ use crate::common::{EngineEvent, FeedWrapper, PeerState};
 use anyhow::Result;
 use async_std::channel::Sender;
 use async_std::sync::{Arc, Mutex};
-use automerge::Backend;
+use automerge::Automerge;
 use futures::stream::StreamExt;
 use log::*;
 use random_access_storage::RandomAccess;
@@ -219,9 +219,9 @@ where
 
             // TODO: This only works if the backend is the message, read all of the feed first
             // and then find out how to construct the backend!
-            let backend = Backend::load(value.unwrap().to_vec()).unwrap();
+            let doc = Automerge::load(&value.unwrap().to_vec()).unwrap();
             engine_event_sender
-                .send(EngineEvent::BackendLoaded(backend))
+                .send(EngineEvent::DocumentLoaded(doc))
                 .await
                 .unwrap();
         }

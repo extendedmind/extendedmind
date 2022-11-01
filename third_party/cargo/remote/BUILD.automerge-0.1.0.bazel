@@ -31,37 +31,57 @@ licenses([
 
 # Generated Targets
 
+# Unsupported target "map" with type "bench" omitted
+
+# Unsupported target "range" with type "bench" omitted
+
+# Unsupported target "sync" with type "bench" omitted
+
+# Unsupported target "quickstart" with type "example" omitted
+
+# Unsupported target "watch" with type "example" omitted
+
 rust_library(
-    name = "automerge_protocol",
+    name = "automerge",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "js-sys",
+        "wasm",
+        "wasm-bindgen",
+        "web-sys",
     ],
-    crate_root = "automerge-protocol/src/lib.rs",
+    crate_root = "rust/automerge/src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2021",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=automerge-protocol",
+        "crate-name=automerge",
         "manual",
     ],
     version = "0.1.0",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__flate2__1_0_24//:flate2",
+        "@raze__fxhash__0_2_1//:fxhash",
         "@raze__hex__0_4_3//:hex",
+        "@raze__itertools__0_10_5//:itertools",
+        "@raze__js_sys__0_3_55//:js_sys",
+        "@raze__leb128__0_2_5//:leb128",
         "@raze__serde__1_0_147//:serde",
+        "@raze__sha2__0_10_6//:sha2",
         "@raze__smol_str__0_1_23//:smol_str",
-        "@raze__strum__0_21_0//:strum",
         "@raze__thiserror__1_0_37//:thiserror",
         "@raze__tinyvec__1_6_0//:tinyvec",
+        "@raze__tracing__0_1_37//:tracing",
         "@raze__uuid__0_8_2//:uuid",
+        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
+        "@raze__web_sys__0_3_55//:web_sys",
     ],
 )
 
 
-# Unsupported target "serde_round_trip" with type "test" omitted
-
-# Unsupported target "serde_round_trip_proptest" with type "test" omitted
+# Unsupported target "test" with type "test" omitted

@@ -8,7 +8,7 @@ version = "0.0.0"
 path = "fake_lib.rs"
 
 [dependencies]
-automerge = { git = "https://github.com/automerge/automerge-rs.git", rev = "e72571962b51c2f0726fb534890ef3b4f7c74dfc" }
+automerge = { git = "https://github.com/automerge/automerge-rs.git", rev = "bba4fe2c36a165f0513d0c2751b35a5cb1acbda5", features=["wasm"] }
 duct = "=0.13.4"
 hypercore = { git = "https://github.com/ttiurani/hypercore", rev = "f9cd0fcf190ff892529678e9249197f0b14969d1" }
 hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs", rev = "4ef9856762b21e1bcaf1e5ba70d115a3bbbff5e4", features = ["wasm-bindgen"] }
