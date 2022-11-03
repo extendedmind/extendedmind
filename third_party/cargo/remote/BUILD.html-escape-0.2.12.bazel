@@ -31,26 +31,31 @@ licenses([
 
 # Generated Targets
 
+# Unsupported target "encode" with type "bench" omitted
+
 rust_library(
-    name = "email_address",
+    name = "html_escape",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2021",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=email_address",
+        "crate-name=html-escape",
         "manual",
     ],
-    version = "0.2.3",
+    version = "0.2.12",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__utf8_width__0_1_6//:utf8_width",
     ],
 )
 

@@ -92,7 +92,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__base64__0_13_1//:base64",
-        "@raze__email_address__0_2_3//:email_address",
+        "@raze__email_address__0_2_4//:email_address",
         "@raze__email_encoding__0_1_3//:email_encoding",
         "@raze__fastrand__1_8_0//:fastrand",
         "@raze__hostname__0_3_1//:hostname",

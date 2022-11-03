@@ -203,7 +203,7 @@ alias(
 
 alias(
     name = "html_escape",
-    actual = "@raze__html_escape__0_2_11//:html_escape",
+    actual = "@raze__html_escape__0_2_12//:html_escape",
     tags = [
         "cargo-raze",
         "manual",

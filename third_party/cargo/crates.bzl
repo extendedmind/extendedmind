@@ -1213,8 +1213,8 @@ def raze_fetch_remote_crates():
     maybe(
         new_git_repository,
         name = "raze__crypto_secretstream__0_1_0",
-        remote = "https://github.com/ttiurani/nacl-compat",
-        commit = "cf69e01bc332185f5120be7776691aa57779b7e7",
+        remote = "https://github.com/RustCrypto/nacl-compat",
+        commit = "8a0176ea42fd0fc5eec239458ff165b34c67182a",
         build_file = Label("//third_party/cargo/remote:BUILD.crypto_secretstream-0.1.0.bazel"),
         init_submodules = True,
     )
@@ -1480,12 +1480,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__email_address__0_2_3",
-        url = "https://crates.io/api/v1/crates/email_address/0.2.3/download",
+        name = "raze__email_address__0_2_4",
+        url = "https://crates.io/api/v1/crates/email_address/0.2.4/download",
         type = "tar.gz",
-        sha256 = "b1b32a7a2580c4473f10f66b512c34bdd7d33c5e3473227ca833abdb5afe4809",
-        strip_prefix = "email_address-0.2.3",
-        build_file = Label("//third_party/cargo/remote:BUILD.email_address-0.2.3.bazel"),
+        sha256 = "e2153bd83ebc09db15bcbdc3e2194d901804952e3dc96967e1cd3b0c5c32d112",
+        strip_prefix = "email_address-0.2.4",
+        build_file = Label("//third_party/cargo/remote:BUILD.email_address-0.2.4.bazel"),
     )
 
     maybe(
@@ -1989,12 +1989,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__html_escape__0_2_11",
-        url = "https://crates.io/api/v1/crates/html-escape/0.2.11/download",
+        name = "raze__html_escape__0_2_12",
+        url = "https://crates.io/api/v1/crates/html-escape/0.2.12/download",
         type = "tar.gz",
-        sha256 = "b8e7479fa1ef38eb49fb6a42c426be515df2d063f06cb8efd3e50af073dbc26c",
-        strip_prefix = "html-escape-0.2.11",
-        build_file = Label("//third_party/cargo/remote:BUILD.html-escape-0.2.11.bazel"),
+        sha256 = "15315cfa9503e9aa85a477138eff76a1b203a430703548052c330b69d8d8c205",
+        strip_prefix = "html-escape-0.2.12",
+        build_file = Label("//third_party/cargo/remote:BUILD.html-escape-0.2.12.bazel"),
     )
 
     maybe(
@@ -2051,7 +2051,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__hypercore__0_11_1_beta_10",
         remote = "https://github.com/ttiurani/hypercore",
-        commit = "3d5927bcc85e7d9eba98b98ec3102ab1c082184e",
+        commit = "4e801252b800288e5d7db506232bbfc938023d6b",
         build_file = Label("//third_party/cargo/remote:BUILD.hypercore-0.11.1-beta.10.bazel"),
         init_submodules = True,
     )
@@ -2060,7 +2060,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__hypercore_protocol__0_3_1",
         remote = "https://github.com/ttiurani/hypercore-protocol-rs",
-        commit = "4410ceb027167b03c5da71108eff9746ac562487",
+        commit = "6d6fb81406ee6c9f73e12df1c3945dee9087e437",
         build_file = Label("//third_party/cargo/remote:BUILD.hypercore-protocol-0.3.1.bazel"),
         init_submodules = True,
     )
@@ -3058,7 +3058,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__random_access_memory__2_0_0",
         remote = "https://github.com/ttiurani/random-access-memory",
-        commit = "ba47478cd24e1f801aefb97bc2b3809ee19385fa",
+        commit = "3e90f7cc41ef565bd496678dca515041f8a6ed9e",
         build_file = Label("//third_party/cargo/remote:BUILD.random-access-memory-2.0.0.bazel"),
         init_submodules = True,
     )
@@ -3067,7 +3067,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__random_access_storage__4_0_0",
         remote = "https://github.com/ttiurani/random-access-storage",
-        commit = "43d305a366865e7904e4d28c6055d55329f6ed3c",
+        commit = "ac9db1bf020cc727bdcb8a4ae0b6485803a65d66",
         build_file = Label("//third_party/cargo/remote:BUILD.random-access-storage-4.0.0.bazel"),
         init_submodules = True,
     )

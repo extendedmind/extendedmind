@@ -502,8 +502,7 @@ dependencies = [
 [[package]]
 name = "crypto_secretstream"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9d7cd1607a25fba059e96d8260197e28fb08d9b93f0673c845898012e7188b13"
+source = "git+https://github.com/RustCrypto/nacl-compat?rev=8a0176ea42fd0fc5eec239458ff165b34c67182a#8a0176ea42fd0fc5eec239458ff165b34c67182a"
 dependencies = [
  "aead 0.5.1",
  "chacha20 0.9.0",
@@ -549,9 +548,9 @@ dependencies = [
 
 [[package]]
 name = "curl-sys"
-version = "0.4.58+curl-7.86.0"
+version = "0.4.59+curl-7.86.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "430e2ecf0c5f4445334472cf8f9611a6eea404b4135ca5500f38a97a128c913e"
+checksum = "6cfce34829f448b08f55b7db6d0009e23e2e86a34e8c2b366269bf5799b4a407"
 dependencies = [
  "cc",
  "libc",
@@ -583,6 +582,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "12dc3116fe595d7847c701796ac1b189bd86b81f4f593c6f775f9d80fb2e29f4"
 dependencies = [
  "byteorder",
+ "digest 0.10.5",
+ "rand_core 0.6.4",
+ "subtle",
+ "zeroize",
+]
+
+[[package]]
+name = "curve25519-dalek"
+version = "4.0.0-pre.2"
+source = "git+https://github.com/dalek-cryptography/curve25519-dalek?rev=8fa201639aeeb1a3b90f38c561441097a36105e4#8fa201639aeeb1a3b90f38c561441097a36105e4"
+dependencies = [
  "digest 0.10.5",
  "rand_core 0.6.4",
  "subtle",
@@ -971,7 +981,7 @@ dependencies = [
 [[package]]
 name = "hypercore"
 version = "0.11.1-beta.10"
-source = "git+https://github.com/ttiurani/hypercore?branch=v10#3d5927bcc85e7d9eba98b98ec3102ab1c082184e"
+source = "git+https://github.com/ttiurani/hypercore?branch=v10#4e801252b800288e5d7db506232bbfc938023d6b"
 dependencies = [
  "anyhow",
  "async-std",
@@ -1000,14 +1010,14 @@ dependencies = [
 [[package]]
 name = "hypercore-protocol"
 version = "0.3.1"
-source = "git+https://github.com/ttiurani/hypercore-protocol-rs?branch=v10#58b063c2abc6f506e8a973b1b1fde3b74a7f6213"
+source = "git+https://github.com/ttiurani/hypercore-protocol-rs?branch=v10#6d6fb81406ee6c9f73e12df1c3945dee9087e437"
 dependencies = [
  "async-channel",
  "async-trait",
  "blake2-rfc",
  "bytes 1.2.1",
  "crypto_secretstream",
- "curve25519-dalek 3.2.1",
+ "curve25519-dalek 4.0.0-pre.2 (git+https://github.com/dalek-cryptography/curve25519-dalek?rev=8fa201639aeeb1a3b90f38c561441097a36105e4)",
  "futures-lite",
  "futures-timer",
  "getrandom 0.1.16",
@@ -1476,7 +1486,7 @@ dependencies = [
 [[package]]
 name = "random-access-memory"
 version = "2.0.0"
-source = "git+https://github.com/ttiurani/random-access-memory?branch=v10#ba47478cd24e1f801aefb97bc2b3809ee19385fa"
+source = "git+https://github.com/ttiurani/random-access-memory?branch=v10#3e90f7cc41ef565bd496678dca515041f8a6ed9e"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1488,7 +1498,7 @@ dependencies = [
 [[package]]
 name = "random-access-storage"
 version = "4.0.0"
-source = "git+https://github.com/ttiurani/random-access-storage?branch=v10#43d305a366865e7904e4d28c6055d55329f6ed3c"
+source = "git+https://github.com/ttiurani/random-access-storage?branch=v10#ac9db1bf020cc727bdcb8a4ae0b6485803a65d66"
 dependencies = [
  "async-trait",
  "futures-io",
@@ -1644,7 +1654,7 @@ dependencies = [
  "aes-gcm",
  "blake2",
  "chacha20poly1305",
- "curve25519-dalek 4.0.0-pre.2",
+ "curve25519-dalek 4.0.0-pre.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand_core 0.6.4",
  "rustc_version",
  "sha2 0.10.6",
