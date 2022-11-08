@@ -18,7 +18,7 @@ impl TryFrom<u8> for AdminCommand {
 }
 
 #[derive(Parser)]
-#[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
+#[clap(version = "0.0.1", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
 pub struct Opts {
     #[clap(arg_enum)]
     pub admin_command: Option<AdminCommand>,

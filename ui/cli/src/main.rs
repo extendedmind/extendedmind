@@ -8,7 +8,7 @@ use log::*;
 use std::path::PathBuf;
 
 #[derive(Parser)]
-#[clap(version = "0.1.0", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
+#[clap(version = "0.0.1", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
 struct Opts {
     data_root_dir: PathBuf,
     hub: String,

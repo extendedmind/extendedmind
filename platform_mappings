@@ -1,5 +1,5 @@
 platforms:
-  //hub:arm64_linux_rpi3b
+  //server:arm64_linux_rpi3b
     --crosstool_top=//third_party/cc_toolchains/aarch64-rpi3-linux-gnu:gcc_toolchain
     --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
     --cpu=aarch64
