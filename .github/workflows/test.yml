@@ -32,7 +32,6 @@ jobs:
       - name: Run Bazel test
         uses: ttiurani/bazel-action@develop
         env:
-          # ubuntu-latest already has this NDK installed at least for now
           ANDROID_NDK_HOME: '/usr/local/lib/android/sdk/ndk/21.4.7075529'
         with:
           command: 'test //...'
