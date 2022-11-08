@@ -12,7 +12,7 @@ const loadUiProtocol = (buffer: ArrayBuffer): UiProtocol => {
     return message.getRoot(UiProtocol);
 };
 
-const syncWithHub = async (
+const syncWithServer = async (
     storedHubKey: string,
     setContent: (newContent: Object) => void,
 ): Promise<void> => {
@@ -38,7 +38,7 @@ const syncWithHub = async (
 export const content = readable(null, function start(setContent: (newContent: Object) => void) {
     hubKey.subscribe((storedHubKey) => {
         if (storedHubKey) {
-            syncWithHub(storedHubKey, setContent).catch((err) => {
+            syncWithServer(storedHubKey, setContent).catch((err) => {
                 console.error('Error polling', err);
             });
         }
