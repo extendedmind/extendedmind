@@ -1,8 +1,11 @@
 use crate::common::{get_stem_from_path, TIMESTAMP_SECONDS_FORMAT, TIMESTAMP_SECONDS_FORMAT_LEN};
 use age::cli_common::file_io;
+use async_std::sync::{Arc, Mutex};
+use async_std::task;
 use chrono::prelude::*;
 use flate2::write::GzEncoder;
 use flate2::Compression;
+use futures::stream::StreamExt;
 use lettre::message::{Attachment, Body, Message};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::transport::smtp::SmtpTransport;
@@ -10,14 +13,58 @@ use lettre::Transport;
 use std::fs::File;
 use std::io::BufRead;
 use std::path::PathBuf;
+use std::sync::atomic::AtomicBool;
 use std::thread;
+use std::time::Duration;
 use std::{fs::read_dir, io::BufReader};
 use thread_priority::{set_current_thread_priority, ThreadPriority};
 
 pub const BACKUP_FILE_PREFIX: &str = "hub_backup_";
 pub const DEFAULT_BACKUP_INTERVAL_MIN: u32 = 1440;
 
-pub fn get_next_backup_timestamp(backup_interval_min: Option<u32>) -> i64 {
+pub fn start_backup_poll(
+    source_dirs: Vec<PathBuf>,
+    backup_dir: PathBuf,
+    backup_interval_min: Option<u32>,
+    backup_ssh_recipients_file: Option<PathBuf>,
+    backup_email_from: Option<String>,
+    backup_email_to: Option<String>,
+    backup_email_smtp_host: Option<String>,
+    backup_email_smtp_username: Option<String>,
+    backup_email_smtp_password: Option<String>,
+    backup_email_smtp_tls_port: Option<u16>,
+    backup_email_smtp_starttls_port: Option<u16>,
+    abort: Arc<Mutex<AtomicBool>>,
+) {
+    if source_dirs.is_empty() {
+        return;
+    }
+    task::spawn(async move {
+        let mut interval = async_std::stream::interval(Duration::from_secs(1));
+        let mut next_backup_timestamp =
+            get_next_backup_timestamp_on_launch(backup_dir.clone(), backup_interval_min);
+        while interval.next().await.is_some() && !*abort.as_ref().lock().await.get_mut() {
+            if is_now_after(next_backup_timestamp) {
+                log::info!("Creating backup");
+                create_backup(
+                    source_dirs.clone(),
+                    backup_dir.clone(),
+                    backup_ssh_recipients_file.clone(),
+                    backup_email_from.clone(),
+                    backup_email_to.clone(),
+                    backup_email_smtp_host.clone(),
+                    backup_email_smtp_username.clone(),
+                    backup_email_smtp_password.clone(),
+                    backup_email_smtp_tls_port.clone(),
+                    backup_email_smtp_starttls_port.clone(),
+                );
+                next_backup_timestamp = get_next_backup_timestamp(backup_interval_min);
+            }
+        }
+    });
+}
+
+fn get_next_backup_timestamp(backup_interval_min: Option<u32>) -> i64 {
     let backup_interval_min: i64 = backup_interval_min
         .unwrap_or(DEFAULT_BACKUP_INTERVAL_MIN)
         .into();
@@ -26,57 +73,52 @@ pub fn get_next_backup_timestamp(backup_interval_min: Option<u32>) -> i64 {
     next_backup.timestamp_millis()
 }
 
-pub fn get_next_backup_timestamp_on_launch(
-    backup_dir: Option<PathBuf>,
+fn get_next_backup_timestamp_on_launch(
+    backup_dir: PathBuf,
     backup_interval_min: Option<u32>,
-) -> Option<i64> {
-    if let Some(backup_dir) = backup_dir {
-        let backup_interval_min: i64 = backup_interval_min
-            .unwrap_or(DEFAULT_BACKUP_INTERVAL_MIN)
-            .into();
-        let mut paths = read_dir(backup_dir.to_str().unwrap())
-            .unwrap()
-            .map(|res| res.map(|e| e.path()))
-            .filter(|path| {
-                if let Ok(path) = path {
-                    return path.is_file()
-                        && get_stem_from_path(&path).starts_with(BACKUP_FILE_PREFIX);
-                }
-                false
-            })
-            .collect::<Result<Vec<_>, std::io::Error>>()
+) -> i64 {
+    let backup_interval_min: i64 = backup_interval_min
+        .unwrap_or(DEFAULT_BACKUP_INTERVAL_MIN)
+        .into();
+    let mut paths = read_dir(backup_dir.to_str().unwrap())
+        .unwrap()
+        .map(|res| res.map(|e| e.path()))
+        .filter(|path| {
+            if let Ok(path) = path {
+                return path.is_file() && get_stem_from_path(&path).starts_with(BACKUP_FILE_PREFIX);
+            }
+            false
+        })
+        .collect::<Result<Vec<_>, std::io::Error>>()
+        .unwrap();
+    paths.sort();
+    let next_backup = if paths.is_empty() {
+        // There are no backups, the next one is interval from now
+        Utc::now() + chrono::Duration::minutes(backup_interval_min)
+    } else {
+        let previous_backup_timestamp = get_stem_from_path(paths.get(paths.len() - 1).unwrap())
+            [BACKUP_FILE_PREFIX.len()..(BACKUP_FILE_PREFIX.len() + TIMESTAMP_SECONDS_FORMAT_LEN)]
+            .to_string();
+        let previous_backup = Utc
+            .datetime_from_str(
+                &previous_backup_timestamp.as_str(),
+                TIMESTAMP_SECONDS_FORMAT,
+            )
             .unwrap();
-        paths.sort();
-        let next_backup = if paths.is_empty() {
-            // There are no backups, the next one is interval from now
-            Utc::now() + chrono::Duration::minutes(backup_interval_min)
-        } else {
-            let previous_backup_timestamp = get_stem_from_path(paths.get(paths.len() - 1).unwrap())
-                [BACKUP_FILE_PREFIX.len()
-                    ..(BACKUP_FILE_PREFIX.len() + TIMESTAMP_SECONDS_FORMAT_LEN)]
-                .to_string();
-            let previous_backup = Utc
-                .datetime_from_str(
-                    &previous_backup_timestamp.as_str(),
-                    TIMESTAMP_SECONDS_FORMAT,
-                )
-                .unwrap();
-            previous_backup + chrono::Duration::minutes(backup_interval_min)
-        };
-        log::info!("Next backup timestamp is after: {}", next_backup);
-        return Some(next_backup.timestamp_millis());
-    }
-    None
+        previous_backup + chrono::Duration::minutes(backup_interval_min)
+    };
+    log::info!("Next backup timestamp is after: {}", next_backup);
+    return next_backup.timestamp_millis();
 }
 
-pub fn is_now_after(timestamp: i64) -> bool {
+fn is_now_after(timestamp: i64) -> bool {
     let now = Utc::now();
     now.timestamp_millis() > timestamp
 }
 
-pub fn create_backup(
+fn create_backup(
+    source_dirs: Vec<PathBuf>,
     backup_dir: PathBuf,
-    metrics_dir: PathBuf,
     backup_ssh_recipients_file: Option<PathBuf>,
     backup_email_from: Option<String>,
     backup_email_to: Option<String>,
@@ -88,7 +130,6 @@ pub fn create_backup(
 ) {
     thread::spawn(move || {
         set_current_thread_priority(ThreadPriority::Min).unwrap();
-        let metrics_dir = metrics_dir.canonicalize().unwrap();
         let timestamp_seconds = chrono::Utc::now().format(TIMESTAMP_SECONDS_FORMAT);
         let backup_file_name_str = format!("{}{}.tar.gz", BACKUP_FILE_PREFIX, &timestamp_seconds);
         let backup_file_str = format!("{}/{}", backup_dir.display(), &backup_file_name_str);
@@ -96,11 +137,14 @@ pub fn create_backup(
             let backup_file = std::fs::File::create(&backup_file_str).unwrap();
             let enc = GzEncoder::new(backup_file, Compression::best());
             let mut a = tar::Builder::new(enc);
-            a.append_dir_all(
-                metrics_dir.as_path().file_name().unwrap(),
-                metrics_dir.as_path(),
-            )
-            .unwrap();
+            for source_dir in source_dirs {
+                let source_dir = source_dir.canonicalize().unwrap();
+                a.append_dir_all(
+                    source_dir.as_path().file_name().unwrap(),
+                    source_dir.as_path(),
+                )
+                .unwrap();
+            }
             a.finish().unwrap();
         }
 

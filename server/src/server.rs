@@ -3,8 +3,8 @@ use async_ctrlc::CtrlC;
 use async_std::channel::bounded;
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
+use extendedmind_hub::backup::start_backup_poll;
 use extendedmind_hub::extendedmind_engine::{tcp, Bytes, Engine};
-use futures::stream::StreamExt;
 use moka::future::Cache;
 use std::path::PathBuf;
 use std::process;
@@ -18,9 +18,6 @@ use tide_acme::{AcmeConfig, TideRustlsExt};
 
 // Internal
 use crate::admin::listen_to_admin_socket;
-use crate::backup::{
-    create_backup, get_next_backup_timestamp, get_next_backup_timestamp_on_launch, is_now_after,
-};
 use crate::common::{ChannelSenderReceiver, State, SystemCommand};
 use crate::http::{create_cache, http_main_server, http_redirect_server};
 use crate::metrics::process_metrics;
@@ -85,49 +82,28 @@ pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
             .unwrap();
     });
 
-    let backup_dir = opts.backup_dir.clone();
-    let metrics_dir = opts.metrics_dir.clone();
-    let backup_interval_min = opts.backup_interval_min.clone();
-    let backup_ssh_recipients_file = opts.backup_ssh_recipients_file;
-    let backup_email_from = opts.backup_email_from;
-    let backup_email_to = opts.backup_email_to;
-    let backup_email_smtp_host = opts.backup_email_smtp_host;
-    let backup_email_smtp_username = opts.backup_email_smtp_username;
-    let backup_email_smtp_password = opts.backup_email_smtp_password;
-    let backup_email_smtp_tls_port = opts.backup_email_smtp_tls_port;
-    let backup_email_smtp_starttls_port = opts.backup_email_smtp_starttls_port;
-    task::spawn(async move {
-        let mut interval = async_std::stream::interval(Duration::from_secs(1));
-        let mut next_backup_timestamp =
-            get_next_backup_timestamp_on_launch(backup_dir.clone(), backup_interval_min);
-        while interval.next().await.is_some() && !*abort.as_ref().lock().await.get_mut() {
-            if let Some(ref next_backup_timestamp_ref) = next_backup_timestamp {
-                if let Some(ref backup_dir) = backup_dir {
-                    if let Some(ref metrics_dir) = metrics_dir {
-                        if is_now_after(*next_backup_timestamp_ref) {
-                            log::info!("Creating backup");
-                            create_backup(
-                                backup_dir.to_path_buf(),
-                                metrics_dir.to_path_buf(),
-                                backup_ssh_recipients_file.clone(),
-                                backup_email_from.clone(),
-                                backup_email_to.clone(),
-                                backup_email_smtp_host.clone(),
-                                backup_email_smtp_username.clone(),
-                                backup_email_smtp_password.clone(),
-                                backup_email_smtp_tls_port.clone(),
-                                backup_email_smtp_starttls_port.clone(),
-                            );
-                            next_backup_timestamp =
-                                Some(get_next_backup_timestamp(backup_interval_min));
-                        }
-                    }
-                }
-            }
+    // Backup polling
+    if let Some(backup_dir) = opts.backup_dir.as_ref() {
+        if let Some(metrics_dir) = opts.metrics_dir.as_ref() {
+            start_backup_poll(
+                vec![metrics_dir.to_path_buf()],
+                backup_dir.to_path_buf(),
+                opts.backup_interval_min.clone(),
+                opts.backup_ssh_recipients_file.clone(),
+                opts.backup_email_from.clone(),
+                opts.backup_email_to.clone(),
+                opts.backup_email_smtp_host.clone(),
+                opts.backup_email_smtp_username.clone(),
+                opts.backup_email_smtp_password.clone(),
+                opts.backup_email_smtp_tls_port.clone(),
+                opts.backup_email_smtp_starttls_port.clone(),
+                abort,
+            );
         }
-    });
+    }
 
-    if let Some(ref metrics_dir) = opts.metrics_dir {
+    // Log processing to metrics
+    if let Some(metrics_dir) = opts.metrics_dir.as_ref() {
         if let Some(log_dir) = opts.log_dir {
             process_metrics(metrics_dir.to_path_buf(), opts.metrics_precision, log_dir);
         }

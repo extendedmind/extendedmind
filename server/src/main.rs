@@ -1,6 +1,5 @@
 use anyhow::Result;
 use clap::Parser;
-use extendedmind_hub::backup;
 use std::process;
 
 mod admin;
