@@ -1,4 +1,4 @@
-use async_std::channel::{Receiver, Sender};
+use async_std::channel::Receiver;
 use extendedmind_hub::extendedmind_engine::{Bytes, Engine, RandomAccessDisk};
 use std::io;
 use tide::http::{headers::HeaderValues, Method};
@@ -9,13 +9,6 @@ use wildmatch::WildMatch;
 pub const ACCESS_LOG_IDENTIFIER: &str = "GET _";
 pub const DEFAULT_ADMIN_SOCKET_FILE: &str = "/var/run/extendedmind_server.sock";
 
-#[derive(Clone, Copy)]
-#[repr(u8)]
-pub enum SystemCommand {
-    WakeUp = 1,
-    Disconnect = 2,
-}
-
 #[derive(derivative::Derivative)]
 #[derivative(Clone(bound = ""))]
 pub struct State {
@@ -24,11 +17,6 @@ pub struct State {
     // System command receiver
     pub system_commands: Receiver<Result<Bytes, io::Error>>,
 }
-
-pub type ChannelSenderReceiver = (
-    Sender<Result<Bytes, io::Error>>,
-    Receiver<Result<Bytes, io::Error>>,
-);
 
 pub fn log_access(method: &Method, url_path: &str, code: &str, extra: Option<&str>) {
     // This value should be
