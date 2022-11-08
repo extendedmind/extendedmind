@@ -7,7 +7,7 @@ use wildmatch::WildMatch;
 // Identifies that the log entry belongs in the access log. Needs to be separate from actual paths,
 // hence the space.
 pub const ACCESS_LOG_IDENTIFIER: &str = "GET _";
-pub const DEFAULT_ADMIN_SOCKET_FILE: &str = "/var/run/extendedmind_hub.sock";
+pub const DEFAULT_ADMIN_SOCKET_FILE: &str = "/var/run/extendedmind_server.sock";
 
 #[derive(Clone, Copy)]
 #[repr(u8)]
