@@ -111,7 +111,7 @@ impl Engine<RandomAccessDisk> {
                 .create(true)
                 .read(true)
                 .write(true)
-                .open(data_root_dir.join("HUB_KEY.txt"))
+                .open(data_root_dir.join("KEY.txt"))
                 .unwrap();
             let mut existing_hub_key = String::new();
             let bytes_read = hub_key_file.read_to_string(&mut existing_hub_key).unwrap();

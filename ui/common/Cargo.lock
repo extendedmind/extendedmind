@@ -707,7 +707,7 @@ checksum = "0206175f82b8d6bf6652ff7d71a1e27fd2e4efde587fd368662814d6ec1d9ce0"
 
 [[package]]
 name = "extendedmind_engine"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "async-attributes",
@@ -724,14 +724,13 @@ dependencies = [
  "random-access-memory",
  "random-access-storage",
  "reusable-box-future",
- "smol_str",
  "wasm-bindgen",
  "wasm-bindgen-futures",
 ]
 
 [[package]]
 name = "extendedmind_schema_rust"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "capnp",
  "capnpc",
@@ -740,7 +739,7 @@ dependencies = [
 
 [[package]]
 name = "extendedmind_ui_common"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "async-std",
  "async-trait",

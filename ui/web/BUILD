@@ -53,8 +53,8 @@ jest_test(
     ],
     jest_config = ":jest.e2e.config.js",
     jest_playwright_config = ":jest-playwright.config.js",
-    hub_bin = "//hub:extendedmind_hub",
-    hub_port = "8080",
+    server_bin = "//server:extendedmind_server",
+    server_port = "8080",
     hub_data_dir = "../../$(@D)/data",
     dist_dir = ":build",
     deps = [

@@ -58,7 +58,7 @@ rust_binary(
         ":rcgen",
         "@raze__pem__1_1_0//:pem",
         "@raze__ring__0_16_20//:ring",
-        "@raze__time__0_3_16//:time",
+        "@raze__time__0_3_17//:time",
         "@raze__yasna__0_5_0//:yasna",
     ],
 )
@@ -92,7 +92,7 @@ rust_library(
     deps = [
         "@raze__pem__1_1_0//:pem",
         "@raze__ring__0_16_20//:ring",
-        "@raze__time__0_3_16//:time",
+        "@raze__time__0_3_17//:time",
         "@raze__yasna__0_5_0//:yasna",
     ],
 )

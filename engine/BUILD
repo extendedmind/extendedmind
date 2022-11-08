@@ -18,7 +18,6 @@ rust_library(
         "//third_party/cargo:anyhow",
         "//third_party/cargo:log",
         "//third_party/cargo:reusable_box_future",
-        "//third_party/cargo:smol_str",
         "//third_party/cargo:wasm_bindgen",
         "//third_party/cargo:wasm_bindgen_futures",
     ] + selects.with_or({

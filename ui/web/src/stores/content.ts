@@ -1,7 +1,7 @@
 import * as capnp from 'capnp-ts';
 import { UiProtocol } from '../lib/schema/ui_protocol.capnp';
 import wasm from '../lib/ui-common/extendedmind_ui_common_wasm_bg.wasm';
-import init, { connectToHub } from '../lib/ui-common/extendedmind_ui_common_wasm';
+import init, { connectToServer } from '../lib/ui-common/extendedmind_ui_common_wasm';
 import { readable } from 'svelte/store';
 import { hubKey } from './hubKey';
 
@@ -28,10 +28,10 @@ const syncWithHub = async (
     };
 
     const wasmExports = await init(wasm);
-    const hubWsHost = window?.process?.env?.EXTENDEDMIND_HUB_PORT
-        ? `${window.location.hostname}:${window.process.env.EXTENDEDMIND_HUB_PORT}`
+    const serverWsHost = window?.process?.env?.EXTENDEDMIND_SERVER_PORT
+        ? `${window.location.hostname}:${window.process.env.EXTENDEDMIND_SERVER_PORT}`
         : window.location.host;
-    await connectToHub(hubWsHost, storedHubKey);
+    await connectToServer(serverWsHost, storedHubKey);
     // Not expected to actually return, but throw an error
 };
 

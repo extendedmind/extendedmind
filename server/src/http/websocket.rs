@@ -1,7 +1,7 @@
 use crate::common::{ChannelSenderReceiver, State, SystemCommand};
 use async_std::channel::{bounded, Receiver, Sender};
 use async_std::task;
-use extendedmind_engine::{Bytes, ChannelWriter, EngineEvent};
+use extendedmind_hub::extendedmind_engine::{Bytes, ChannelWriter, EngineEvent};
 use futures::stream::StreamExt;
 use log::debug;
 use std::io;

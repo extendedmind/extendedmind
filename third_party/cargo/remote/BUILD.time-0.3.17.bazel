@@ -31,37 +31,42 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "bench" with type "bench" omitted
+# Unsupported target "benchmarks" with type "bench" omitted
 
 rust_library(
-    name = "regex_syntax",
+    name = "time",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
         "default",
-        "unicode",
-        "unicode-age",
-        "unicode-bool",
-        "unicode-case",
-        "unicode-gencat",
-        "unicode-perl",
-        "unicode-script",
-        "unicode-segment",
+        "formatting",
+        "macros",
+        "parsing",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2021",
+    proc_macro_deps = [
+        "@raze__time_macros__0_2_6//:time_macros",
+    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=regex-syntax",
+        "crate-name=time",
         "manual",
     ],
-    version = "0.6.27",
+    version = "0.3.17",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__itoa__1_0_4//:itoa",
+        "@raze__serde__1_0_147//:serde",
+        "@raze__time_core__0_1_0//:time_core",
     ],
 )
 
+
+# Unsupported target "tests" with type "test" omitted

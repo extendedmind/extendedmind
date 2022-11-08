@@ -4,9 +4,9 @@ let hubKey;
 
 beforeAll(async () => {
     // TODO: find public key here
-    const hubKeyFile = `${process.env.EXTENDEDMIND_HUB_DATA_DIR}/HUB_KEY.txt`;
+    const hubKeyFile = `${process.env.EXTENDEDMIND_HUB_DATA_DIR}/KEY.txt`;
     hubKey = await fs.readFile(hubKeyFile, 'utf8');
-    const url = `http://localhost:${process.env.EXTENDEDMIND_HUB_PORT}/extendedmind`;
+    const url = `http://localhost:${process.env.EXTENDEDMIND_SERVER_PORT}/extendedmind`;
     console.log(`Navigating to ${url}`);
     await page.goto(url);
 });

@@ -3,7 +3,7 @@ path = "src/lib.rs"
 
 [package]
 name = "extendedmind_engine"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2018"
 licence = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
@@ -18,13 +18,11 @@ futures = "^0.3.5"
 hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs", branch = "v10", features = ["wasm-bindgen"] }
 random-access-storage = { git = "https://github.com/ttiurani/random-access-storage", branch = "v10" }
 random-access-memory = { git = "https://github.com/ttiurani/random-access-memory", branch = "v10" }
-
 hex = "0.4"
 anyhow = "1.0.28"
 log = "0.4.14"
 reusable-box-future = "0.2.0"
 derivative = "2.2.0"
-smol_str = "0.1.18"
 wasm-bindgen = "=0.2.78"
 wasm-bindgen-futures = "0.4.28"
 

@@ -18,12 +18,12 @@ mod wasm {
         async fn js_ui_protocol(data: &[u8]) -> Result<(), JsValue>;
     }
 
-    #[wasm_bindgen(js_name = "connectToHub")]
-    pub async fn connect_to_hub(address: String, public_key: String) -> Result<(), JsValue> {
+    #[wasm_bindgen(js_name = "connectToServer")]
+    pub async fn connect_to_server(address: String, public_key: String) -> Result<(), JsValue> {
         console_error_panic_hook::set_once();
         console_log::init_with_level(log::Level::Debug).unwrap();
         info!(
-            "call: connect_to_hub, address: {}, public_key: {}",
+            "call: connect_to_server, address: {}, public_key: {}",
             &address, &public_key
         );
 

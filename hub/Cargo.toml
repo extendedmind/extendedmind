@@ -1,11 +1,11 @@
 [package]
 name = "extendedmind_hub"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2018"
 licence = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
-# [dependencies]
+# TODO: Build following https://blog.dend.ro/building-rust-for-routers/
 
 [dependencies]
 extendedmind_engine = { path = "../engine" }
@@ -15,23 +15,10 @@ anyhow = "1.0.33"
 chrono = { version = "0.4.19" }
 futures = "^0.3.5"
 async-std = { version = "1.6.2", features = ["unstable"] }
-tide = "0.16.0"
-tide-websockets = "0.4.0"
-tide-compress = "0.10.2"
-tide-rustls = { git = "https://github.com/http-rs/tide-rustls", rev = "cbfb61f519238730b4d6318901fe2f2a8bfdb164" }
-tide-acme = { git = "https://github.com/ttiurani/tide-acme", rev = "53c21b421b2443c3c02487b49f3c7f32c64febb0" }
-thread-priority = "0.8.2"
-serde = "1.0.137"
-wildmatch = "2.1.0"
-html-escape = "0.2.11"
 tar = "0.4.38"
 flate2 = "1.0.24"
 age = { version = "0.8.1", features = ["ssh", "cli-common"] }
 lettre = { version = "0.10.0-rc.7", default-features = false, features = ["smtp-transport", "rustls-tls", "hostname", "builder"] }
-moka = { version = "0.8.4", default-features = false, features = ["atomic64", "future"] }
-async-tungstenite = { version = "0.13.1", features = ["async-std-runtime"] }
-async-trait = "0.1.51"
-ctrlc = { version = "3.0", features = ["termination"] }
-async-ctrlc = { version = "1.2.0", features = ["stream"] }
+async-ctrlc = { version = "1.2.0", features = ["stream", "termination"] }
 clap = { version = "3.0.0-rc.5", features = ["derive"] }
-derivative = "2.2.0"
+thread-priority = "0.8.2"

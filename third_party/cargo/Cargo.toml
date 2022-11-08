@@ -35,8 +35,7 @@ flate2 = "1.0.24"
 age = { version = "0.8.1", features = ["ssh", "cli-common"] }
 lettre = { version = "0.10.0-rc.7", default-features = false, features = ["smtp-transport", "rustls-tls", "hostname", "builder"] }
 html-escape = "0.2.11"
-ctrlc = { version = "3.0", features = ["termination"] }
-async-ctrlc = "1.2.0"
+async-ctrlc = { version = "1.2.0", features = ["stream", "termination"] }
 thread-priority = "0.8.2"
 random-access-storage = { git = "https://github.com/ttiurani/random-access-storage", branch = "v10" }
 random-access-memory = { git = "https://github.com/ttiurani/random-access-memory", branch = "v10" }
@@ -45,7 +44,6 @@ hex = "0.4"
 reusable-box-future = "0.2.0"
 derivative = "2.2.0"
 capnp = "0.14.5"
-smol_str = "0.1.18"
 # Wasm dependencies
 # NOTE: This version needs to match that of rules_rust
 wasm-bindgen = "=0.2.78" # See below for hack to get #![doc = include_str!("../README.md")] to work

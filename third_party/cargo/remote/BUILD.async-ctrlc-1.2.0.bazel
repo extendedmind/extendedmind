@@ -39,6 +39,9 @@ rust_library(
     name = "async_ctrlc",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "futures-core",
+        "stream",
+        "termination",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -56,6 +59,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__ctrlc__3_2_3//:ctrlc",
+        "@raze__futures_core__0_3_25//:futures_core",
     ],
 )
 
