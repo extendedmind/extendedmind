@@ -1,32 +1,38 @@
-use isahc::prelude::*;
-use std::io::Write;
-use std::{path::PathBuf, str::FromStr};
-
-fn download_capnp_schemas() {
-    let java_capnp_text = isahc::get("https://raw.githubusercontent.com/capnproto/capnproto-java/master/compiler/src/main/schema/capnp/java.capnp").unwrap().text().unwrap();
-    std::fs::create_dir_all("target/capnp").unwrap();
-    let mut java_capnp_file = std::fs::OpenOptions::new()
-        .create(true)
-        .write(true)
-        .truncate(true)
-        .open(PathBuf::from_str("target/capnp/java.capnp").unwrap())
-        .unwrap();
-    java_capnp_file
-        .write_all(&java_capnp_text.as_bytes())
-        .unwrap();
-    java_capnp_file.flush().unwrap();
-}
+use std::ffi::OsStr;
+use std::path::PathBuf;
 
 fn main() {
-    download_capnp_schemas();
-    capnpc::CompilerCommand::new()
-        .import_path("target")
-        .src_prefix("src")
-        // TODO: This is very fragile and OSX only
-        .capnp_executable("/usr/local/Cellar/capnp/0.9.1/bin/capnp")
-        .file("src/model.capnp")
-        .file("src/wire_protocol.capnp")
-        .file("src/ui_protocol.capnp")
-        .run()
-        .expect("schema compiler command");
+    let out_dir: String = std::env::var_os("OUT_DIR").unwrap().into_string().unwrap();
+    let manifest_dir = std::env::var_os("CARGO_MANIFEST_DIR")
+        .unwrap()
+        .into_string()
+        .unwrap();
+    let bazel_generated_rust_path =
+        PathBuf::from(format!("{}/../bazel-bin/schema/src", manifest_dir));
+    let mut capnp_sources: Vec<PathBuf> = bazel_generated_rust_path
+        .read_dir()
+        .unwrap()
+        .flatten()
+        .filter(|entry| {
+            entry.path().is_file() && entry.path().extension() == Some(OsStr::new("rs"))
+        })
+        .map(|entry| entry.path())
+        .collect();
+    for capnp_source in capnp_sources.iter_mut() {
+        let source = capnp_source.canonicalize().unwrap();
+        let destination = PathBuf::from(format!(
+            "{}/{}",
+            out_dir,
+            capnp_source.file_name().unwrap().to_str().unwrap()
+        ));
+        if !destination.exists() {
+            std::fs::copy(source.clone(), destination.clone()).expect(
+                format!(
+                    "{:?} could not be copied to {:?}",
+                    capnp_source, destination
+                )
+                .as_str(),
+            );
+        }
+    }
 }
