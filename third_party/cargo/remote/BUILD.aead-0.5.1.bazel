@@ -37,6 +37,7 @@ rust_library(
     crate_features = [
         "alloc",
         "default",
+        "getrandom",
         "rand_core",
         "stream",
     ],

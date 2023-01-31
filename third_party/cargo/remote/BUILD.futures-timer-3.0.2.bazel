@@ -35,9 +35,6 @@ rust_library(
     name = "futures_timer",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "gloo-timers",
-        "send_wrapper",
-        "wasm-bindgen",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -54,8 +51,6 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__gloo_timers__0_2_6//:gloo_timers",
-        "@raze__send_wrapper__0_4_0//:send_wrapper",
     ],
 )
 

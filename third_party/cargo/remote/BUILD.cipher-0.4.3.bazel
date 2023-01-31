@@ -38,6 +38,7 @@ rust_library(
         "alloc",
         "block-padding",
         "std",
+        "zeroize",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -56,6 +57,7 @@ rust_library(
     deps = [
         "@raze__crypto_common__0_1_6//:crypto_common",
         "@raze__inout__0_1_3//:inout",
+        "@raze__zeroize__1_5_7//:zeroize",
     ],
 )
 

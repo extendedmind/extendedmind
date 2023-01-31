@@ -50,7 +50,7 @@ rust_library(
         "wasm-bindgen",
         "web-sys",
     ],
-    crate_root = "rust/automerge/src/lib.rs",
+    crate_root = "src/lib.rs",
     data = [],
     edition = "2021",
     rustc_flags = [
@@ -61,7 +61,7 @@ rust_library(
         "crate-name=automerge",
         "manual",
     ],
-    version = "0.1.0",
+    version = "0.3.0",
 
     # buildifier: leave-alone
     deps = [
@@ -77,7 +77,7 @@ rust_library(
         "@raze__thiserror__1_0_38//:thiserror",
         "@raze__tinyvec__1_6_0//:tinyvec",
         "@raze__tracing__0_1_37//:tracing",
-        "@raze__uuid__0_8_2//:uuid",
+        "@raze__uuid__1_2_2//:uuid",
         "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
         "@raze__web_sys__0_3_55//:web_sys",
     ],

@@ -4,27 +4,15 @@ path = "src/lib.rs"
 [package]
 name = "extendedmind_engine"
 version = "0.0.1"
-edition = "2018"
+edition = "2021"
 licence = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
 extendedmind_schema_rust = { path = "../schema" }
-automerge = { git = "https://github.com/automerge/automerge-rs.git", rev = "bba4fe2c36a165f0513d0c2751b35a5cb1acbda5", features=["wasm"] }
-bytes = "0.5.0"
+peermerge = { git = "https://github.com/extendedmind/peermerge.git", branch = "main" }
 async-std = "1.9.0"
-async-attributes = "1.1.2"
 futures = "^0.3.5"
-hypercore-protocol = { git = "https://github.com/ttiurani/hypercore-protocol-rs", branch = "v10", features = ["wasm-bindgen"] }
-random-access-storage = { git = "https://github.com/ttiurani/random-access-storage", branch = "v10" }
-random-access-memory = { git = "https://github.com/ttiurani/random-access-memory", branch = "v10" }
-hex = "0.4"
-anyhow = "1.0.28"
-log = "0.4.14"
+anyhow = "1.0.33"
+bytes = "0.5.0"
 reusable-box-future = "0.2.0"
-derivative = "2.2.0"
-wasm-bindgen = "=0.2.78"
-wasm-bindgen-futures = "0.4.28"
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-random-access-disk = { git = "https://github.com/ttiurani/random-access-disk", branch = "v10" }

@@ -32,26 +32,34 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "autocfg",
+    name = "spki",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "alloc",
+        "base64ct",
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2015",
+    compile_data = glob(["README.md"]),
+    edition = "2021",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=autocfg",
+        "crate-name=spki",
         "manual",
     ],
-    version = "0.1.8",
+    version = "0.6.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__autocfg__1_1_0//:autocfg",
+        "@raze__base64ct__1_5_3//:base64ct",
+        "@raze__der__0_6_1//:der",
     ],
 )
 
+
+# Unsupported target "spki" with type "test" omitted
+
+# Unsupported target "traits" with type "test" omitted

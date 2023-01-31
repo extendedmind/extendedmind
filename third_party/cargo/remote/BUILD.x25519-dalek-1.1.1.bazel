@@ -58,7 +58,7 @@ rust_library(
     deps = [
         "@raze__curve25519_dalek__3_2_0//:curve25519_dalek",
         "@raze__rand_core__0_5_1//:rand_core",
-        "@raze__zeroize__1_4_3//:zeroize",
+        "@raze__zeroize__1_5_7//:zeroize",
     ],
 )
 

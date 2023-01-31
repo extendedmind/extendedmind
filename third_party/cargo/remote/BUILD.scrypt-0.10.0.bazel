@@ -26,32 +26,39 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
+# Unsupported target "lib" with type "bench" omitted
+
 rust_library(
-    name = "spki",
+    name = "scrypt",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2018",
+    edition = "2021",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-raze",
-        "crate-name=spki",
+        "crate-name=scrypt",
         "manual",
     ],
-    version = "0.4.1",
+    version = "0.10.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__der__0_4_5//:der",
+        "@raze__hmac__0_12_1//:hmac",
+        "@raze__pbkdf2__0_11_0//:pbkdf2",
+        "@raze__salsa20__0_10_2//:salsa20",
+        "@raze__sha2__0_10_6//:sha2",
     ],
 )
 
+
+# Unsupported target "mod" with type "test" omitted

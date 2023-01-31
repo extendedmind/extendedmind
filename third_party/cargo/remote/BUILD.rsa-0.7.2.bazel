@@ -31,11 +31,14 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "lib" with type "bench" omitted
+# Unsupported target "key" with type "bench" omitted
 
 rust_library(
-    name = "scrypt",
+    name = "rsa",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+        "@raze__num_bigint_dig__0_8_2//:num_bigint_dig": "num_bigint",
+    },
     crate_features = [
     ],
     crate_root = "src/lib.rs",
@@ -46,19 +49,30 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=scrypt",
+        "crate-name=rsa",
         "manual",
     ],
-    version = "0.9.0",
+    version = "0.7.2",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__hmac__0_12_1//:hmac",
-        "@raze__pbkdf2__0_10_1//:pbkdf2",
-        "@raze__salsa20__0_10_2//:salsa20",
-        "@raze__sha2__0_10_6//:sha2",
+        "@raze__byteorder__1_4_3//:byteorder",
+        "@raze__digest__0_10_6//:digest",
+        "@raze__num_bigint_dig__0_8_2//:num_bigint_dig",
+        "@raze__num_integer__0_1_45//:num_integer",
+        "@raze__num_iter__0_1_43//:num_iter",
+        "@raze__num_traits__0_2_15//:num_traits",
+        "@raze__pkcs1__0_4_1//:pkcs1",
+        "@raze__pkcs8__0_9_0//:pkcs8",
+        "@raze__rand_core__0_6_4//:rand_core",
+        "@raze__signature__1_6_4//:signature",
+        "@raze__smallvec__1_10_0//:smallvec",
+        "@raze__subtle__2_4_1//:subtle",
+        "@raze__zeroize__1_5_7//:zeroize",
     ],
 )
 
 
-# Unsupported target "mod" with type "test" omitted
+# Unsupported target "pkcs1" with type "test" omitted
+
+# Unsupported target "pkcs8" with type "test" omitted

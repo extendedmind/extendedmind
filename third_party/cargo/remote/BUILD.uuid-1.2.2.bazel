@@ -50,13 +50,17 @@ rust_library(
     srcs = glob(["**/*.rs"]),
     aliases = {
         "@raze__getrandom__0_2_8//:getrandom": "getrandom",
+        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen": "wasm_bindgen",
     },
     crate_features = [
         "default",
         "getrandom",
+        "js",
         "rng",
+        "serde",
         "std",
         "v4",
+        "wasm-bindgen",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -74,6 +78,8 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__getrandom__0_2_8//:getrandom",
+        "@raze__serde__1_0_152//:serde",
+        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
     ],
 )
 

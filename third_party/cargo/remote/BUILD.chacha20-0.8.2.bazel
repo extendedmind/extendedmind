@@ -64,7 +64,7 @@ rust_library(
     deps = [
         "@raze__cfg_if__1_0_0//:cfg_if",
         "@raze__cipher__0_3_0//:cipher",
-        "@raze__zeroize__1_4_3//:zeroize",
+        "@raze__zeroize__1_5_7//:zeroize",
     ] + selects.with_or({
         # cfg(any(target_arch = "x86_64", target_arch = "x86"))
         (

@@ -57,7 +57,7 @@ rust_library(
         "@raze__chacha20__0_8_2//:chacha20",
         "@raze__cipher__0_3_0//:cipher",
         "@raze__poly1305__0_7_2//:poly1305",
-        "@raze__zeroize__1_4_3//:zeroize",
+        "@raze__zeroize__1_5_7//:zeroize",
     ],
 )
 

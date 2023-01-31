@@ -35,6 +35,10 @@ rust_library(
     name = "signature",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "digest",
+        "digest-preview",
+        "rand-preview",
+        "rand_core",
         "std",
     ],
     crate_root = "src/lib.rs",
@@ -53,6 +57,8 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
+        "@raze__digest__0_10_6//:digest",
+        "@raze__rand_core__0_6_4//:rand_core",
     ],
 )
 

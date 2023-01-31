@@ -51,7 +51,7 @@ cargo_build_script(
     ],
     crate_root = "build.rs",
     data = glob(["**"]),
-    edition = "2015",
+    edition = "2021",
     rustc_flags = [
         "--cap-lints=allow",
     ],
@@ -59,10 +59,9 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.7.0",
+    version = "0.8.2",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__autocfg__0_1_8//:autocfg",
     ],
 )
 
@@ -78,7 +77,7 @@ rust_library(
     ],
     crate_root = "src/lib.rs",
     data = [],
-    edition = "2015",
+    edition = "2021",
     rustc_flags = [
         "--cap-lints=allow",
     ],
@@ -87,7 +86,7 @@ rust_library(
         "crate-name=num-bigint-dig",
         "manual",
     ],
-    version = "0.7.0",
+    version = "0.8.2",
 
     # buildifier: leave-alone
     deps = [
@@ -100,7 +99,7 @@ rust_library(
         "@raze__num_traits__0_2_15//:num_traits",
         "@raze__rand__0_8_5//:rand",
         "@raze__smallvec__1_10_0//:smallvec",
-        "@raze__zeroize__1_4_3//:zeroize",
+        "@raze__zeroize__1_5_7//:zeroize",
     ],
 )
 

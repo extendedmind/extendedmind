@@ -2,7 +2,6 @@ use anyhow::Result;
 use async_std::channel::{SendError, Sender};
 use bytes::Bytes;
 use futures::io::AsyncWrite;
-use log::*;
 use reusable_box_future::ReusableBoxFuture;
 use std::io;
 use std::pin::Pin;
@@ -24,7 +23,6 @@ impl ChannelWriter {
         }
     }
     pub async fn send(self: Self, msg: Bytes) -> Result<(), SendError<Result<Bytes, io::Error>>> {
-        debug!("Channel writing {}", &msg.len());
         self.channel.send(Ok(msg)).await
     }
 }

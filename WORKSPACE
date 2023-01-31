@@ -63,11 +63,11 @@ http_archive(
 
 load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains", "rust_repository_set")
 rules_rust_dependencies()
-RUST_VERSION = "1.61.0"
-rust_register_toolchains(version = RUST_VERSION, edition="2018", rustfmt_version = RUST_VERSION)
+RUST_VERSION = "1.67.0"
+rust_register_toolchains(version = RUST_VERSION, edition="2021", rustfmt_version = RUST_VERSION)
 rust_repository_set(
     name = "extendedmind_rust_apple_x86_64",
-    edition = "2018",
+    edition = "2021",
     version = RUST_VERSION,
     rustfmt_version = RUST_VERSION,
     exec_triple = "x86_64-apple-darwin",
@@ -93,7 +93,7 @@ rust_repository_set(
 
 rust_repository_set(
     name = "extendedmind_rust_linux_x86_64",
-    edition = "2018",
+    edition = "2021",
     version = RUST_VERSION,
     rustfmt_version = RUST_VERSION,
     exec_triple = "x86_64-unknown-linux-gnu",

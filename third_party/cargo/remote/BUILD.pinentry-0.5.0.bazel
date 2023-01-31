@@ -56,7 +56,7 @@ rust_library(
         "@raze__percent_encoding__2_2_0//:percent_encoding",
         "@raze__secrecy__0_8_0//:secrecy",
         "@raze__which__4_4_0//:which",
-        "@raze__zeroize__1_4_3//:zeroize",
+        "@raze__zeroize__1_5_7//:zeroize",
     ],
 )
 
