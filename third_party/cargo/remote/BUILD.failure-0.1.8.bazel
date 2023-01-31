@@ -67,7 +67,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__backtrace__0_3_66//:backtrace",
+        "@raze__backtrace__0_3_67//:backtrace",
     ],
 )
 

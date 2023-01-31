@@ -53,13 +53,13 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_channel__1_7_1//:async_channel",
-        "@raze__async_executor__1_4_1//:async_executor",
-        "@raze__async_io__1_10_0//:async_io",
+        "@raze__async_channel__1_8_0//:async_channel",
+        "@raze__async_executor__1_5_0//:async_executor",
+        "@raze__async_io__1_12_0//:async_io",
         "@raze__async_lock__2_6_0//:async_lock",
-        "@raze__blocking__1_2_0//:blocking",
+        "@raze__blocking__1_3_0//:blocking",
         "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__once_cell__1_16_0//:once_cell",
+        "@raze__once_cell__1_17_0//:once_cell",
     ],
 )
 

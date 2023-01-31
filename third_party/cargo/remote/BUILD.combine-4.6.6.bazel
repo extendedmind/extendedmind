@@ -71,7 +71,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__bytes__1_2_1//:bytes",
+        "@raze__bytes__1_3_0//:bytes",
         "@raze__memchr__2_5_0//:memchr",
     ],
 )

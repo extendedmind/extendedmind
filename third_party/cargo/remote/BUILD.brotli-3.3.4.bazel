@@ -58,7 +58,7 @@ rust_binary(
         ":brotli",
         "@raze__alloc_no_stdlib__2_0_4//:alloc_no_stdlib",
         "@raze__alloc_stdlib__0_2_2//:alloc_stdlib",
-        "@raze__brotli_decompressor__2_3_2//:brotli_decompressor",
+        "@raze__brotli_decompressor__2_3_4//:brotli_decompressor",
     ],
 )
 
@@ -90,7 +90,7 @@ rust_binary(
         ":brotli",
         "@raze__alloc_no_stdlib__2_0_4//:alloc_no_stdlib",
         "@raze__alloc_stdlib__0_2_2//:alloc_stdlib",
-        "@raze__brotli_decompressor__2_3_2//:brotli_decompressor",
+        "@raze__brotli_decompressor__2_3_4//:brotli_decompressor",
     ],
 )
 
@@ -123,7 +123,7 @@ rust_library(
     deps = [
         "@raze__alloc_no_stdlib__2_0_4//:alloc_no_stdlib",
         "@raze__alloc_stdlib__0_2_2//:alloc_stdlib",
-        "@raze__brotli_decompressor__2_3_2//:brotli_decompressor",
+        "@raze__brotli_decompressor__2_3_4//:brotli_decompressor",
     ],
 )
 

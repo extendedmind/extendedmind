@@ -93,8 +93,8 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":http_types_build_script",
-        "@raze__anyhow__1_0_66//:anyhow",
-        "@raze__async_channel__1_7_1//:async_channel",
+        "@raze__anyhow__1_0_68//:anyhow",
+        "@raze__async_channel__1_8_0//:async_channel",
         "@raze__async_std__1_12_0//:async_std",
         "@raze__base64__0_13_1//:base64",
         "@raze__cookie__0_14_4//:cookie",
@@ -102,8 +102,8 @@ rust_library(
         "@raze__infer__0_2_3//:infer",
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",
         "@raze__rand__0_7_3//:rand",
-        "@raze__serde__1_0_147//:serde",
-        "@raze__serde_json__1_0_87//:serde_json",
+        "@raze__serde__1_0_152//:serde",
+        "@raze__serde_json__1_0_91//:serde_json",
         "@raze__serde_qs__0_8_5//:serde_qs",
         "@raze__serde_urlencoded__0_7_1//:serde_urlencoded",
         "@raze__url__2_3_1//:url",

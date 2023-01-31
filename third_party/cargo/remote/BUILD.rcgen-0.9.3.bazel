@@ -56,10 +56,10 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":rcgen",
-        "@raze__pem__1_1_0//:pem",
+        "@raze__pem__1_1_1//:pem",
         "@raze__ring__0_16_20//:ring",
         "@raze__time__0_3_17//:time",
-        "@raze__yasna__0_5_0//:yasna",
+        "@raze__yasna__0_5_1//:yasna",
     ],
 )
 
@@ -90,10 +90,10 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__pem__1_1_0//:pem",
+        "@raze__pem__1_1_1//:pem",
         "@raze__ring__0_16_20//:ring",
         "@raze__time__0_3_17//:time",
-        "@raze__yasna__0_5_0//:yasna",
+        "@raze__yasna__0_5_1//:yasna",
     ],
 )
 

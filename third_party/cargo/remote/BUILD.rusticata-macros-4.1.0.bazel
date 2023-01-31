@@ -53,7 +53,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__nom__7_1_1//:nom",
+        "@raze__nom__7_1_3//:nom",
     ],
 )
 

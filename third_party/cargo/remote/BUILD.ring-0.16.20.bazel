@@ -63,7 +63,7 @@ cargo_build_script(
     version = "0.16.20",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__cc__1_0_74//:cc",
+        "@raze__cc__1_0_79//:cc",
     ] + selects.with_or({
         # cfg(all(target_arch = "wasm32", target_vendor = "unknown", target_os = "unknown", target_env = ""))
         (
@@ -171,8 +171,8 @@ rust_library(
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
-            "@raze__libc__0_2_137//:libc",
-            "@raze__once_cell__1_16_0//:once_cell",
+            "@raze__libc__0_2_139//:libc",
+            "@raze__once_cell__1_17_0//:once_cell",
         ],
         "//conditions:default": [],
     }) + selects.with_or({

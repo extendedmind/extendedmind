@@ -91,7 +91,7 @@ rust_library(
         "@raze__combine__4_6_6//:combine",
         "@raze__jni_sys__0_3_0//:jni_sys",
         "@raze__log__0_4_17//:log",
-        "@raze__thiserror__1_0_37//:thiserror",
+        "@raze__thiserror__1_0_38//:thiserror",
     ],
 )
 

@@ -40,7 +40,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__proc_macro_hack__0_5_19//:proc_macro_hack",
+        "@raze__proc_macro_hack__0_5_20_deprecated//:proc_macro_hack",
         "@raze__time_macros_impl__0_1_2//:time_macros_impl",
     ],
     rustc_flags = [

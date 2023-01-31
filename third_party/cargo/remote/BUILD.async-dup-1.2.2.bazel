@@ -51,7 +51,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__futures_io__0_3_25//:futures_io",
+        "@raze__futures_io__0_3_26//:futures_io",
         "@raze__simple_mutex__1_1_5//:simple_mutex",
     ],
 )

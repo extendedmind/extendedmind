@@ -58,8 +58,8 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__ctrlc__3_2_3//:ctrlc",
-        "@raze__futures_core__0_3_25//:futures_core",
+        "@raze__ctrlc__3_2_4//:ctrlc",
+        "@raze__futures_core__0_3_26//:futures_core",
     ],
 )
 

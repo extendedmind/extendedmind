@@ -62,8 +62,8 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__itoa__1_0_4//:itoa",
-        "@raze__serde__1_0_147//:serde",
+        "@raze__itoa__1_0_5//:itoa",
+        "@raze__serde__1_0_152//:serde",
         "@raze__time_core__0_1_0//:time_core",
     ],
 )

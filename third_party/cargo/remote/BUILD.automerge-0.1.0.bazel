@@ -65,16 +65,16 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__flate2__1_0_24//:flate2",
+        "@raze__flate2__1_0_25//:flate2",
         "@raze__fxhash__0_2_1//:fxhash",
         "@raze__hex__0_4_3//:hex",
         "@raze__itertools__0_10_5//:itertools",
         "@raze__js_sys__0_3_55//:js_sys",
         "@raze__leb128__0_2_5//:leb128",
-        "@raze__serde__1_0_147//:serde",
+        "@raze__serde__1_0_152//:serde",
         "@raze__sha2__0_10_6//:sha2",
         "@raze__smol_str__0_1_23//:smol_str",
-        "@raze__thiserror__1_0_37//:thiserror",
+        "@raze__thiserror__1_0_38//:thiserror",
         "@raze__tinyvec__1_6_0//:tinyvec",
         "@raze__tracing__0_1_37//:tracing",
         "@raze__uuid__0_8_2//:uuid",

@@ -73,8 +73,8 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__async_std__1_12_0//:async_std",
-        "@raze__futures_io__0_3_25//:futures_io",
-        "@raze__futures_util__0_3_25//:futures_util",
+        "@raze__futures_io__0_3_26//:futures_io",
+        "@raze__futures_util__0_3_26//:futures_util",
         "@raze__log__0_4_17//:log",
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",
         "@raze__tungstenite__0_13_0//:tungstenite",

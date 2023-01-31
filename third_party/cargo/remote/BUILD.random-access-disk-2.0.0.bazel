@@ -37,6 +37,7 @@ rust_library(
     name = "random_access_disk",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "async-std",
         "default",
         "libc",
         "sparse",
@@ -45,7 +46,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_58//:async_trait",
+        "@raze__async_trait__0_1_64//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -59,9 +60,9 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__anyhow__1_0_66//:anyhow",
+        "@raze__anyhow__1_0_68//:anyhow",
         "@raze__async_std__1_12_0//:async_std",
-        "@raze__libc__0_2_137//:libc",
+        "@raze__libc__0_2_139//:libc",
         "@raze__mkdirp__1_0_0//:mkdirp",
         "@raze__random_access_storage__4_0_0//:random_access_storage",
     ],

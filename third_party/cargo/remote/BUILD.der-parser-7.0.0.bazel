@@ -59,7 +59,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__asn1_rs__0_3_1//:asn1_rs",
-        "@raze__nom__7_1_1//:nom",
+        "@raze__nom__7_1_3//:nom",
         "@raze__num_bigint__0_4_3//:num_bigint",
         "@raze__num_traits__0_2_15//:num_traits",
         "@raze__rusticata_macros__4_1_0//:rusticata_macros",

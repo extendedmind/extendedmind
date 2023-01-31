@@ -63,8 +63,8 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":unic_langid_impl",
-        "@raze__serde__1_0_147//:serde",
-        "@raze__tinystr__0_7_0//:tinystr",
+        "@raze__serde__1_0_152//:serde",
+        "@raze__tinystr__0_7_1//:tinystr",
     ],
 )
 
@@ -93,8 +93,8 @@ rust_binary(
     # buildifier: leave-alone
     deps = [
         ":unic_langid_impl",
-        "@raze__serde__1_0_147//:serde",
-        "@raze__tinystr__0_7_0//:tinystr",
+        "@raze__serde__1_0_152//:serde",
+        "@raze__tinystr__0_7_1//:tinystr",
     ],
 )
 
@@ -120,8 +120,8 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__serde__1_0_147//:serde",
-        "@raze__tinystr__0_7_0//:tinystr",
+        "@raze__serde__1_0_152//:serde",
+        "@raze__tinystr__0_7_1//:tinystr",
     ],
 )
 

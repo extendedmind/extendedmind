@@ -58,13 +58,13 @@ rust_library(
     deps = [
         "@raze__asn1_rs__0_3_1//:asn1_rs",
         "@raze__base64__0_13_1//:base64",
-        "@raze__data_encoding__2_3_2//:data_encoding",
+        "@raze__data_encoding__2_3_3//:data_encoding",
         "@raze__der_parser__7_0_0//:der_parser",
         "@raze__lazy_static__1_4_0//:lazy_static",
-        "@raze__nom__7_1_1//:nom",
+        "@raze__nom__7_1_3//:nom",
         "@raze__oid_registry__0_4_0//:oid_registry",
         "@raze__rusticata_macros__4_1_0//:rusticata_macros",
-        "@raze__thiserror__1_0_37//:thiserror",
+        "@raze__thiserror__1_0_38//:thiserror",
         "@raze__time__0_3_17//:time",
     ],
 )

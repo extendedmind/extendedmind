@@ -87,7 +87,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":async_io_stream_build_script",
-        "@raze__futures__0_3_25//:futures",
+        "@raze__futures__0_3_26//:futures",
         "@raze__pharos__0_5_3//:pharos",
     ],
 )

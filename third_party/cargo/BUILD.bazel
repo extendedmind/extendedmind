@@ -23,7 +23,7 @@ alias(
 
 alias(
     name = "anyhow",
-    actual = "@raze__anyhow__1_0_66//:anyhow",
+    actual = "@raze__anyhow__1_0_68//:anyhow",
     tags = [
         "cargo-raze",
         "manual",
@@ -59,7 +59,7 @@ alias(
 
 alias(
     name = "async_trait",
-    actual = "@raze__async_trait__0_1_58//:async_trait",
+    actual = "@raze__async_trait__0_1_64//:async_trait",
     tags = [
         "cargo-raze",
         "manual",
@@ -95,7 +95,7 @@ alias(
 
 alias(
     name = "capnp",
-    actual = "@raze__capnp__0_14_10//:capnp",
+    actual = "@raze__capnp__0_14_11//:capnp",
     tags = [
         "cargo-raze",
         "manual",
@@ -104,7 +104,7 @@ alias(
 
 alias(
     name = "chrono",
-    actual = "@raze__chrono__0_4_22//:chrono",
+    actual = "@raze__chrono__0_4_23//:chrono",
     tags = [
         "cargo-raze",
         "manual",
@@ -167,7 +167,7 @@ alias(
 
 alias(
     name = "flate2",
-    actual = "@raze__flate2__1_0_24//:flate2",
+    actual = "@raze__flate2__1_0_25//:flate2",
     tags = [
         "cargo-raze",
         "manual",
@@ -176,7 +176,7 @@ alias(
 
 alias(
     name = "futures",
-    actual = "@raze__futures__0_3_25//:futures",
+    actual = "@raze__futures__0_3_26//:futures",
     tags = [
         "cargo-raze",
         "manual",
@@ -194,7 +194,7 @@ alias(
 
 alias(
     name = "html_escape",
-    actual = "@raze__html_escape__0_2_12//:html_escape",
+    actual = "@raze__html_escape__0_2_13//:html_escape",
     tags = [
         "cargo-raze",
         "manual",
@@ -230,7 +230,7 @@ alias(
 
 alias(
     name = "lettre",
-    actual = "@raze__lettre__0_10_1//:lettre",
+    actual = "@raze__lettre__0_10_2//:lettre",
     tags = [
         "cargo-raze",
         "manual",
@@ -293,7 +293,7 @@ alias(
 
 alias(
     name = "serde",
-    actual = "@raze__serde__1_0_147//:serde",
+    actual = "@raze__serde__1_0_152//:serde",
     tags = [
         "cargo-raze",
         "manual",
@@ -392,7 +392,7 @@ alias(
 
 alias(
     name = "ws_stream_wasm",
-    actual = "@raze__ws_stream_wasm__0_7_3//:ws_stream_wasm",
+    actual = "@raze__ws_stream_wasm__0_7_4//:ws_stream_wasm",
     tags = [
         "cargo-raze",
         "manual",

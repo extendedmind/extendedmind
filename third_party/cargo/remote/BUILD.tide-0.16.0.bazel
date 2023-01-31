@@ -84,7 +84,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_58//:async_trait",
+        "@raze__async_trait__0_1_64//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -103,15 +103,15 @@ rust_library(
         "@raze__async_sse__4_1_0//:async_sse",
         "@raze__async_std__1_12_0//:async_std",
         "@raze__femme__2_2_1//:femme",
-        "@raze__futures_util__0_3_25//:futures_util",
+        "@raze__futures_util__0_3_26//:futures_util",
         "@raze__http_client__6_5_3//:http_client",
         "@raze__http_types__2_12_0//:http_types",
         "@raze__kv_log_macro__1_0_7//:kv_log_macro",
         "@raze__log__0_4_17//:log",
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",
         "@raze__route_recognizer__0_2_0//:route_recognizer",
-        "@raze__serde__1_0_147//:serde",
-        "@raze__serde_json__1_0_87//:serde_json",
+        "@raze__serde__1_0_152//:serde",
+        "@raze__serde_json__1_0_91//:serde_json",
     ],
 )
 

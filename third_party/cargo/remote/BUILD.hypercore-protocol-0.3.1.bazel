@@ -43,6 +43,7 @@ cargo_build_script(
     build_script_env = {
     },
     crate_features = [
+        "async-std",
         "crypto_secretstream",
         "default",
         "v10",
@@ -84,6 +85,7 @@ rust_library(
     name = "hypercore_protocol",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "async-std",
         "crypto_secretstream",
         "default",
         "v10",
@@ -93,7 +95,7 @@ rust_library(
     data = [],
     edition = "2018",
     proc_macro_deps = [
-        "@raze__async_trait__0_1_58//:async_trait",
+        "@raze__async_trait__0_1_64//:async_trait",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -108,11 +110,11 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":hypercore_protocol_build_script",
-        "@raze__async_channel__1_7_1//:async_channel",
+        "@raze__async_channel__1_8_0//:async_channel",
         "@raze__blake2_rfc__0_2_18//:blake2_rfc",
-        "@raze__bytes__1_2_1//:bytes",
-        "@raze__crypto_secretstream__0_1_0//:crypto_secretstream",
-        "@raze__curve25519_dalek__4_0_0_pre_2//:curve25519_dalek",
+        "@raze__bytes__1_3_0//:bytes",
+        "@raze__crypto_secretstream__0_1_1//:crypto_secretstream",
+        "@raze__curve25519_dalek__4_0_0_rc_0//:curve25519_dalek",
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__futures_timer__3_0_2//:futures_timer",
         "@raze__getrandom__0_1_16//:getrandom",

@@ -54,7 +54,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__gloo_timers__0_2_4//:gloo_timers",
+        "@raze__gloo_timers__0_2_6//:gloo_timers",
         "@raze__send_wrapper__0_4_0//:send_wrapper",
     ],
 )

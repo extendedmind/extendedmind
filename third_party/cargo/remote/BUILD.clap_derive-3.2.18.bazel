@@ -54,9 +54,9 @@ rust_proc_macro(
     # buildifier: leave-alone
     deps = [
         "@raze__heck__0_4_0//:heck",
-        "@raze__proc_macro2__1_0_47//:proc_macro2",
+        "@raze__proc_macro2__1_0_50//:proc_macro2",
         "@raze__proc_macro_error__1_0_4//:proc_macro_error",
-        "@raze__quote__1_0_21//:quote",
-        "@raze__syn__1_0_103//:syn",
+        "@raze__quote__1_0_23//:quote",
+        "@raze__syn__1_0_107//:syn",
     ],
 )

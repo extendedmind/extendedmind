@@ -116,15 +116,15 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__async_channel__1_7_1//:async_channel",
+        "@raze__async_channel__1_8_0//:async_channel",
         "@raze__async_lock__2_6_0//:async_lock",
-        "@raze__crossbeam_utils__0_8_12//:crossbeam_utils",
-        "@raze__futures_core__0_3_25//:futures_core",
-        "@raze__futures_io__0_3_25//:futures_io",
+        "@raze__crossbeam_utils__0_8_14//:crossbeam_utils",
+        "@raze__futures_core__0_3_26//:futures_core",
+        "@raze__futures_io__0_3_26//:futures_io",
         "@raze__kv_log_macro__1_0_7//:kv_log_macro",
         "@raze__log__0_4_17//:log",
         "@raze__memchr__2_5_0//:memchr",
-        "@raze__once_cell__1_16_0//:once_cell",
+        "@raze__once_cell__1_17_0//:once_cell",
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",
         "@raze__pin_utils__0_1_0//:pin_utils",
         "@raze__slab__0_4_7//:slab",
@@ -141,8 +141,8 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
             "@raze__async_global_executor__2_3_1//:async_global_executor",
-            "@raze__async_io__1_10_0//:async_io",
-            "@raze__async_process__1_5_0//:async_process",
+            "@raze__async_io__1_12_0//:async_io",
+            "@raze__async_process__1_6_0//:async_process",
             "@raze__futures_lite__1_12_0//:futures_lite",
         ],
         "//conditions:default": [],
@@ -151,8 +151,8 @@ rust_library(
         (
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
         ): [
-            "@raze__futures_channel__0_3_25//:futures_channel",
-            "@raze__gloo_timers__0_2_4//:gloo_timers",
+            "@raze__futures_channel__0_3_26//:futures_channel",
+            "@raze__gloo_timers__0_2_6//:gloo_timers",
             "@raze__wasm_bindgen_futures__0_4_28//:wasm_bindgen_futures",
         ],
         "//conditions:default": [],

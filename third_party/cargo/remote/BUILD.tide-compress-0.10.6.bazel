@@ -64,7 +64,7 @@ rust_library(
         "@raze__futures_lite__1_12_0//:futures_lite",
         "@raze__http_types__2_12_0//:http_types",
         "@raze__phf__0_11_1//:phf",
-        "@raze__regex__1_7_0//:regex",
+        "@raze__regex__1_7_1//:regex",
         "@raze__tide__0_16_0//:tide",
     ],
 )

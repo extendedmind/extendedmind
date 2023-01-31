@@ -55,7 +55,7 @@ rust_library(
     deps = [
         "@raze__generic_array__0_14_6//:generic_array",
         "@raze__rand_core__0_6_4//:rand_core",
-        "@raze__typenum__1_15_0//:typenum",
+        "@raze__typenum__1_16_0//:typenum",
     ],
 )
 

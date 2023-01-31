@@ -83,7 +83,7 @@ rust_library(
     deps = [
         ":async_fs_build_script",
         "@raze__async_lock__2_6_0//:async_lock",
-        "@raze__blocking__1_2_0//:blocking",
+        "@raze__blocking__1_3_0//:blocking",
         "@raze__futures_lite__1_12_0//:futures_lite",
     ],
 )

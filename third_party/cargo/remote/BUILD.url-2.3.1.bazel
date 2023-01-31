@@ -58,7 +58,7 @@ rust_library(
         "@raze__form_urlencoded__1_1_0//:form_urlencoded",
         "@raze__idna__0_3_0//:idna",
         "@raze__percent_encoding__2_2_0//:percent_encoding",
-        "@raze__serde__1_0_147//:serde",
+        "@raze__serde__1_0_152//:serde",
     ],
 )
 

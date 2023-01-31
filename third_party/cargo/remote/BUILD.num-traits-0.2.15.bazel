@@ -90,7 +90,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":num_traits_build_script",
-        "@raze__libm__0_2_5//:libm",
+        "@raze__libm__0_2_6//:libm",
     ],
 )
 

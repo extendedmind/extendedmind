@@ -82,8 +82,8 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":async_net_build_script",
-        "@raze__async_io__1_10_0//:async_io",
-        "@raze__blocking__1_2_0//:blocking",
+        "@raze__async_io__1_12_0//:async_io",
+        "@raze__blocking__1_3_0//:blocking",
         "@raze__futures_lite__1_12_0//:futures_lite",
     ],
 )
