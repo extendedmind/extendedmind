@@ -1,52 +1,44 @@
 use anyhow::Result;
-use async_ctrlc::CtrlC;
-use async_std::channel::{bounded, Receiver};
-use async_std::sync::{Arc, Mutex};
-use async_std::task;
-use clap::Parser;
-use extendedmind_engine::{tcp, Bytes, Engine, RandomAccessDisk};
-use std::path::PathBuf;
-use std::process;
-use std::sync::atomic::AtomicBool;
-use std::time::Duration;
+use clap::{Parser, Subcommand};
+use peermerge_tcp::connect_tcp_server_disk;
+use std::{path::PathBuf, process};
 
+use crate::{
+    admin::execute_admin_command,
+    common::{BackupOpts, GlobalOpts},
+    init::{initialize, InitializeResult},
+};
+
+mod admin;
 mod backup;
 mod common;
-
-use backup::start_backup_poll;
-use common::{ChannelSenderReceiver, SystemCommand};
+mod init;
 
 #[derive(Parser)]
 #[clap(version = "0.0.1", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
-struct Opts {
-    #[clap(short, long)]
-    data_root_dir: PathBuf,
-    #[clap(short, long)]
-    tcp_port: u16,
-    #[clap(short, long)]
-    verbose: Option<bool>,
-    #[clap(short, long)]
-    log_to_stderr: bool,
-    #[clap(long)]
-    backup_dir: Option<PathBuf>,
-    #[clap(long)]
-    backup_interval_min: Option<u32>,
-    #[clap(long)]
-    backup_ssh_recipients_file: Option<PathBuf>,
-    #[clap(long)]
-    backup_email_from: Option<String>,
-    #[clap(long)]
-    backup_email_to: Option<String>,
-    #[clap(long)]
-    backup_email_smtp_host: Option<String>,
-    #[clap(long)]
-    backup_email_smtp_username: Option<String>,
-    #[clap(long)]
-    backup_email_smtp_password: Option<String>,
-    #[clap(long)]
-    backup_email_smtp_tls_port: Option<u16>,
-    #[clap(long)]
-    backup_email_smtp_starttls_port: Option<u16>,
+pub(crate) struct Opts {
+    #[clap(subcommand)]
+    pub(crate) command: Command,
+    #[clap(flatten)]
+    pub(crate) global_opts: GlobalOpts,
+}
+
+#[derive(Debug, Subcommand)]
+pub(crate) enum Command {
+    /// Start listening to given TCP/IP port.
+    Listen {
+        #[clap(short, long)]
+        data_root_dir: PathBuf,
+        #[clap(short, long)]
+        tcp_port: u16,
+        #[clap(flatten)]
+        backup_opts: BackupOpts,
+    },
+    /// Register a proxy for a peermerge's document URL
+    Register {
+        #[clap(short, long)]
+        peermerge_doc_url: String,
+    },
 }
 
 fn setup_logging(verbose: bool) {
@@ -73,67 +65,34 @@ fn setup_logging(verbose: bool) {
 
 fn main() -> Result<()> {
     let opts: Opts = Opts::parse();
-    setup_logging(opts.verbose.unwrap_or(false));
+    setup_logging(opts.global_opts.verbose.unwrap_or(false));
+    let admin_socket_file = opts.global_opts.admin_socket_file;
 
-    // Initialize the engine blocking
-    let data_root_dir = opts.data_root_dir.clone();
-    let engine =
-        futures::executor::block_on(
-            async move { Engine::new_disk(&data_root_dir, false, None).await },
-        );
+    match opts.command {
+        Command::Listen {
+            data_root_dir,
+            tcp_port,
+            backup_opts,
+        } => {
+            // Initialize
+            let initialize_result = initialize(admin_socket_file, backup_opts, vec![data_root_dir]);
 
-    // Create channels
-    let (system_command_sender, system_command_receiver): ChannelSenderReceiver = bounded(1000);
-
-    // Listen to ctrlc in a separate task
-    let ctrlc = CtrlC::new().expect("cannot create Ctrl+C handler?");
-    let abort: Arc<Mutex<AtomicBool>> = Arc::new(Mutex::new(AtomicBool::new(false)));
-    let abort_writer = abort.clone();
-
-    task::spawn(async move {
-        ctrlc.await;
-        log::info!("(1/4) Received termination signal, sending disconnect");
-        system_command_sender
-            .send(Ok(Bytes::from_static(&[SystemCommand::Disconnect as u8])))
-            .await
-            .unwrap();
-        log::info!("(2/4) Writing to abort lock");
-        *abort_writer.as_ref().lock().await = AtomicBool::new(true);
-        // Wait 200ms before killing, to allow time for file saving and closing sockets
-        log::info!("(3/4) Sleeping for 200ms");
-        task::sleep(Duration::from_millis(200)).await;
-        log::info!("(4/4) Exiting process with 0");
-        process::exit(0);
-    });
-
-    // Backup polling
-    if let Some(backup_dir) = opts.backup_dir.as_ref() {
-        start_backup_poll(
-            vec![opts.data_root_dir.clone()],
-            backup_dir.to_path_buf(),
-            opts.backup_interval_min.clone(),
-            opts.backup_ssh_recipients_file.clone(),
-            opts.backup_email_from.clone(),
-            opts.backup_email_to.clone(),
-            opts.backup_email_smtp_host.clone(),
-            opts.backup_email_smtp_username.clone(),
-            opts.backup_email_smtp_password.clone(),
-            opts.backup_email_smtp_tls_port.clone(),
-            opts.backup_email_smtp_starttls_port.clone(),
-            abort,
-        );
+            // Block on server
+            futures::executor::block_on(start_server(initialize_result, tcp_port))?;
+        }
+        Command::Register { peermerge_doc_url } => {
+            let result = futures::executor::block_on(execute_admin_command(
+                admin_socket_file,
+                common::AdminCommand::Register { peermerge_doc_url },
+            ))?;
+            process::exit(result.into());
+        }
     }
-
-    // Block server
-    futures::executor::block_on(start_server(engine, system_command_receiver, opts.tcp_port))?;
     Ok(())
 }
 
-async fn start_server(
-    engine: Engine<RandomAccessDisk>,
-    _system_command_receiver: Receiver<Result<Bytes, std::io::Error>>,
-    tcp_port: u16,
-) -> Result<()> {
-    tcp::listen(format!("0.0.0.0:{}", tcp_port), engine).await?;
+async fn start_server(initialize_result: InitializeResult, tcp_port: u16) -> Result<()> {
+    async_std::task::sleep(std::time::Duration::from_secs(100)).await;
+    // tcp::listen(format!("0.0.0.0:{}", tcp_port), engine).await?;
     Ok(())
 }

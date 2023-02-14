@@ -247,6 +247,15 @@ alias(
 )
 
 alias(
+    name = "peermerge_tcp",
+    actual = "@raze__peermerge_tcp__0_0_1//:peermerge_tcp",
+    tags = [
+        "cargo-raze",
+        "manual",
+    ],
+)
+
+alias(
     name = "reusable_box_future",
     actual = "@raze__reusable_box_future__0_2_0//:reusable_box_future",
     tags = [

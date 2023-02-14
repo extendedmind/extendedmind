@@ -1108,6 +1108,7 @@ dependencies = [
  "log",
  "moka",
  "peermerge",
+ "peermerge-tcp",
  "reusable-box-future",
  "serde",
  "tar",
@@ -2828,6 +2829,20 @@ dependencies = [
  "random-access-disk",
  "random-access-memory",
  "random-access-storage",
+ "tracing",
+]
+
+[[package]]
+name = "peermerge-tcp"
+version = "0.0.1"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#6d3e20e929b3d2573a6276818daf06f6579e1a15"
+dependencies = [
+ "anyhow",
+ "async-std",
+ "futures",
+ "peermerge",
+ "random-access-disk",
+ "random-access-memory",
  "tracing",
 ]
 

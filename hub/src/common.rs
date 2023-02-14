@@ -1,4 +1,6 @@
 use async_std::channel::{Receiver, Sender};
+use clap::clap_derive::ArgEnum;
+use clap::{self, Args};
 use extendedmind_engine::Bytes;
 use std::io;
 use std::path::PathBuf;
@@ -19,6 +21,46 @@ pub type ChannelSenderReceiver = (
     Sender<Result<Bytes, io::Error>>,
     Receiver<Result<Bytes, io::Error>>,
 );
+
+#[derive(Debug, Clone)]
+pub enum AdminCommand {
+    Register { peermerge_doc_url: String },
+    BustCache,
+}
+
+#[derive(Debug, Args)]
+pub struct GlobalOpts {
+    #[clap(short, long)]
+    pub admin_socket_file: PathBuf,
+    #[clap(short, long)]
+    pub verbose: Option<bool>,
+    #[clap(short, long)]
+    pub log_to_stderr: bool,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct BackupOpts {
+    #[clap(long)]
+    pub backup_dir: Option<PathBuf>,
+    #[clap(long)]
+    pub backup_interval_min: Option<u32>,
+    #[clap(long)]
+    pub backup_ssh_recipients_file: Option<PathBuf>,
+    #[clap(long)]
+    pub backup_email_from: Option<String>,
+    #[clap(long)]
+    pub backup_email_to: Option<String>,
+    #[clap(long)]
+    pub backup_email_smtp_host: Option<String>,
+    #[clap(long)]
+    pub backup_email_smtp_username: Option<String>,
+    #[clap(long)]
+    pub backup_email_smtp_password: Option<String>,
+    #[clap(long)]
+    pub backup_email_smtp_tls_port: Option<u16>,
+    #[clap(long)]
+    pub backup_email_smtp_starttls_port: Option<u16>,
+}
 
 pub fn get_stem_from_path(path: &PathBuf) -> String {
     path.file_stem()

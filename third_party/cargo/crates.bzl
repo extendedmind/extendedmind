@@ -2718,6 +2718,15 @@ def raze_fetch_remote_crates():
     )
 
     maybe(
+        new_git_repository,
+        name = "raze__peermerge_tcp__0_0_1",
+        remote = "https://github.com/extendedmind/peermerge.git",
+        commit = "6d3e20e929b3d2573a6276818daf06f6579e1a15",
+        build_file = Label("//third_party/cargo/remote:BUILD.peermerge-tcp-0.0.1.bazel"),
+        init_submodules = True,
+    )
+
+    maybe(
         http_archive,
         name = "raze__pem__1_1_1",
         url = "https://crates.io/api/v1/crates/pem/1.1.1/download",

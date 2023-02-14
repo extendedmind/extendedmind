@@ -1,4 +1,6 @@
-use crate::common::{get_stem_from_path, TIMESTAMP_SECONDS_FORMAT, TIMESTAMP_SECONDS_FORMAT_LEN};
+use crate::common::{
+    get_stem_from_path, BackupOpts, TIMESTAMP_SECONDS_FORMAT, TIMESTAMP_SECONDS_FORMAT_LEN,
+};
 use age::cli_common::file_io;
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
@@ -25,15 +27,7 @@ pub const DEFAULT_BACKUP_INTERVAL_MIN: u32 = 1440;
 pub fn start_backup_poll(
     source_dirs: Vec<PathBuf>,
     backup_dir: PathBuf,
-    backup_interval_min: Option<u32>,
-    backup_ssh_recipients_file: Option<PathBuf>,
-    backup_email_from: Option<String>,
-    backup_email_to: Option<String>,
-    backup_email_smtp_host: Option<String>,
-    backup_email_smtp_username: Option<String>,
-    backup_email_smtp_password: Option<String>,
-    backup_email_smtp_tls_port: Option<u16>,
-    backup_email_smtp_starttls_port: Option<u16>,
+    backup_opts: BackupOpts,
     abort: Arc<Mutex<AtomicBool>>,
 ) {
     if source_dirs.is_empty() {
@@ -41,24 +35,15 @@ pub fn start_backup_poll(
     }
     task::spawn(async move {
         let mut interval = async_std::stream::interval(Duration::from_secs(1));
-        let mut next_backup_timestamp =
-            get_next_backup_timestamp_on_launch(backup_dir.clone(), backup_interval_min);
+        let mut next_backup_timestamp = get_next_backup_timestamp_on_launch(
+            backup_dir.clone(),
+            backup_opts.backup_interval_min,
+        );
         while interval.next().await.is_some() && !*abort.as_ref().lock().await.get_mut() {
             if is_now_after(next_backup_timestamp) {
                 log::info!("Creating backup");
-                create_backup(
-                    source_dirs.clone(),
-                    backup_dir.clone(),
-                    backup_ssh_recipients_file.clone(),
-                    backup_email_from.clone(),
-                    backup_email_to.clone(),
-                    backup_email_smtp_host.clone(),
-                    backup_email_smtp_username.clone(),
-                    backup_email_smtp_password.clone(),
-                    backup_email_smtp_tls_port.clone(),
-                    backup_email_smtp_starttls_port.clone(),
-                );
-                next_backup_timestamp = get_next_backup_timestamp(backup_interval_min);
+                create_backup(source_dirs.clone(), backup_dir.clone(), backup_opts.clone());
+                next_backup_timestamp = get_next_backup_timestamp(backup_opts.backup_interval_min);
             }
         }
     });
@@ -116,18 +101,7 @@ fn is_now_after(timestamp: i64) -> bool {
     now.timestamp_millis() > timestamp
 }
 
-fn create_backup(
-    source_dirs: Vec<PathBuf>,
-    backup_dir: PathBuf,
-    backup_ssh_recipients_file: Option<PathBuf>,
-    backup_email_from: Option<String>,
-    backup_email_to: Option<String>,
-    backup_email_smtp_host: Option<String>,
-    backup_email_smtp_username: Option<String>,
-    backup_email_smtp_password: Option<String>,
-    backup_email_smtp_tls_port: Option<u16>,
-    backup_email_smtp_starttls_port: Option<u16>,
-) {
+fn create_backup(source_dirs: Vec<PathBuf>, backup_dir: PathBuf, backup_opts: BackupOpts) {
     thread::spawn(move || {
         set_current_thread_priority(ThreadPriority::Min).unwrap();
         let timestamp_seconds = chrono::Utc::now().format(TIMESTAMP_SECONDS_FORMAT);
@@ -148,7 +122,7 @@ fn create_backup(
             a.finish().unwrap();
         }
 
-        if let Some(backup_ssh_recipients_file) = backup_ssh_recipients_file {
+        if let Some(backup_ssh_recipients_file) = backup_opts.backup_ssh_recipients_file.as_ref() {
             // Encrypt backup with a file containing one or more SSH keys
             let backup_ssh_recipients_file_str = backup_ssh_recipients_file
                 .clone()
@@ -159,7 +133,7 @@ fn create_backup(
                 "Attempt to encrypt backup to SSH recipients listed in {}",
                 backup_ssh_recipients_file_str.clone()
             );
-            let mut recipients: Vec<Box<dyn age::Recipient>> = vec![];
+            let mut recipients: Vec<Box<dyn age::Recipient + Send>> = vec![];
             let buf = BufReader::new(File::open(&backup_ssh_recipients_file).unwrap());
             for (line_number, line) in buf.lines().enumerate() {
                 let line = line.unwrap();
@@ -184,7 +158,7 @@ fn create_backup(
                 let encrypted_backup_file_str = format!("{}.age", &backup_file_str);
                 {
                     log::debug!("Encrypting backup file {}", backup_file_str.clone());
-                    let encryptor = age::Encryptor::with_recipients(recipients);
+                    let encryptor = age::Encryptor::with_recipients(recipients).unwrap();
                     let mut input = File::open(&backup_file_str).unwrap();
                     let output = file_io::OutputWriter::new(
                         Some(encrypted_backup_file_str.clone()),
@@ -203,13 +177,7 @@ fn create_backup(
                     encrypted_backup_file_str,
                     encrypted_backup_file_name_str,
                     timestamp_seconds.to_string(),
-                    backup_email_from,
-                    backup_email_to,
-                    backup_email_smtp_host,
-                    backup_email_smtp_username,
-                    backup_email_smtp_password,
-                    backup_email_smtp_tls_port,
-                    backup_email_smtp_starttls_port,
+                    backup_opts,
                 ) {
                     Some(()) => {
                         log::debug!("Backup email sent successfully");
@@ -232,19 +200,13 @@ fn send_backup_email(
     encrypted_backup_file_str: String,
     encrypted_backup_file_name_str: String,
     encrypted_backup_timestamp_seconds: String,
-    backup_email_from: Option<String>,
-    backup_email_to: Option<String>,
-    backup_email_smtp_host: Option<String>,
-    backup_email_smtp_username: Option<String>,
-    backup_email_smtp_password: Option<String>,
-    backup_email_smtp_tls_port: Option<u16>,
-    backup_email_smtp_starttls_port: Option<u16>,
+    backup_opts: BackupOpts,
 ) -> Option<()> {
-    let from = backup_email_from?;
-    let to = backup_email_to?;
-    let smtp_host = backup_email_smtp_host?;
-    let smtp_username = backup_email_smtp_username?;
-    let smtp_password = backup_email_smtp_password?;
+    let from = backup_opts.backup_email_from?;
+    let to = backup_opts.backup_email_to?;
+    let smtp_host = backup_opts.backup_email_smtp_host?;
+    let smtp_username = backup_opts.backup_email_smtp_username?;
+    let smtp_password = backup_opts.backup_email_smtp_password?;
     let body = Body::new(std::fs::read(&encrypted_backup_file_str).unwrap());
 
     let message = Message::builder()
@@ -260,7 +222,7 @@ fn send_backup_email(
         )
         .unwrap();
 
-    let mailer = if let Some(starttls_port) = backup_email_smtp_starttls_port {
+    let mailer = if let Some(starttls_port) = backup_opts.backup_email_smtp_starttls_port {
         SmtpTransport::starttls_relay(&smtp_host)
             .unwrap()
             .credentials(Credentials::new(smtp_username, smtp_password))
@@ -270,7 +232,7 @@ fn send_backup_email(
         let builder = SmtpTransport::relay(&smtp_host)
             .unwrap()
             .credentials(Credentials::new(smtp_username, smtp_password));
-        if let Some(tls_port) = backup_email_smtp_tls_port {
+        if let Some(tls_port) = backup_opts.backup_email_smtp_tls_port {
             builder.port(tls_port)
         } else {
             builder
