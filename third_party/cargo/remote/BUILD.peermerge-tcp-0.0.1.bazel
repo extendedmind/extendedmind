@@ -53,7 +53,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__anyhow__1_0_68//:anyhow",
+        "@raze__anyhow__1_0_69//:anyhow",
         "@raze__async_std__1_12_0//:async_std",
         "@raze__futures__0_3_26//:futures",
         "@raze__peermerge__0_0_1//:peermerge",

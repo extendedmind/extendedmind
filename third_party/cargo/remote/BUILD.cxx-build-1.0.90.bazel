@@ -26,20 +26,15 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-rust_proc_macro(
-    name = "i18n_embed_impl",
+rust_library(
+    name = "cxx_build",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "default",
-        "find-crate",
-        "fluent-system",
-        "i18n-config",
-        "quote",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -49,17 +44,20 @@ rust_proc_macro(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=i18n-embed-impl",
+        "crate-name=cxx-build",
         "manual",
     ],
-    version = "0.8.0",
+    version = "1.0.90",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__find_crate__0_6_3//:find_crate",
-        "@raze__i18n_config__0_4_3//:i18n_config",
+        "@raze__cc__1_0_79//:cc",
+        "@raze__codespan_reporting__0_11_1//:codespan_reporting",
+        "@raze__once_cell__1_17_0//:once_cell",
         "@raze__proc_macro2__1_0_51//:proc_macro2",
         "@raze__quote__1_0_23//:quote",
+        "@raze__scratch__1_0_3//:scratch",
         "@raze__syn__1_0_107//:syn",
     ],
 )
+

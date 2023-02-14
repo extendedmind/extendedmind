@@ -105,7 +105,7 @@ rust_library(
         "@raze__tagptr__0_2_0//:tagptr",
         "@raze__thiserror__1_0_38//:thiserror",
         "@raze__triomphe__0_1_8//:triomphe",
-        "@raze__uuid__1_2_2//:uuid",
+        "@raze__uuid__1_3_0//:uuid",
     ],
 )
 

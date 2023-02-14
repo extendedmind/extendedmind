@@ -58,7 +58,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__tinyvec_macros__0_1_0//:tinyvec_macros",
+        "@raze__tinyvec_macros__0_1_1//:tinyvec_macros",
     ],
 )
 

@@ -31,28 +31,16 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "http" with type "bench" omitted
+# Unsupported target "buf" with type "bench" omitted
 
-# Unsupported target "json" with type "bench" omitted
+# Unsupported target "bytes" with type "bench" omitted
 
-# Unsupported target "mp4" with type "bench" omitted
-
-# Unsupported target "async" with type "example" omitted
-
-# Unsupported target "date" with type "example" omitted
-
-# Unsupported target "ini" with type "example" omitted
-
-# Unsupported target "number" with type "example" omitted
-
-# Unsupported target "readme" with type "example" omitted
+# Unsupported target "bytes_mut" with type "bench" omitted
 
 rust_library(
-    name = "combine",
+    name = "bytes",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "alloc",
-        "bytes",
         "default",
         "std",
     ],
@@ -64,23 +52,35 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=combine",
+        "crate-name=bytes",
         "manual",
     ],
-    version = "4.6.6",
+    version = "1.4.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__bytes__1_4_0//:bytes",
-        "@raze__memchr__2_5_0//:memchr",
     ],
 )
 
 
-# Unsupported target "async" with type "test" omitted
+# Unsupported target "test_buf" with type "test" omitted
 
-# Unsupported target "buffered_stream" with type "test" omitted
+# Unsupported target "test_buf_mut" with type "test" omitted
 
-# Unsupported target "parser" with type "test" omitted
+# Unsupported target "test_bytes" with type "test" omitted
 
-# Unsupported target "parser_macro" with type "test" omitted
+# Unsupported target "test_bytes_odd_alloc" with type "test" omitted
+
+# Unsupported target "test_bytes_vec_alloc" with type "test" omitted
+
+# Unsupported target "test_chain" with type "test" omitted
+
+# Unsupported target "test_debug" with type "test" omitted
+
+# Unsupported target "test_iter" with type "test" omitted
+
+# Unsupported target "test_reader" with type "test" omitted
+
+# Unsupported target "test_serde" with type "test" omitted
+
+# Unsupported target "test_take" with type "test" omitted

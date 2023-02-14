@@ -26,17 +26,16 @@ package(default_visibility = [
 ])
 
 licenses([
-    "restricted",  # 0BSD from expression "0BSD"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
 rust_library(
-    name = "quoted_printable",
+    name = "heck",
     srcs = glob(["**/*.rs"]),
     crate_features = [
         "default",
-        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -46,10 +45,10 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=quoted_printable",
+        "crate-name=heck",
         "manual",
     ],
-    version = "0.4.6",
+    version = "0.4.1",
 
     # buildifier: leave-alone
     deps = [

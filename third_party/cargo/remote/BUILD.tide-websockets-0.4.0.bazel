@@ -60,7 +60,7 @@ rust_library(
         "@raze__futures_util__0_3_26//:futures_util",
         "@raze__pin_project__1_0_12//:pin_project",
         "@raze__serde__1_0_152//:serde",
-        "@raze__serde_json__1_0_91//:serde_json",
+        "@raze__serde_json__1_0_93//:serde_json",
         "@raze__sha_1__0_9_8//:sha_1",
         "@raze__tide__0_16_0//:tide",
     ],

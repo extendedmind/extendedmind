@@ -56,7 +56,7 @@ rust_library(
         "@raze__cargo_platform__0_1_2//:cargo_platform",
         "@raze__semver__1_0_16//:semver",
         "@raze__serde__1_0_152//:serde",
-        "@raze__serde_json__1_0_91//:serde_json",
+        "@raze__serde_json__1_0_93//:serde_json",
     ],
 )
 

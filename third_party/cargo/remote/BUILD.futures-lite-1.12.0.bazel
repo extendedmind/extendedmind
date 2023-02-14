@@ -59,7 +59,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__fastrand__1_8_0//:fastrand",
+        "@raze__fastrand__1_9_0//:fastrand",
         "@raze__futures_core__0_3_26//:futures_core",
         "@raze__futures_io__0_3_26//:futures_io",
         "@raze__memchr__2_5_0//:memchr",

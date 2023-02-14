@@ -26,14 +26,18 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
+# Unsupported target "bench" with type "bench" omitted
+
 rust_library(
-    name = "cxx_build",
+    name = "fastrand",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+    },
     crate_features = [
     ],
     crate_root = "src/lib.rs",
@@ -44,20 +48,25 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=cxx-build",
+        "crate-name=fastrand",
         "manual",
     ],
-    version = "1.0.88",
+    version = "1.9.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__cc__1_0_79//:cc",
-        "@raze__codespan_reporting__0_11_1//:codespan_reporting",
-        "@raze__once_cell__1_17_0//:once_cell",
-        "@raze__proc_macro2__1_0_50//:proc_macro2",
-        "@raze__quote__1_0_23//:quote",
-        "@raze__scratch__1_0_3//:scratch",
-        "@raze__syn__1_0_107//:syn",
-    ],
+    ] + selects.with_or({
+        # cfg(all(target_arch = "wasm32", not(target_os = "wasi")))
+        (
+            "@rules_rust//rust/platform:wasm32-unknown-unknown",
+        ): [
+            "@raze__instant__0_1_12//:instant",
+        ],
+        "//conditions:default": [],
+    }),
 )
 
+
+# Unsupported target "char" with type "test" omitted
+
+# Unsupported target "smoke" with type "test" omitted

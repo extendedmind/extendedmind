@@ -63,7 +63,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__filetime__0_2_19//:filetime",
+        "@raze__filetime__0_2_20//:filetime",
     ] + selects.with_or({
         # cfg(unix)
         (

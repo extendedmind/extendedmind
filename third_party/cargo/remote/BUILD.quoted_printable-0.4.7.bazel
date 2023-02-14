@@ -26,15 +26,17 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "restricted",  # 0BSD from expression "0BSD"
 ])
 
 # Generated Targets
 
-rust_proc_macro(
-    name = "cxxbridge_macro",
+rust_library(
+    name = "quoted_printable",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -44,15 +46,13 @@ rust_proc_macro(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=cxxbridge-macro",
+        "crate-name=quoted_printable",
         "manual",
     ],
-    version = "1.0.88",
+    version = "0.4.7",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__proc_macro2__1_0_50//:proc_macro2",
-        "@raze__quote__1_0_23//:quote",
-        "@raze__syn__1_0_107//:syn",
     ],
 )
+

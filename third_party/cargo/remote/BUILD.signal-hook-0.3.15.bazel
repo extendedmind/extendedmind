@@ -56,7 +56,7 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.3.14",
+    version = "0.3.15",
     visibility = ["//visibility:private"],
     deps = [
     ],
@@ -82,13 +82,13 @@ rust_library(
         "crate-name=signal-hook",
         "manual",
     ],
-    version = "0.3.14",
+    version = "0.3.15",
 
     # buildifier: leave-alone
     deps = [
         ":signal_hook_build_script",
         "@raze__libc__0_2_139//:libc",
-        "@raze__signal_hook_registry__1_4_0//:signal_hook_registry",
+        "@raze__signal_hook_registry__1_4_1//:signal_hook_registry",
     ],
 )
 

@@ -26,18 +26,41 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # MIT from expression "MIT OR Apache-2.0"
+    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
 ])
 
 # Generated Targets
 
+# Unsupported target "format_str" with type "bench" omitted
+
+# Unsupported target "parse_str" with type "bench" omitted
+
+# Unsupported target "v4" with type "bench" omitted
+
+# Unsupported target "random_uuid" with type "example" omitted
+
+# Unsupported target "sortable_uuid" with type "example" omitted
+
+# Unsupported target "uuid_macro" with type "example" omitted
+
+# Unsupported target "windows_guid" with type "example" omitted
+
 rust_library(
-    name = "smol_str",
+    name = "uuid",
     srcs = glob(["**/*.rs"]),
+    aliases = {
+        "@raze__getrandom__0_2_8//:getrandom": "getrandom",
+        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen": "wasm_bindgen",
+    },
     crate_features = [
         "default",
+        "getrandom",
+        "js",
+        "rng",
         "serde",
         "std",
+        "v4",
+        "wasm-bindgen",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -47,18 +70,18 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=smol_str",
+        "crate-name=uuid",
         "manual",
     ],
-    version = "0.1.23",
+    version = "1.3.0",
 
     # buildifier: leave-alone
     deps = [
+        "@raze__getrandom__0_2_8//:getrandom",
         "@raze__serde__1_0_152//:serde",
+        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
     ],
 )
 
 
-# Unsupported target "test" with type "test" omitted
-
-# Unsupported target "tidy" with type "test" omitted
+# Unsupported target "macros" with type "test" omitted

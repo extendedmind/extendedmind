@@ -58,7 +58,7 @@ rust_proc_macro(
         "@raze__i18n_config__0_4_3//:i18n_config",
         "@raze__i18n_embed__0_13_8//:i18n_embed",
         "@raze__lazy_static__1_4_0//:lazy_static",
-        "@raze__proc_macro2__1_0_50//:proc_macro2",
+        "@raze__proc_macro2__1_0_51//:proc_macro2",
         "@raze__proc_macro_error__1_0_4//:proc_macro_error",
         "@raze__quote__1_0_23//:quote",
         "@raze__strsim__0_10_0//:strsim",

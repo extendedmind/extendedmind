@@ -26,15 +26,13 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
 
-# Unsupported target "bench" with type "bench" omitted
-
 rust_library(
-    name = "fastrand",
+    name = "windows_targets",
     srcs = glob(["**/*.rs"]),
     aliases = {
     },
@@ -48,25 +46,21 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=fastrand",
+        "crate-name=windows-targets",
         "manual",
     ],
-    version = "1.8.0",
+    version = "0.42.1",
 
     # buildifier: leave-alone
     deps = [
     ] + selects.with_or({
-        # cfg(target_arch = "wasm32")
+        # x86_64-pc-windows-msvc
         (
-            "@rules_rust//rust/platform:wasm32-unknown-unknown",
+            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
         ): [
-            "@raze__instant__0_1_12//:instant",
+            "@raze__windows_x86_64_msvc__0_42_1//:windows_x86_64_msvc",
         ],
         "//conditions:default": [],
     }),
 )
 
-
-# Unsupported target "char" with type "test" omitted
-
-# Unsupported target "smoke" with type "test" omitted

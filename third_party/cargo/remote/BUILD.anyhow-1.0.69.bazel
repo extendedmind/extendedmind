@@ -26,7 +26,7 @@ package(default_visibility = [
 ])
 
 licenses([
-    "notice",  # Apache-2.0 from expression "Apache-2.0 OR MIT"
+    "notice",  # MIT from expression "MIT OR Apache-2.0"
 ])
 
 # Generated Targets
@@ -38,19 +38,13 @@ load(
 )
 
 cargo_build_script(
-    name = "snow_build_script",
+    name = "anyhow_build_script",
     srcs = glob(["**/*.rs"]),
     build_script_env = {
     },
     crate_features = [
-        "aes-gcm",
-        "blake2",
-        "chacha20poly1305",
-        "curve25519-dalek",
         "default",
-        "default-resolver",
-        "risky-raw-split",
-        "sha2",
+        "std",
     ],
     crate_root = "build.rs",
     data = glob(["**"]),
@@ -62,29 +56,18 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.9.0",
+    version = "1.0.69",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__rustc_version__0_4_0//:rustc_version",
     ],
 )
 
-# Unsupported target "benches" with type "bench" omitted
-
-# Unsupported target "simple" with type "example" omitted
-
 rust_library(
-    name = "snow",
+    name = "anyhow",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "aes-gcm",
-        "blake2",
-        "chacha20poly1305",
-        "curve25519-dalek",
         "default",
-        "default-resolver",
-        "risky-raw-split",
-        "sha2",
+        "std",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -94,25 +77,42 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=snow",
+        "crate-name=anyhow",
         "manual",
     ],
-    version = "0.9.0",
+    version = "1.0.69",
 
     # buildifier: leave-alone
     deps = [
-        ":snow_build_script",
-        "@raze__aes_gcm__0_9_4//:aes_gcm",
-        "@raze__blake2__0_10_6//:blake2",
-        "@raze__chacha20poly1305__0_9_1//:chacha20poly1305",
-        "@raze__curve25519_dalek__4_0_0_rc_0//:curve25519_dalek",
-        "@raze__rand_core__0_6_4//:rand_core",
-        "@raze__sha2__0_10_6//:sha2",
-        "@raze__subtle__2_4_1//:subtle",
+        ":anyhow_build_script",
     ],
 )
 
 
-# Unsupported target "general" with type "test" omitted
+# Unsupported target "compiletest" with type "test" omitted
 
-# Unsupported target "vectors" with type "test" omitted
+# Unsupported target "test_autotrait" with type "test" omitted
+
+# Unsupported target "test_backtrace" with type "test" omitted
+
+# Unsupported target "test_boxed" with type "test" omitted
+
+# Unsupported target "test_chain" with type "test" omitted
+
+# Unsupported target "test_context" with type "test" omitted
+
+# Unsupported target "test_convert" with type "test" omitted
+
+# Unsupported target "test_downcast" with type "test" omitted
+
+# Unsupported target "test_ensure" with type "test" omitted
+
+# Unsupported target "test_ffi" with type "test" omitted
+
+# Unsupported target "test_fmt" with type "test" omitted
+
+# Unsupported target "test_macros" with type "test" omitted
+
+# Unsupported target "test_repr" with type "test" omitted
+
+# Unsupported target "test_source" with type "test" omitted

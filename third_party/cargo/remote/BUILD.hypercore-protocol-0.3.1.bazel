@@ -108,7 +108,7 @@ rust_library(
         ":hypercore_protocol_build_script",
         "@raze__async_channel__1_8_0//:async_channel",
         "@raze__blake2_rfc__0_2_18//:blake2_rfc",
-        "@raze__bytes__1_3_0//:bytes",
+        "@raze__bytes__1_4_0//:bytes",
         "@raze__crypto_secretstream__0_1_1//:crypto_secretstream",
         "@raze__curve25519_dalek__4_0_0_rc_0//:curve25519_dalek",
         "@raze__futures_lite__1_12_0//:futures_lite",
@@ -122,7 +122,7 @@ rust_library(
         "@raze__rand__0_8_5//:rand",
         "@raze__salsa20__0_6_0//:salsa20",
         "@raze__sha2__0_10_6//:sha2",
-        "@raze__snow__0_9_0//:snow",
+        "@raze__snow__0_9_1//:snow",
     ],
 )
 

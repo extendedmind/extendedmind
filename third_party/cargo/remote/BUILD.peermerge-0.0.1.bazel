@@ -62,7 +62,7 @@ rust_library(
 
     # buildifier: leave-alone
     deps = [
-        "@raze__anyhow__1_0_68//:anyhow",
+        "@raze__anyhow__1_0_69//:anyhow",
         "@raze__async_std__1_12_0//:async_std",
         "@raze__automerge__0_3_0//:automerge",
         "@raze__chacha20poly1305__0_10_1//:chacha20poly1305",

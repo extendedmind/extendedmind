@@ -32,11 +32,27 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "tempfile",
+    name = "windows_sys",
     srcs = glob(["**/*.rs"]),
     aliases = {
     },
     crate_features = [
+        "Win32",
+        "Win32_Foundation",
+        "Win32_Networking",
+        "Win32_Networking_WinSock",
+        "Win32_Security",
+        "Win32_Storage",
+        "Win32_Storage_FileSystem",
+        "Win32_System",
+        "Win32_System_Console",
+        "Win32_System_IO",
+        "Win32_System_LibraryLoader",
+        "Win32_System_Pipes",
+        "Win32_System_SystemServices",
+        "Win32_System_Threading",
+        "Win32_System_WindowsProgramming",
+        "default",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -46,46 +62,29 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=tempfile",
+        "crate-name=windows-sys",
         "manual",
     ],
-    version = "3.3.0",
+    version = "0.45.0",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__cfg_if__1_0_0//:cfg_if",
-        "@raze__fastrand__1_9_0//:fastrand",
-        "@raze__remove_dir_all__0_5_3//:remove_dir_all",
     ] + selects.with_or({
-        # cfg(any(unix, target_os = "wasi"))
+        # cfg(not(windows_raw_dylib))
         (
             "@rules_rust//rust/platform:x86_64-apple-darwin",
+            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
             "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
             "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
+            "@rules_rust//rust/platform:wasm32-unknown-unknown",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
-            "@raze__libc__0_2_139//:libc",
-        ],
-        "//conditions:default": [],
-    }) + selects.with_or({
-        # cfg(windows)
-        (
-            "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
-        ): [
-            "@raze__winapi__0_3_9//:winapi",
+            "@raze__windows_targets__0_42_1//:windows_targets",
         ],
         "//conditions:default": [],
     }),
 )
 
-
-# Unsupported target "namedtempfile" with type "test" omitted
-
-# Unsupported target "spooled" with type "test" omitted
-
-# Unsupported target "tempdir" with type "test" omitted
-
-# Unsupported target "tempfile" with type "test" omitted

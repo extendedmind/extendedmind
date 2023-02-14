@@ -135,7 +135,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":tokio_build_script",
-        "@raze__mio__0_8_5//:mio",
+        "@raze__mio__0_8_6//:mio",
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",
     ] + selects.with_or({
         # cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))
