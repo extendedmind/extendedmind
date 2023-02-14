@@ -80,10 +80,10 @@ fn main() -> Result<()> {
         } => {
             // Initialize
             let initialize_result =
-                initialize(admin_socket_file, backup_opts, vec![data_root_dir.clone()]);
+                initialize(&data_root_dir, admin_socket_file, backup_opts, vec![])?;
 
             // Block on server
-            futures::executor::block_on(start_server(initialize_result, tcp_port, data_root_dir))?;
+            futures::executor::block_on(start_server(initialize_result, tcp_port))?;
         }
         Command::Register { peermerge_doc_url } => {
             let result = futures::executor::block_on(execute_admin_command(
@@ -96,24 +96,17 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-async fn start_server(
-    initialize_result: InitializeResult,
-    tcp_port: u16,
-    data_root_dir: PathBuf,
-) -> Result<()> {
+async fn start_server(initialize_result: InitializeResult, tcp_port: u16) -> Result<()> {
     // Create channels
     let (mut peermerge_state_event_sender, mut peermerge_state_event_receiver): (
         UnboundedSender<StateEvent>,
         UnboundedReceiver<StateEvent>,
     ) = unbounded();
 
-    // Create a peermerge
-    let peermerge = Peermerge::create_new_disk(NameDescription::new("hub"), &data_root_dir).await;
-
     // Listen to admin commands
     let mut admin_command_receiver = initialize_result.admin_command_receiver;
     let admin_result_sender = initialize_result.admin_result_sender;
-    let mut peermerge_for_task = peermerge.clone();
+    let mut peermerge_for_task = initialize_result.peermerge.clone();
     task::spawn(async move {
         while let Some(event) = admin_command_receiver.next().await {
             match event {
@@ -140,7 +133,7 @@ async fn start_server(
 
     // Start server
     connect_tcp_server_disk(
-        peermerge,
+        initialize_result.peermerge,
         "0.0.0.0",
         tcp_port,
         &mut peermerge_state_event_sender,

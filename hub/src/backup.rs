@@ -5,6 +5,7 @@ use age::cli_common::file_io;
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
 use chrono::prelude::*;
+use extendedmind_engine::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
 use flate2::write::GzEncoder;
 use flate2::Compression;
 use futures::stream::StreamExt;
@@ -25,6 +26,8 @@ pub const BACKUP_FILE_PREFIX: &str = "hub_backup_";
 pub const DEFAULT_BACKUP_INTERVAL_MIN: u32 = 1440;
 
 pub fn start_backup_poll(
+    // TODO: Get backup from peermerge
+    _peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
     source_dirs: Vec<PathBuf>,
     backup_dir: PathBuf,
     backup_opts: BackupOpts,

@@ -2712,7 +2712,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__peermerge__0_0_1",
         remote = "https://github.com/extendedmind/peermerge.git",
-        commit = "e0d875a845713fc4dd179de424954b3590cdd7ac",
+        commit = "0499bfd6c58bd6f09f52b62b02869a0cc66abe60",
         build_file = Label("//third_party/cargo/remote:BUILD.peermerge-0.0.1.bazel"),
         init_submodules = True,
     )
@@ -2721,7 +2721,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__peermerge_tcp__0_0_1",
         remote = "https://github.com/extendedmind/peermerge.git",
-        commit = "e0d875a845713fc4dd179de424954b3590cdd7ac",
+        commit = "0499bfd6c58bd6f09f52b62b02869a0cc66abe60",
         build_file = Label("//third_party/cargo/remote:BUILD.peermerge-tcp-0.0.1.bazel"),
         init_submodules = True,
     )

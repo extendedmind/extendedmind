@@ -3,7 +3,10 @@ use async_ctrlc::CtrlC;
 use async_std::channel::{unbounded, Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
-use extendedmind_engine::Bytes;
+use extendedmind_engine::{
+    Bytes, FeedDiskPersistence, NameDescription, Peermerge, RandomAccessDisk,
+};
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::process;
 use std::sync::atomic::AtomicBool;
@@ -14,16 +17,21 @@ use crate::backup::start_backup_poll;
 use crate::common::{AdminCommand, BackupOpts, ChannelSenderReceiver, SystemCommand};
 
 pub struct InitializeResult {
+    pub peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
     pub system_command_receiver: Receiver<Result<Bytes, std::io::Error>>,
     pub admin_command_receiver: Receiver<AdminCommand>,
     pub admin_result_sender: Sender<Result<()>>,
 }
 
 pub fn initialize(
+    data_root_dir: &PathBuf,
     admin_socket_file: PathBuf,
     backup_opts: BackupOpts,
     backup_source_dirs: Vec<PathBuf>,
-) -> InitializeResult {
+) -> Result<InitializeResult> {
+    // Create/open peermerge blocking
+    let peermerge = futures::executor::block_on(get_peermerge(data_root_dir))?;
+
     // Create channels
     let (system_command_sender, system_command_receiver): ChannelSenderReceiver = unbounded();
     let (admin_command_sender, admin_command_receiver): (
@@ -73,8 +81,10 @@ pub fn initialize(
     });
 
     // Backup polling
+    let peermerge_for_task = peermerge.clone();
     if let Some(backup_dir) = backup_opts.backup_dir.as_ref() {
         start_backup_poll(
+            peermerge_for_task,
             backup_source_dirs,
             backup_dir.to_path_buf(),
             backup_opts.clone(),
@@ -82,9 +92,24 @@ pub fn initialize(
         );
     }
 
-    InitializeResult {
+    Ok(InitializeResult {
+        peermerge,
         system_command_receiver,
         admin_command_receiver,
         admin_result_sender,
-    }
+    })
+}
+
+async fn get_peermerge(
+    data_root_dir: &PathBuf,
+) -> Result<Peermerge<RandomAccessDisk, FeedDiskPersistence>> {
+    let peermerge = if Peermerge::document_infos_disk(data_root_dir)
+        .await
+        .is_some()
+    {
+        Peermerge::open_disk(HashMap::new(), data_root_dir).await
+    } else {
+        Peermerge::create_new_disk(NameDescription::new("extendedmind_proxy"), data_root_dir).await
+    };
+    Ok(peermerge)
 }

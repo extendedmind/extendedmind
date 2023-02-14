@@ -2084,7 +2084,7 @@ dependencies = [
 [[package]]
 name = "peermerge"
 version = "0.0.1"
-source = "git+https://github.com/extendedmind/peermerge.git?branch=main#e0d875a845713fc4dd179de424954b3590cdd7ac"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#0499bfd6c58bd6f09f52b62b02869a0cc66abe60"
 dependencies = [
  "anyhow",
  "async-std",
@@ -2104,7 +2104,7 @@ dependencies = [
 [[package]]
 name = "peermerge-tcp"
 version = "0.0.1"
-source = "git+https://github.com/extendedmind/peermerge.git?branch=main#e0d875a845713fc4dd179de424954b3590cdd7ac"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#0499bfd6c58bd6f09f52b62b02869a0cc66abe60"
 dependencies = [
  "anyhow",
  "async-std",
