@@ -1,64 +1,61 @@
 use anyhow::Result;
-use async_std::channel::{SendError, Sender};
 use bytes::Bytes;
-use futures::io::AsyncWrite;
-use reusable_box_future::ReusableBoxFuture;
+use futures::channel::mpsc::UnboundedSender;
+use futures::io::{AsyncWrite, Error, ErrorKind};
 use std::io;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
 #[derive(Debug)]
 pub struct ChannelWriter {
-    channel: Sender<Result<Bytes, io::Error>>,
-    send_future: Option<ReusableBoxFuture<Result<(), SendError<Result<Bytes, io::Error>>>>>,
-    sending: Option<Bytes>,
+    channel: UnboundedSender<Result<Bytes, io::Error>>,
 }
 
 impl ChannelWriter {
-    pub fn new(channel: Sender<Result<Bytes, io::Error>>) -> Self {
-        Self {
-            channel,
-            send_future: None,
-            sending: None,
-        }
-    }
-    pub async fn send(self: Self, msg: Bytes) -> Result<(), SendError<Result<Bytes, io::Error>>> {
-        self.channel.send(Ok(msg)).await
+    pub fn new(channel: UnboundedSender<Result<Bytes, io::Error>>) -> Self {
+        Self { channel }
     }
 }
 
 impl AsyncWrite for ChannelWriter {
     fn poll_write(
         mut self: Pin<&mut Self>,
-        cx: &mut Context<'_>,
-        buf: &[u8],
+        context: &mut Context,
+        buffer: &[u8],
     ) -> Poll<io::Result<usize>> {
-        if self.sending.as_deref() != Some(buf) {
-            let buf = Bytes::copy_from_slice(buf);
+        let len = buffer.len();
 
-            let send_future = {
-                let channel = self.channel.clone();
-                let buf = buf.clone();
-                async move { channel.send(Ok(buf)).await }
-            };
+        match self.channel.poll_ready(context) {
+            Poll::Ready(Ok(())) => {
+                if let Err(e) = self.channel.start_send(Ok(Bytes::copy_from_slice(buffer))) {
+                    if e.is_disconnected() {
+                        return Poll::Ready(Err(Error::new(ErrorKind::BrokenPipe, e)));
+                    }
 
-            if let Some(old_send_future) = self.send_future.as_mut() {
-                old_send_future.set(send_future);
-            } else {
-                self.send_future = Some(ReusableBoxFuture::new(send_future));
+                    // Unbounded channels should only ever have "Disconnected" errors
+                    unreachable!();
+                }
             }
-            self.sending = Some(buf);
+            Poll::Ready(Err(e)) => {
+                if e.is_disconnected() {
+                    return Poll::Ready(Err(Error::new(ErrorKind::BrokenPipe, e)));
+                }
+
+                // Unbounded channels should only ever have "Disconnected" errors
+                unreachable!();
+            }
+            Poll::Pending => return Poll::Pending,
         }
 
-        self.send_future.as_mut().unwrap().poll(cx).map(|res| {
-            self.sending = None;
-            Ok(res.map_or(0, |()| buf.len()))
-        })
+        Poll::Ready(Ok(len))
     }
-    fn poll_flush(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<io::Result<()>> {
+
+    fn poll_flush(self: Pin<&mut Self>, _context: &mut Context) -> Poll<io::Result<()>> {
         Poll::Ready(Ok(()))
     }
-    fn poll_close(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<io::Result<()>> {
+
+    fn poll_close(self: Pin<&mut Self>, _context: &mut Context) -> Poll<io::Result<()>> {
+        self.channel.close_channel();
         Poll::Ready(Ok(()))
     }
 }

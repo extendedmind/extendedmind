@@ -12,7 +12,6 @@ rust_library(
         "//third_party/cargo:bytes",
         "//third_party/cargo:futures",
         "//third_party/cargo:anyhow",
-        "//third_party/cargo:reusable_box_future",
     ],
     srcs = glob(["src/**"]),
 )

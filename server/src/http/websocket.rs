@@ -1,145 +1,71 @@
-use async_std::channel::{bounded, Receiver, Sender};
 use async_std::task;
-use extendedmind_hub::common::{ChannelSenderReceiver, SystemCommand};
-use extendedmind_hub::extendedmind_engine::{Bytes, ChannelWriter, EngineEvent};
-use futures::stream::StreamExt;
+use extendedmind_hub::extendedmind_engine::{Bytes, ChannelWriter, ProtocolBuilder, StateEvent};
+use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
+use futures::stream::{IntoAsyncRead, StreamExt, TryStreamExt};
 use log::debug;
 use std::io;
-use std::time::Instant;
 use tide_websockets::{Message, WebSocketConnection};
 
 use crate::common::State;
 
-#[derive(Copy, Clone, Debug)]
-pub enum ReceiverType {
-    System,
-    Hypercore,
-    Client,
-}
+pub type ChannelSenderReceiver = (
+    UnboundedSender<Result<Bytes, io::Error>>,
+    UnboundedReceiver<Result<Bytes, io::Error>>,
+);
 
-#[derive(Clone)]
-struct WrappedData {
-    data: Bytes,
-    receiver_type: ReceiverType,
-}
-
-type WrappedBytesClosure =
-    Box<dyn Fn(Result<Bytes, io::Error>) -> Result<WrappedData, io::Error> + Send + Sync>;
-
-pub async fn handle_hypercore(
+pub async fn handle_peermerge(
     req: tide::Request<State>,
     stream: WebSocketConnection,
 ) -> tide::Result<()> {
-    debug!("WS connect to hypercore");
+    debug!("WS connect to peermerge");
     // Get handle to async-tungstenite WebSocketStream
     let ws_writer = stream.clone();
     let mut ws_reader = stream.clone();
 
-    // Create engine and hypercore channels for this connection
-    let (engine_sender, hypercore_receiver): ChannelSenderReceiver = bounded(1000);
-    let (hypercore_sender, engine_receiver): ChannelSenderReceiver = bounded(1000);
+    // Create client and peermerge proxy channels for this connection
+    let (client_sender, peermerge_receiver): ChannelSenderReceiver = unbounded();
+    let (peermerge_sender, mut client_receiver): ChannelSenderReceiver = unbounded();
 
-    // Create the engine event channel
-    let (engine_event_sender, engine_event_receiver): (Sender<EngineEvent>, Receiver<EngineEvent>) =
-        async_std::channel::bounded(1000);
+    // Create peermerge state event channel
+    let (mut state_event_sender, mut state_event_receiver): (
+        UnboundedSender<StateEvent>,
+        UnboundedReceiver<StateEvent>,
+    ) = unbounded();
 
-    // Get passable handle on engine
-    let engine = req.state().engine.clone();
-
-    // Launch a task for the protocol
+    // Launch a task for connecting to the protocol
+    let mut peermerge_for_task = req.state().peermerge.clone();
     task::spawn(async move {
-        engine
-            .connect_passive(
-                ChannelWriter::new(engine_sender),
-                engine_receiver,
-                engine_event_sender,
-                engine_event_receiver,
-            )
+        let receiver: IntoAsyncRead<UnboundedReceiver<Result<Bytes, io::Error>>> =
+            peermerge_receiver.into_async_read();
+        let sender = ChannelWriter::new(peermerge_sender);
+        let mut protocol = ProtocolBuilder::new(false).connect_rw(receiver, sender);
+        peermerge_for_task
+            .connect_protocol_disk(&mut protocol, &mut state_event_sender)
             .await
-            .ok();
+            .expect("Should not error when exiting");
     });
 
-    // Create channel for client data
-    let (client_sender, client_receiver): ChannelSenderReceiver = bounded(1000);
-
-    // Launch a second task for listening to receivers
+    // Launch a second task for registering peermerge state events
     task::spawn(async move {
-        let receivers = collect_receivers(req.state(), hypercore_receiver, client_receiver);
-        let mut merged_receivers = futures::stream::select_all(receivers);
-        let mut now = Instant::now();
-        while let Some(Ok(wrapped_value)) = merged_receivers.next().await {
-            match wrapped_value.receiver_type {
-                ReceiverType::System => {
-                    if wrapped_value.data.as_ref().get(0)
-                        == Some(&(SystemCommand::Disconnect as u8))
-                    {
-                        debug!("got disconnect");
-                        ws_writer.send(Message::Close(None)).await.unwrap();
-                        break;
-                    }
-                    // Send ping message if enough time has elapsed
-                    // TODO: Something needs to send WakeUp to system_command_sender so that this
-                    // si triggered.
-                    if now.elapsed().as_secs() > 30 {
-                        debug!("sending ping");
-                        ws_writer.send(Message::Ping(Vec::new())).await.unwrap();
-                        now = Instant::now();
-                    }
-                }
-                ReceiverType::Client => {
-                    debug!(
-                        "got client request, forwarding to hypercore {}",
-                        wrapped_value.data.len()
-                    );
-                    hypercore_sender
-                        .clone()
-                        .send(Ok(wrapped_value.data))
-                        .await
-                        .unwrap();
-                }
-                ReceiverType::Hypercore => {
-                    let msg = wrapped_value.data.as_ref().to_vec();
-                    debug!("got hypercore message, sending to client, {:?}", msg.len());
-                    ws_writer.send(Message::Binary(msg)).await.unwrap();
-                }
-            }
+        while let Some(event) = state_event_receiver.next().await {
+            debug!("Got state event {:?}", event);
+        }
+    });
+
+    // Launch a third task for listening to client data (coming from peermerge) and passing it on
+    // to websocket.
+    task::spawn(async move {
+        while let Some(Ok(data)) = client_receiver.next().await {
+            let msg = data.as_ref().to_vec();
+            debug!("got outgoing data, forwarding to websocket {}", msg.len());
+            ws_writer.send(Message::Binary(msg)).await.unwrap();
         }
     });
 
     // Block loop on incoming messages
     while let Some(Ok(Message::Binary(msg))) = ws_reader.next().await {
-        debug!("got incoming client message {:?}", msg.len());
-        client_sender.send(Ok(Bytes::from(msg))).await.unwrap();
+        debug!("got incoming data, passing to peermerge {:?}", msg.len());
+        client_sender.unbounded_send(Ok(Bytes::from(msg))).unwrap();
     }
     Ok(())
-}
-
-fn collect_receivers(
-    state: &State,
-    hypercore_receiver: Receiver<Result<Bytes, io::Error>>,
-    client_receiver: Receiver<Result<Bytes, io::Error>>,
-) -> Vec<futures::stream::Map<Receiver<Result<Bytes, io::Error>>, WrappedBytesClosure>> {
-    vec![
-        state
-            .system_commands
-            .clone()
-            .map(Box::new(|read_result: Result<Bytes, io::Error>| {
-                read_result.map(|data| WrappedData {
-                    data,
-                    receiver_type: ReceiverType::System,
-                })
-            }) as WrappedBytesClosure),
-        hypercore_receiver.map(Box::new(move |read_result: Result<Bytes, io::Error>| {
-            read_result.map(|data| WrappedData {
-                data,
-                receiver_type: ReceiverType::Hypercore,
-            })
-        }) as WrappedBytesClosure),
-        client_receiver.map(Box::new(|read_result: Result<Bytes, io::Error>| {
-            read_result.map(|data| WrappedData {
-                data,
-                receiver_type: ReceiverType::Client,
-            })
-        }) as WrappedBytesClosure),
-    ]
 }

@@ -3,9 +3,7 @@ use async_ctrlc::CtrlC;
 use async_std::channel::{unbounded, Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
-use extendedmind_engine::{
-    Bytes, FeedDiskPersistence, NameDescription, Peermerge, RandomAccessDisk,
-};
+use extendedmind_engine::{FeedDiskPersistence, NameDescription, Peermerge, RandomAccessDisk};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::process;
@@ -14,11 +12,10 @@ use std::time::Duration;
 
 use crate::admin::listen_to_admin_socket;
 use crate::backup::start_backup_poll;
-use crate::common::{AdminCommand, BackupOpts, ChannelSenderReceiver, SystemCommand};
+use crate::common::{AdminCommand, BackupOpts};
 
 pub struct InitializeResult {
     pub peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
-    pub system_command_receiver: Receiver<Result<Bytes, std::io::Error>>,
     pub admin_command_receiver: Receiver<AdminCommand>,
     pub admin_result_sender: Sender<Result<()>>,
 }
@@ -32,8 +29,7 @@ pub fn initialize(
     // Create/open peermerge blocking
     let peermerge = futures::executor::block_on(get_peermerge(data_root_dir))?;
 
-    // Create channels
-    let (system_command_sender, system_command_receiver): ChannelSenderReceiver = unbounded();
+    // Create channels for admin signals
     let (admin_command_sender, admin_command_receiver): (
         Sender<AdminCommand>,
         Receiver<AdminCommand>,
@@ -55,12 +51,10 @@ pub fn initialize(
                 admin_socket_file_to_shutdown,
             );
         });
-        log::info!("(2/5) Sending disconnect");
-        system_command_sender
-            .send(Ok(Bytes::from_static(&[SystemCommand::Disconnect as u8])))
-            .await
-            .unwrap();
+        log::info!("(2/5) Sending close signal");
+        // TODO: Here would be something like peermerge.close().await;
         log::info!("(3/5) Writing to abort lock");
+        // TODO: This is unneeded when peermerge itself can notify it is closed
         *abort_writer.as_ref().lock().await = AtomicBool::new(true);
         // Wait 200ms before killing, to allow time for file saving and closing sockets
         log::info!("(4/5) Sleeping for 200ms");
@@ -94,7 +88,6 @@ pub fn initialize(
 
     Ok(InitializeResult {
         peermerge,
-        system_command_receiver,
         admin_command_receiver,
         admin_result_sender,
     })

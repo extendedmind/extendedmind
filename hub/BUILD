@@ -16,6 +16,8 @@ HUB_DEPS = [
     "//third_party/cargo:age",
     "//third_party/cargo:lettre",
     "//third_party/cargo:async_std",
+    "//third_party/cargo:clap",
+    "//third_party/cargo:async_ctrlc",
 ]
 
 rust_library(
@@ -28,8 +30,6 @@ rust_binary(
     name = "extendedmind_hub_bin",
     deps = HUB_DEPS + [
         "//third_party/cargo:fern",
-        "//third_party/cargo:clap",
-        "//third_party/cargo:async_ctrlc",
     ],
     srcs = glob(include=["src/**"], exclude=["src/lib.rs"]),
 )

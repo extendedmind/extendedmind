@@ -1,7 +1,10 @@
-use crate::{common::State, metrics::ProduceMetrics};
+use crate::{
+    common::State,
+    metrics::ProduceMetrics,
+    opts::{HttpOpts, MetricsOpts, PerformanceOpts},
+};
 use anyhow::Result;
 use moka::future::Cache;
-use std::path::PathBuf;
 use tide::{
     http::{
         headers::{HeaderName, HeaderValues},
@@ -14,7 +17,7 @@ use tide_websockets::WebSocket;
 use wildmatch::WildMatch;
 
 mod websocket;
-use websocket::handle_hypercore;
+use websocket::handle_peermerge;
 mod html;
 use html::ServeStaticFiles;
 mod cache;
@@ -24,21 +27,13 @@ use cache::CacheMiddleware;
 pub fn http_main_server(
     initial_state: State,
     cache: Option<Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>>,
-    static_root_dir: Option<PathBuf>,
-    skip_compress_mime: Option<Vec<String>>,
-    inline_css_path: Option<Vec<String>>,
-    inline_css_skip_referer: Option<Vec<String>>,
-    immutable_path: Option<Vec<String>>,
-    hsts_max_age: Option<u64>,
-    hsts_preload: bool,
-    metrics_endpoint: Option<String>,
-    metrics_dir: Option<PathBuf>,
-    metrics_secret: Option<String>,
-    metrics_skip_compress: bool,
+    http_opts: HttpOpts,
+    metrics_opts: MetricsOpts,
+    performance_opts: PerformanceOpts,
 ) -> Result<tide::Server<State>> {
-    let skip_compress_mime = skip_compress_mime.clone();
+    let skip_compress_mime = performance_opts.skip_compress_mime.clone();
     let mut app = tide::with_state(initial_state);
-    let inline_css_wildmatch = match inline_css_path {
+    let inline_css_wildmatch = match performance_opts.inline_css_path {
         Some(inline_css_path) => {
             log::info!("Inlining CSS for paths {:?}", &inline_css_path);
             Some(
@@ -50,7 +45,7 @@ pub fn http_main_server(
         }
         None => None,
     };
-    let inline_css_skip_referer_wildmatch = match inline_css_skip_referer {
+    let inline_css_skip_referer_wildmatch = match performance_opts.inline_css_skip_referer {
         Some(inline_css_skip_referer) => {
             log::info!(
                 "Skip inlining CSS for Referer header url {:?}",
@@ -66,7 +61,7 @@ pub fn http_main_server(
         None => None,
     };
 
-    let metrics_skip_compress: bool = metrics_skip_compress
+    let metrics_skip_compress: bool = metrics_opts.metrics_skip_compress.unwrap_or(false)
         || match &skip_compress_mime {
             Some(skip_compress_mime) => {
                 skip_compress_mime.contains(&"application/json".to_string())
@@ -74,7 +69,7 @@ pub fn http_main_server(
             None => false,
         };
 
-    if let Some(static_root_dir) = static_root_dir {
+    if let Some(static_root_dir) = http_opts.static_root_dir {
         let index_path = static_root_dir.join("index.html");
 
         let serve_static_files = ServeStaticFiles::new(
@@ -83,9 +78,9 @@ pub fn http_main_server(
             skip_compress_mime,
             inline_css_wildmatch.clone(),
             inline_css_skip_referer_wildmatch.clone(),
-            immutable_path.clone(),
-            hsts_max_age,
-            hsts_preload,
+            performance_opts.immutable_path.clone(),
+            http_opts.hsts_max_age,
+            http_opts.hsts_preload.unwrap_or(false),
         );
         if index_path.exists() {
             app.at("").get(serve_static_files.clone());
@@ -93,25 +88,26 @@ pub fn http_main_server(
         app.at("*").get(serve_static_files);
     }
 
-    let skip_cache_path: Option<Vec<String>> = if let Some(metrics_endpoint) = metrics_endpoint {
-        if let Some(metrics_dir) = metrics_dir {
-            app.at(&metrics_endpoint).get(ProduceMetrics::new(
-                metrics_endpoint.clone(),
-                metrics_dir,
-                metrics_secret,
-                immutable_path,
-                metrics_skip_compress,
-            ));
-            Some(vec![metrics_endpoint])
+    let skip_cache_path: Option<Vec<String>> =
+        if let Some(metrics_endpoint) = metrics_opts.metrics_endpoint {
+            if let Some(metrics_dir) = metrics_opts.metrics_dir {
+                app.at(&metrics_endpoint).get(ProduceMetrics::new(
+                    metrics_endpoint.clone(),
+                    metrics_dir,
+                    metrics_opts.metrics_secret,
+                    performance_opts.immutable_path,
+                    metrics_skip_compress,
+                ));
+                Some(vec![metrics_endpoint])
+            } else {
+                None
+            }
         } else {
             None
-        }
-    } else {
-        None
-    };
+        };
 
-    app.at("/extendedmind/hypercore")
-        .get(WebSocket::new(handle_hypercore));
+    app.at("/extendedmind/peermerge")
+        .get(WebSocket::new(handle_peermerge));
 
     if let Some(cache) = cache {
         app.with(CacheMiddleware::new(

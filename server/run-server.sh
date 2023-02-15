@@ -15,13 +15,15 @@ mkdir -p target/logs/metrics
 TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
 ../ui/web/node_modules/.bin/ibazel run //server:extendedmind_server -- \
     --admin-socket-file ${TARGET_PATH}/extendedmind_server.sock \
+    --verbose true \
+    start \
     --data-root-dir ${TARGET_PATH} --http-port 3001 \
     ${STATIC_OPT} \
     --skip-compress-mime application/wasm \
     --cache-ttl-sec 5 --cache-tti-sec 5 \
     --inline-css-path /blog/* --immutable-path /_app/*.css --immutable-path /_app/*.js \
     --inline-css-skip-referer http://localhost* \
-    --verbose true --log-dir ${TARGET_PATH}/logs --log-precision 18 \
+    --log-dir ${TARGET_PATH}/logs --log-precision 18 \
     --metrics-dir ${TARGET_PATH}/logs/metrics --metrics-precision 16 \
     --metrics-endpoint /api/metrics --metrics-secret top \
     --backup-dir ${TARGET_PATH} --backup-interval-min 1 ${BACKUP_OPTS}

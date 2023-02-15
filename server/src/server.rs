@@ -1,16 +1,9 @@
 use anyhow::Result;
-use async_ctrlc::CtrlC;
-use async_std::channel::bounded;
-use async_std::sync::{Arc, Mutex};
-use async_std::task;
-use extendedmind_hub::backup::start_backup_poll;
-use extendedmind_hub::common::{ChannelSenderReceiver, SystemCommand};
-use extendedmind_hub::extendedmind_engine::{tcp, Bytes, Engine};
+use extendedmind_hub::common::BackupOpts;
+use extendedmind_hub::init::{initialize, InitializeResult};
+use extendedmind_hub::listen::listen;
 use moka::future::Cache;
 use std::path::PathBuf;
-use std::process;
-use std::sync::atomic::AtomicBool;
-use std::time::Duration;
 use tide::http::headers::{HeaderName, HeaderValues};
 use tide::http::Mime;
 use tide::StatusCode;
@@ -18,180 +11,97 @@ use tide_acme::rustls_acme::caches::DirCache;
 use tide_acme::{AcmeConfig, TideRustlsExt};
 
 // Internal
-use crate::admin::listen_to_admin_socket;
 use crate::common::State;
 use crate::http::{create_cache, http_main_server, http_redirect_server};
 use crate::metrics::process_metrics;
-use crate::opts::Opts;
+use crate::opts::{HttpOpts, LogOpts, MetricsOpts, PerformanceOpts, PortOpts};
 
-pub fn start_server(admin_socket_file: String, opts: Opts) -> Result<()> {
-    let data_root_dir = &opts
-        .data_root_dir
-        .expect("--data-root-dir is mandatory in server mode");
-
-    // Initialize the engine blocking
-    let engine =
-        futures::executor::block_on(
-            async move { Engine::new_disk(data_root_dir, false, None).await },
-        );
-
-    // Create channels
-    let (system_command_sender, system_command_receiver): ChannelSenderReceiver = bounded(1000);
-
-    // Create state for websocket
-    let initial_state = State {
-        engine,
-        system_commands: system_command_receiver,
+pub fn start_server(
+    admin_socket_file: PathBuf,
+    data_root_dir: PathBuf,
+    log_opts: LogOpts,
+    backup_opts: BackupOpts,
+    metrics_opts: MetricsOpts,
+    port_opts: PortOpts,
+    http_opts: HttpOpts,
+    performance_opts: PerformanceOpts,
+) -> Result<()> {
+    // Initialize hub
+    let backup_source_dirs = if let Some(metrics_dir) = metrics_opts.metrics_dir.as_ref() {
+        vec![metrics_dir.to_path_buf()]
+    } else {
+        vec![]
     };
+    let initialize_result = initialize(
+        &data_root_dir,
+        admin_socket_file,
+        backup_opts,
+        backup_source_dirs,
+    )?;
 
-    // Listen to ctrlc in a separate task
-    let ctrlc = CtrlC::new().expect("cannot create Ctrl+C handler?");
-    let abort: Arc<Mutex<AtomicBool>> = Arc::new(Mutex::new(AtomicBool::new(false)));
-    let abort_writer = abort.clone();
-
-    let admin_socket_file_to_shutdown = admin_socket_file.clone();
-    task::spawn(async move {
-        ctrlc.await;
-        log::info!("(1/5) Received termination signal, deleting admin socket");
-        std::fs::remove_file(&admin_socket_file_to_shutdown).unwrap_or_else(|_| {
-            log::warn!(
-                "Could not delete admin socket file {}",
-                admin_socket_file_to_shutdown,
-            );
-        });
-        log::info!("(2/5) Sending disconnect");
-        system_command_sender
-            .send(Ok(Bytes::from_static(&[SystemCommand::Disconnect as u8])))
-            .await
-            .unwrap();
-        log::info!("(3/5) Writing to abort lock");
-        *abort_writer.as_ref().lock().await = AtomicBool::new(true);
-        // Wait 200ms before killing, to allow time for file saving and closing sockets
-        log::info!("(4/5) Sleeping for 200ms");
-        task::sleep(Duration::from_millis(200)).await;
-        log::info!("(5/5) Exiting process with 0");
-        process::exit(0);
-    });
-
-    let cache = create_cache(opts.cache_ttl_sec, opts.cache_tti_sec);
-
-    // Listen to admin unix socket
-    let cache_for_admin = cache.clone();
-    task::spawn(async move {
-        listen_to_admin_socket(admin_socket_file, cache_for_admin)
-            .await
-            .unwrap();
-    });
-
-    // Backup polling
-    if let Some(backup_dir) = opts.backup_dir.as_ref() {
-        if let Some(metrics_dir) = opts.metrics_dir.as_ref() {
-            start_backup_poll(
-                vec![metrics_dir.to_path_buf()],
-                backup_dir.to_path_buf(),
-                opts.backup_interval_min.clone(),
-                opts.backup_ssh_recipients_file.clone(),
-                opts.backup_email_from.clone(),
-                opts.backup_email_to.clone(),
-                opts.backup_email_smtp_host.clone(),
-                opts.backup_email_smtp_username.clone(),
-                opts.backup_email_smtp_password.clone(),
-                opts.backup_email_smtp_tls_port.clone(),
-                opts.backup_email_smtp_starttls_port.clone(),
-                abort,
-            );
-        }
-    }
+    // Create cache
+    let cache = create_cache(
+        performance_opts.cache_ttl_sec,
+        performance_opts.cache_tti_sec,
+    );
 
     // Log processing to metrics
-    if let Some(metrics_dir) = opts.metrics_dir.as_ref() {
-        if let Some(log_dir) = opts.log_dir {
-            process_metrics(metrics_dir.to_path_buf(), opts.metrics_precision, log_dir);
+    if let Some(metrics_dir) = metrics_opts.metrics_dir.as_ref() {
+        if let Some(log_dir) = log_opts.log_dir {
+            process_metrics(
+                metrics_dir.to_path_buf(),
+                metrics_opts.metrics_precision,
+                log_dir,
+            );
         }
     }
 
-    // Block server with initial state
+    // Block server
     futures::executor::block_on(start_server_async(
-        initial_state,
+        initialize_result,
         cache,
-        opts.static_root_dir,
-        opts.http_port,
-        opts.https_port,
-        opts.domain,
-        opts.acme_email,
-        opts.acme_dir,
-        opts.acme_production.unwrap_or(false),
-        opts.hsts_max_age,
-        opts.hsts_permanent_redirect.unwrap_or(false),
-        opts.hsts_preload.unwrap_or(false),
-        opts.tcp_port,
-        opts.skip_compress_mime,
-        opts.inline_css_path,
-        opts.inline_css_skip_referer,
-        opts.immutable_path,
-        opts.metrics_endpoint,
-        opts.metrics_dir,
-        opts.metrics_secret,
-        opts.metrics_skip_compress.unwrap_or(false),
+        port_opts,
+        http_opts,
+        metrics_opts,
+        performance_opts,
     ))?;
 
     Ok(())
 }
 
 async fn start_server_async(
-    initial_state: State,
+    initialize_result: InitializeResult,
     cache: Option<Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>>,
-    static_root_dir: Option<PathBuf>,
-    http_port: Option<u16>,
-    https_port: Option<u16>,
-    domain: Option<String>,
-    acme_email: Option<String>,
-    acme_dir: Option<String>,
-    acme_production: bool,
-    hsts_max_age: Option<u64>,
-    hsts_permanent_redirect: bool,
-    hsts_preload: bool,
-    tcp_port: Option<u16>,
-    skip_compress_mime: Option<Vec<String>>,
-    inline_css_path: Option<Vec<String>>,
-    inline_css_skip_referer: Option<Vec<String>>,
-    immutable_path: Option<Vec<String>>,
-    metrics_endpoint: Option<String>,
-    metrics_dir: Option<PathBuf>,
-    metrics_secret: Option<String>,
-    metrics_skip_compress: bool,
+    port_opts: PortOpts,
+    http_opts: HttpOpts,
+    metrics_opts: MetricsOpts,
+    performance_opts: PerformanceOpts,
 ) -> Result<()> {
-    let engine = initial_state.engine.clone();
-
-    if let Some(http_port) = http_port {
+    if let Some(http_port) = port_opts.http_port {
+        let initial_state = State::new(initialize_result.peermerge.clone());
         let main_server = http_main_server(
             initial_state,
             cache,
-            static_root_dir,
-            skip_compress_mime,
-            inline_css_path,
-            inline_css_skip_referer,
-            immutable_path,
-            hsts_max_age,
-            hsts_preload,
-            metrics_endpoint,
-            metrics_dir,
-            metrics_secret,
-            metrics_skip_compress,
+            http_opts.clone(),
+            metrics_opts,
+            performance_opts,
         )
         .unwrap();
-        if let Some(https_port) = https_port {
-            if domain.is_none() || acme_dir.is_none() || acme_email.is_none() {
+        if let Some(https_port) = port_opts.https_port {
+            if http_opts.domain.is_none()
+                || http_opts.acme_dir.is_none()
+                || http_opts.acme_email.is_none()
+            {
                 anyhow::bail!(
                     "With --https-port also --domain, --acme-email and --acme-dir are required"
                 );
             }
-            let domain = domain.unwrap();
-            let acme_dir = acme_dir.unwrap();
-            let acme_email = acme_email.unwrap();
+            let domain = http_opts.domain.unwrap();
+            let acme_dir = http_opts.acme_dir.unwrap();
+            let acme_email = http_opts.acme_email.unwrap();
             let redirect_server = http_redirect_server(
                 format!("https://{}:{}", &domain, &https_port).as_str(),
-                hsts_permanent_redirect,
+                http_opts.hsts_permanent_redirect.unwrap_or(false),
             )
             .unwrap();
             let redirect_listener = redirect_server.listen(format!("0.0.0.0:{}", &http_port));
@@ -204,28 +114,28 @@ async fn start_server_async(
                         AcmeConfig::new(vec![domain])
                             .contact_push(format!("mailto:{}", acme_email))
                             .cache(DirCache::new(acme_dir))
-                            .directory_lets_encrypt(acme_production),
+                            .directory_lets_encrypt(http_opts.acme_production.unwrap_or(false)),
                     ),
             );
 
-            if let Some(tcp_port) = tcp_port {
-                let tcp_listener = tcp::listen(format!("0.0.0.0:{}", tcp_port), engine);
+            if let Some(tcp_port) = port_opts.tcp_port {
+                let tcp_listener = listen(initialize_result, tcp_port);
                 futures::try_join!(main_listener, redirect_listener, tcp_listener)?;
             } else {
                 futures::try_join!(main_listener, redirect_listener)?;
             }
         } else {
             let main_listener = main_server.listen(format!("0.0.0.0:{}", &http_port));
-            if let Some(tcp_port) = tcp_port {
-                let tcp_listener = tcp::listen(format!("0.0.0.0:{}", tcp_port), engine);
+            if let Some(tcp_port) = port_opts.tcp_port {
+                let tcp_listener = listen(initialize_result, tcp_port);
                 futures::try_join!(main_listener, tcp_listener)?;
             } else {
                 main_listener.await?;
             }
         }
     } else {
-        if let Some(tcp_port) = tcp_port {
-            tcp::listen(format!("0.0.0.0:{}", tcp_port), engine).await?;
+        if let Some(tcp_port) = port_opts.tcp_port {
+            listen(initialize_result, tcp_port).await?;
         } else {
             anyhow::bail!("Either --tcp-port or --http-port is mandatory");
         };

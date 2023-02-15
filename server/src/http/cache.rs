@@ -2,7 +2,7 @@ use moka::future::Cache;
 use std::time::Duration;
 use tide::{
     http::{
-        content::{AcceptEncoding, ContentEncoding, Encoding},
+        content::{AcceptEncoding, Encoding},
         headers::{HeaderName, HeaderValues},
         Method, Mime,
     },

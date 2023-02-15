@@ -42,6 +42,7 @@ pub fn start_backup_poll(
             backup_dir.clone(),
             backup_opts.backup_interval_min,
         );
+        // TODO: Instead of abort, use !peermerge.closed()
         while interval.next().await.is_some() && !*abort.as_ref().lock().await.get_mut() {
             if is_now_after(next_backup_timestamp) {
                 log::info!("Creating backup");
