@@ -789,6 +789,7 @@ dependencies = [
  "futures",
  "js-sys",
  "log",
+ "peermerge-tcp",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "ws_stream_wasm",
@@ -1410,6 +1411,20 @@ dependencies = [
  "random-access-disk",
  "random-access-memory",
  "random-access-storage",
+ "tracing",
+]
+
+[[package]]
+name = "peermerge-tcp"
+version = "0.0.1"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#0499bfd6c58bd6f09f52b62b02869a0cc66abe60"
+dependencies = [
+ "anyhow",
+ "async-std",
+ "futures",
+ "peermerge",
+ "random-access-disk",
+ "random-access-memory",
  "tracing",
 ]
 

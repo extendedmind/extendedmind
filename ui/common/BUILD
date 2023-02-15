@@ -2,6 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_shared_library", "rust_test", "rustfmt_test")
 load("@rules_rust//wasm_bindgen:wasm_bindgen.bzl", "rust_wasm_bindgen")
+load("@bazel_skylib//lib:selects.bzl", "selects")
 
 deps = [
     "//schema:extendedmind_schema_rust",
@@ -16,7 +17,16 @@ deps = [
     "//third_party/cargo:log",
     "//third_party/cargo:console_error_panic_hook",
     "//third_party/cargo:console_log",
-]
+] + selects.with_or({
+    (
+        "@rules_rust//rust/platform:wasm32-unknown-unknown",
+    ): [
+        # WASM-only dependencies here
+    ],
+    "//conditions:default": [
+        "//third_party/cargo:peermerge_tcp",
+    ],
+}),
 
 proc_macro_deps = [
     "//third_party/cargo:async_attributes",

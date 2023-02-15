@@ -20,3 +20,6 @@ async-trait = "0.1.63"
 js-sys = "0.3.55"
 console_error_panic_hook = "0.1.7"
 console_log = "0.2.0"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+peermerge-tcp = { git = "https://github.com/extendedmind/peermerge.git", branch = "main", default-features = false, features = ["async-std-runtime"] }

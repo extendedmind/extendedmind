@@ -1,9 +1,11 @@
-use async_std::channel::{Receiver, Sender};
 use async_std::task;
 use clap::Parser;
 use extendedmind_core::capnp;
 use extendedmind_ui_common::non_wasm::connect_to_hub;
-use futures::prelude::*;
+use futures::{
+    channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender},
+    prelude::*,
+};
 use log::*;
 use std::path::PathBuf;
 
@@ -11,8 +13,9 @@ use std::path::PathBuf;
 #[clap(version = "0.0.1", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
 struct Opts {
     data_root_dir: PathBuf,
-    hub: String,
-    public_key: String,
+    hub_host: String,
+    hub_port: u16,
+    doc_url: String,
 }
 
 fn setup_logging() {
@@ -33,20 +36,27 @@ fn setup_logging() {
 
 async fn run(
     data_root_dir: PathBuf,
-    hub_url: String,
-    public_key: String,
+    hub_host: String,
+    hub_port: u16,
+    doc_url: String,
 ) -> Result<(), Box<dyn std::error::Error>> {
     debug!("Cli run");
     let (ui_protocol_sender, mut ui_protocol_receiver): (
-        Sender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
-        Receiver<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
-    ) = async_std::channel::bounded(1000);
+        UnboundedSender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
+        UnboundedReceiver<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
+    ) = unbounded();
 
     task::spawn_local(async move {
         debug!("Connecting to hub");
-        connect_to_hub(data_root_dir, &hub_url, &public_key, ui_protocol_sender)
-            .await
-            .unwrap();
+        connect_to_hub(
+            data_root_dir,
+            &hub_host,
+            hub_port,
+            &doc_url,
+            ui_protocol_sender,
+        )
+        .await
+        .unwrap();
     });
 
     // TODO: Eventually this would be a loop
@@ -64,5 +74,10 @@ async fn run(
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_logging();
     let opts: Opts = Opts::parse();
-    task::block_on(run(opts.data_root_dir, opts.hub, opts.public_key))
+    task::block_on(run(
+        opts.data_root_dir,
+        opts.hub_host,
+        opts.hub_port,
+        opts.doc_url,
+    ))
 }

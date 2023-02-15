@@ -732,6 +732,7 @@ dependencies = [
  "futures",
  "js-sys",
  "log",
+ "peermerge-tcp",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "ws_stream_wasm",
@@ -783,7 +784,7 @@ checksum = "f55d280d4b6d9585f3d1458eb082fb30f541ad227b2102965e4c7aa239a5e9e4"
 [[package]]
 name = "flat-tree"
 version = "5.0.0"
-source = "git+https://github.com/ttiurani/flat-tree?branch=v10#ec7a72ef14f3cdf7460e87976f009960f8af5370"
+source = "git+https://github.com/ttiurani/flat-tree?branch=v10#3c669d8c70ac42c5dfc5fa0ea46b9ec2a203a5e0"
 
 [[package]]
 name = "flate2"
@@ -1247,6 +1248,20 @@ dependencies = [
  "random-access-disk",
  "random-access-memory",
  "random-access-storage",
+ "tracing",
+]
+
+[[package]]
+name = "peermerge-tcp"
+version = "0.0.1"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#0499bfd6c58bd6f09f52b62b02869a0cc66abe60"
+dependencies = [
+ "anyhow",
+ "async-std",
+ "futures",
+ "peermerge",
+ "random-access-disk",
+ "random-access-memory",
  "tracing",
 ]
 

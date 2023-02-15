@@ -1,18 +1,29 @@
-use async_std::channel::{Receiver, Sender};
-use extendedmind_core::{automerge, capnp, ui_protocol, EngineEvent};
+use extendedmind_core::{
+    capnp, ui_protocol, DocumentId, FeedDiskPersistence, Peermerge, RandomAccessDisk, StateEvent,
+    StateEventContent, ROOT,
+};
+use futures::channel::mpsc::{UnboundedReceiver, UnboundedSender};
+use futures::stream::StreamExt;
 use log::*;
 
-pub async fn poll_engine_event(
-    engine_event_receiver: Receiver<EngineEvent>,
-    ui_protocol_sender: Sender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
+pub async fn poll_state_event(
+    peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
+    doc_id: DocumentId,
+    mut state_event_receiver: UnboundedReceiver<StateEvent>,
+    ui_protocol_sender: UnboundedSender<
+        capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>,
+    >,
 ) {
     debug!("poll_engine_event called");
-    loop {
-        let engine_event = engine_event_receiver.recv().await.unwrap();
-        match engine_event {
-            EngineEvent::DocumentLoaded(doc) => {
-                debug!("EngineEvent::DocumentLoaded");
-                let (version, _change) = doc.get(&automerge::ROOT, "version").unwrap().unwrap();
+    while let Some(event) = state_event_receiver.next().await {
+        match event.content {
+            StateEventContent::DocumentInitialized() => {
+                debug!("StateEvent::DocumentInitialized");
+                let version = peermerge
+                    .get_scalar(&doc_id, ROOT, "version")
+                    .await
+                    .unwrap()
+                    .unwrap();
                 let version = version.to_u64().unwrap() as u8;
                 let mut message = capnp::message::TypedBuilder::<ui_protocol::Owned>::new_default();
                 {
@@ -22,8 +33,9 @@ pub async fn poll_engine_event(
                     let mut model = payload.init_init();
                     model.set_version(version);
                 }
-                ui_protocol_sender.send(message).await.unwrap();
+                ui_protocol_sender.unbounded_send(message).unwrap();
             }
+            _ => {}
         }
     }
 }
