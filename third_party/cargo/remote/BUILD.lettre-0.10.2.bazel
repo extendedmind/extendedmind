@@ -103,7 +103,7 @@ rust_library(
         "@raze__idna__0_3_0//:idna",
         "@raze__mime__0_3_16//:mime",
         "@raze__nom__7_1_3//:nom",
-        "@raze__once_cell__1_17_0//:once_cell",
+        "@raze__once_cell__1_17_1//:once_cell",
         "@raze__quoted_printable__0_4_7//:quoted_printable",
         "@raze__rustls__0_20_8//:rustls",
         "@raze__rustls_pemfile__1_0_2//:rustls_pemfile",

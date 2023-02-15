@@ -21,7 +21,7 @@ chrono = { version = "0.4.19" }
 futures = "^0.3.5"
 async-std = { version = "1.9.0", features = ["unstable"] }
 async-attributes = "1.1.2"
-async-trait = "0.1.51"
+async-trait = "0.1.63"
 tide = "0.16.0"
 tide-websockets = "0.4.0"
 tide-compress = "0.10.2"

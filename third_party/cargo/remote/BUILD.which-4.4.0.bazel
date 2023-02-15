@@ -60,7 +60,7 @@ rust_library(
         (
             "@rules_rust//rust/platform:x86_64-pc-windows-msvc",
         ): [
-            "@raze__once_cell__1_17_0//:once_cell",
+            "@raze__once_cell__1_17_1//:once_cell",
         ],
         "//conditions:default": [],
     }),

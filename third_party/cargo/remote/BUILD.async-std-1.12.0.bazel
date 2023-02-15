@@ -129,7 +129,7 @@ rust_library(
         "@raze__kv_log_macro__1_0_7//:kv_log_macro",
         "@raze__log__0_4_17//:log",
         "@raze__memchr__2_5_0//:memchr",
-        "@raze__once_cell__1_17_0//:once_cell",
+        "@raze__once_cell__1_17_1//:once_cell",
         "@raze__pin_project_lite__0_2_9//:pin_project_lite",
         "@raze__pin_utils__0_1_0//:pin_utils",
         "@raze__slab__0_4_7//:slab",

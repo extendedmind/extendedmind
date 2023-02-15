@@ -1862,12 +1862,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__gimli__0_27_1",
-        url = "https://crates.io/api/v1/crates/gimli/0.27.1/download",
+        name = "raze__gimli__0_27_2",
+        url = "https://crates.io/api/v1/crates/gimli/0.27.2/download",
         type = "tar.gz",
-        sha256 = "221996f774192f0f718773def8201c4ae31f02616a54ccfc2d358bb0e5cefdec",
-        strip_prefix = "gimli-0.27.1",
-        build_file = Label("//third_party/cargo/remote:BUILD.gimli-0.27.1.bazel"),
+        sha256 = "ad0a93d233ebf96623465aad4046a8d3aa4da22d4f4beba5388838c8a434bbb4",
+        strip_prefix = "gimli-0.27.2",
+        build_file = Label("//third_party/cargo/remote:BUILD.gimli-0.27.2.bazel"),
     )
 
     maybe(
@@ -2620,12 +2620,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__once_cell__1_17_0",
-        url = "https://crates.io/api/v1/crates/once_cell/1.17.0/download",
+        name = "raze__once_cell__1_17_1",
+        url = "https://crates.io/api/v1/crates/once_cell/1.17.1/download",
         type = "tar.gz",
-        sha256 = "6f61fba1741ea2b3d6a1e3178721804bb716a68a6aeba1149b5d52e3d464ea66",
-        strip_prefix = "once_cell-1.17.0",
-        build_file = Label("//third_party/cargo/remote:BUILD.once_cell-1.17.0.bazel"),
+        sha256 = "b7e5500299e16ebb147ae15a00a942af264cf3688f47923b8fc2cd5858f23ad3",
+        strip_prefix = "once_cell-1.17.1",
+        build_file = Label("//third_party/cargo/remote:BUILD.once_cell-1.17.1.bazel"),
     )
 
     maybe(
