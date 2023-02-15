@@ -5,7 +5,7 @@ use age::cli_common::file_io;
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
 use chrono::prelude::*;
-use extendedmind_engine::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
+use extendedmind_core::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
 use flate2::write::GzEncoder;
 use flate2::Compression;
 use futures::stream::StreamExt;

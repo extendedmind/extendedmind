@@ -4,7 +4,7 @@ load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test", "rustfmt_test")
 load("@bazel_skylib//lib:selects.bzl", "selects")
 
 rust_library(
-    name = "extendedmind_engine",
+    name = "extendedmind_core",
     deps = [
         "//schema:extendedmind_schema_rust",
         "//third_party/cargo:peermerge",
@@ -17,12 +17,12 @@ rust_library(
 )
 
 rust_test(
-    name = "extendedmind_engine_test",
-    crate = ":extendedmind_engine",
+    name = "extendedmind_core_test",
+    crate = ":extendedmind_core",
     size = "small",
 )
 
 rustfmt_test(
-    name = "extendedmind_engine_rustfmt_test",
-    targets = [":extendedmind_engine"],
+    name = "extendedmind_core_rustfmt_test",
+    targets = [":extendedmind_core"],
 )

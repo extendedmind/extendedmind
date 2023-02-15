@@ -1,5 +1,5 @@
 use async_std::task;
-use extendedmind_hub::extendedmind_engine::{Bytes, ChannelWriter, ProtocolBuilder, StateEvent};
+use extendedmind_hub::extendedmind_core::{Bytes, ChannelWriter, ProtocolBuilder, StateEvent};
 use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
 use futures::stream::{IntoAsyncRead, StreamExt, TryStreamExt};
 use log::debug;

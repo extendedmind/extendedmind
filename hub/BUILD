@@ -4,7 +4,7 @@ load("@rules_rust//rust:defs.bzl", "rust_library", "rust_binary", "rustfmt_test"
 
 HUB_DEPS = [
     "//schema:extendedmind_schema_rust",
-    "//engine:extendedmind_engine",
+    "//core:extendedmind_core",
     "//third_party/cargo:peermerge_tcp",
     "//third_party/cargo:log",
     "//third_party/cargo:anyhow",

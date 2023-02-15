@@ -2,7 +2,7 @@ mod wasm {
     // use crate::connect::connect_active;
     use crate::connect::poll_engine_event;
     use async_std::channel::{Receiver, Sender};
-    use extendedmind_engine::{
+    use extendedmind_core::{
         capnp, ui_protocol, Bytes, ChannelWriter, Engine, EngineEvent, Result,
     };
     use futures::SinkExt;
@@ -39,8 +39,8 @@ mod wasm {
         debug!("...engine created, connecting...");
 
         let (ui_protocol_sender, mut ui_protocol_receiver): (
-            Sender<capnp::message::TypedBuilder<extendedmind_engine::ui_protocol::Owned>>,
-            Receiver<capnp::message::TypedBuilder<extendedmind_engine::ui_protocol::Owned>>,
+            Sender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
+            Receiver<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
         ) = async_std::channel::bounded(1000);
 
         let (outgoing_sender, mut to_wire_receiver): (

@@ -1,4 +1,4 @@
-use extendedmind_hub::extendedmind_engine::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
+use extendedmind_hub::extendedmind_core::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
 use tide::http::{headers::HeaderValues, Method};
 use wildmatch::WildMatch;
 

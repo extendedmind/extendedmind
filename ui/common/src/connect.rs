@@ -1,12 +1,10 @@
 use async_std::channel::{Receiver, Sender};
-use extendedmind_engine::{automerge, capnp, ui_protocol, EngineEvent};
+use extendedmind_core::{automerge, capnp, ui_protocol, EngineEvent};
 use log::*;
 
 pub async fn poll_engine_event(
     engine_event_receiver: Receiver<EngineEvent>,
-    ui_protocol_sender: Sender<
-        capnp::message::TypedBuilder<extendedmind_engine::ui_protocol::Owned>,
-    >,
+    ui_protocol_sender: Sender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
 ) {
     debug!("poll_engine_event called");
     loop {

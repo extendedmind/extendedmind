@@ -1,5 +1,5 @@
 use async_std::task;
-use extendedmind_engine::StateEvent;
+use extendedmind_core::StateEvent;
 use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
 use futures::stream::StreamExt;
 use peermerge_tcp::connect_tcp_server_disk;

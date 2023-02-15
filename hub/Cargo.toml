@@ -8,7 +8,7 @@ authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 # TODO: Build following https://blog.dend.ro/building-rust-for-routers/
 
 [dependencies]
-extendedmind_engine = { path = "../engine" }
+extendedmind_core = { path = "../core" }
 peermerge-tcp = { git = "https://github.com/extendedmind/peermerge.git", branch = "main", default-features = false, features = ["async-std-runtime"] }
 fern = "0.6.0"
 log = "0.4.11"

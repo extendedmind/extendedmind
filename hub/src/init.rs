@@ -3,7 +3,7 @@ use async_ctrlc::CtrlC;
 use async_std::channel::{unbounded, Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
-use extendedmind_engine::{FeedDiskPersistence, NameDescription, Peermerge, RandomAccessDisk};
+use extendedmind_core::{FeedDiskPersistence, NameDescription, Peermerge, RandomAccessDisk};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::process;

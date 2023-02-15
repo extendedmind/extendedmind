@@ -5,7 +5,7 @@ load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_test", "rustfmt_test")
 rust_binary(
     name = "extendedmind_cli",
     deps = ["//schema:extendedmind_schema_rust",
-            "//engine:extendedmind_engine",
+            "//core:extendedmind_core",
             "//ui/common:extendedmind_ui_common",
             "//third_party/cargo:async_tungstenite",
             "//third_party/cargo:futures",

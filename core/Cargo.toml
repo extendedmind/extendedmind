@@ -2,7 +2,7 @@
 path = "src/lib.rs"
 
 [package]
-name = "extendedmind_engine"
+name = "extendedmind_core"
 version = "0.0.1"
 edition = "2021"
 licence = "AGPL-3.0-only"

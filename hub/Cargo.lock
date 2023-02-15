@@ -1034,7 +1034,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0206175f82b8d6bf6652ff7d71a1e27fd2e4efde587fd368662814d6ec1d9ce0"
 
 [[package]]
-name = "extendedmind_engine"
+name = "extendedmind_core"
 version = "0.0.1"
 dependencies = [
  "anyhow",
@@ -1055,7 +1055,7 @@ dependencies = [
  "async-std",
  "chrono",
  "clap",
- "extendedmind_engine",
+ "extendedmind_core",
  "fern",
  "flate2",
  "futures",

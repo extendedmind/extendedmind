@@ -4,7 +4,7 @@ load("@rules_rust//rust:defs.bzl", "rust_shared_library", "rustfmt_test")
 
 deps = [
     "//schema:extendedmind_schema_rust",
-    "//engine:extendedmind_engine",
+    "//core:extendedmind_core",
     "//ui/common:extendedmind_ui_common",
     "//third_party/cargo:jni",
     "//third_party/cargo:futures",

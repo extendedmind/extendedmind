@@ -5,7 +5,7 @@ load("@rules_rust//wasm_bindgen:wasm_bindgen.bzl", "rust_wasm_bindgen")
 
 deps = [
     "//schema:extendedmind_schema_rust",
-    "//engine:extendedmind_engine",
+    "//core:extendedmind_core",
     "//third_party/cargo:wasm_bindgen",
     "//third_party/cargo:wasm_bindgen_futures",
     "//third_party/cargo:ws_stream_wasm",

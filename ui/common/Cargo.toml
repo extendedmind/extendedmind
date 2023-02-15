@@ -9,7 +9,7 @@ licence = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
-extendedmind_engine = { path = "../../engine" }
+extendedmind_core = { path = "../../core" }
 log = "0.4.14"
 wasm-bindgen = "=0.2.78"
 wasm-bindgen-futures = "0.4.28"

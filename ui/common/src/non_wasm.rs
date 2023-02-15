@@ -2,7 +2,7 @@ use crate::connect::poll_engine_event;
 use async_std::channel::{Receiver, Sender};
 use async_std::net::TcpStream;
 use async_std::task;
-use extendedmind_engine::{capnp, Engine, EngineEvent, Result};
+use extendedmind_core::{capnp, Engine, EngineEvent, Result};
 use log::*;
 use std::path::PathBuf;
 
@@ -10,9 +10,7 @@ pub async fn connect_to_hub(
     data_root_dir: PathBuf,
     hub_url: &str,
     public_key: &str,
-    ui_protocol_sender: Sender<
-        capnp::message::TypedBuilder<extendedmind_engine::ui_protocol::Owned>,
-    >,
+    ui_protocol_sender: Sender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
 ) -> Result<()> {
     debug!("connect_to_hub called");
     let engine = Engine::new_disk(&data_root_dir, true, Some(public_key)).await;
