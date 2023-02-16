@@ -2,16 +2,18 @@ use async_std::task;
 use clap::{Parser, Subcommand};
 use extendedmind_ui_common::non_wasm::{back_up, create_document};
 use log::*;
-use std::path::PathBuf;
+use std::{io::Write, path::PathBuf};
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
     /// Create a new extendedmind document.
     Create {
-        #[clap(short, long)]
-        encrypted: bool,
         #[clap(long)]
         description: Option<String>,
+        #[clap(short, long)]
+        encrypted: bool,
+        #[clap(short, long)]
+        output: Option<PathBuf>,
     },
     /// Back up to remote
     BackUp {
@@ -53,13 +55,33 @@ async fn run_create_document(
     data_root_dir: PathBuf,
     description: Option<String>,
     encrypted: bool,
+    output: Option<PathBuf>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let (_peermerge, _document_id, doc_url, proxy_doc_url, encryption_key) =
         create_document(data_root_dir, description, encrypted).await?;
-    println!("DOC_URL={}", doc_url);
-    println!("PROXY_DOC_URL={}", proxy_doc_url);
+    let mut lines: Vec<String> = vec![];
+    lines.push(format!("DOC_URL={}", doc_url));
+    lines.push(format!("PROXY_DOC_URL={}", proxy_doc_url));
     if let Some(encryption_key) = encryption_key {
-        println!("ENCRYPTION_KEY={}", encryption_key)
+        lines.push(format!("ENCRYPTION_KEY={}", encryption_key));
+    }
+    if let Some(output) = output {
+        let output_file = std::fs::OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(output)
+            .unwrap();
+        let mut output_writer = std::io::LineWriter::new(output_file);
+
+        for line in lines {
+            output_writer.write_all(line.as_bytes())?;
+            output_writer.write_all(b"\n")?;
+        }
+    } else {
+        for line in lines {
+            println!("{}", line);
+        }
     }
     Ok(())
 }
@@ -80,12 +102,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opts: Opts = Opts::parse();
     match opts.command {
         Command::Create {
-            encrypted,
             description,
+            encrypted,
+            output,
         } => task::block_on(run_create_document(
             opts.data_root_dir,
             description,
             encrypted,
+            output,
         )),
         Command::BackUp {
             hub_domain,
