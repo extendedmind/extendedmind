@@ -53,6 +53,13 @@ fn main() -> Result<()> {
                 performance_opts,
             )?;
         }
+        Command::Register { peermerge_doc_url } => {
+            let result = futures::executor::block_on(execute_admin_command(
+                admin_socket_file,
+                AdminCommand::Register { peermerge_doc_url },
+            ))?;
+            process::exit(result.into());
+        }
         Command::BustCache { .. } => {
             setup_logging(
                 LogMethod::StdOut,

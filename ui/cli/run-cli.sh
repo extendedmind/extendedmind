@@ -12,7 +12,24 @@ bazel run //ui/cli:extendedmind_cli -- \
 
 export $(grep -v '^#' ${TARGET_PATH}/secrets.txt | xargs)
 
-echo "HELO ${DOC_URL}"
+HUB_SOCKET=$(echo "$(cd "$(dirname "../../hub/target/hub.sock")"; pwd)/$(basename "../../hub/target/hub.sock")")
+SERVER_SOCKET=$(echo "$(cd "$(dirname "../../server/target/server.sock")"; pwd)/$(basename "../../server/target/server.sock")")
+if [ -S "$HUB_SOCKET" ]; then
+    # Register created doc url to hub
+    bazel run //hub:extendedmind_hub_bin -- \
+          --admin-socket-file ${HUB_SOCKET} \
+          register \
+          --peermerge-doc-url ${PROXY_DOC_URL}
+elif [ -S "$SERVER_SOCKET" ]; then
+    # Register created doc url to server
+    bazel run //server:extendedmind_server -- \
+          --admin-socket-file ${SERVER_SOCKET} \
+          register \
+          --peermerge-doc-url ${PROXY_DOC_URL}
+else
+    echo "Neither hub nor server running, exiting"
+    exit 0
+fi
 
 # --hub-domain localhost
 # --hub-port 3002

@@ -1,7 +1,10 @@
 use anyhow::Result;
-use extendedmind_hub::common::BackupOpts;
-use extendedmind_hub::init::{initialize, InitializeResult};
+use async_std::task;
+use extendedmind_hub::common::{AdminCommand, BackupOpts};
+use extendedmind_hub::extendedmind_core::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
+use extendedmind_hub::init::initialize;
 use extendedmind_hub::listen::listen;
+use futures::stream::StreamExt;
 use moka::future::Cache;
 use std::path::PathBuf;
 use tide::http::headers::{HeaderName, HeaderValues};
@@ -45,6 +48,30 @@ pub fn start_server(
         performance_opts.cache_tti_sec,
     );
 
+    // Listen to admin commands
+    let mut admin_command_receiver = initialize_result.admin_command_receiver;
+    let admin_result_sender = initialize_result.admin_result_sender;
+    let mut peermerge_for_task = initialize_result.peermerge.clone();
+    let mut cache_for_task = cache.clone();
+    task::spawn(async move {
+        while let Some(event) = admin_command_receiver.next().await {
+            match event {
+                AdminCommand::Register { peermerge_doc_url } => {
+                    peermerge_for_task
+                        .attach_proxy_document_disk(&peermerge_doc_url)
+                        .await;
+                    admin_result_sender.try_send(Ok(())).unwrap();
+                }
+                AdminCommand::BustCache { .. } => {
+                    if let Some(cache) = cache_for_task.as_mut() {
+                        cache.invalidate_all();
+                    }
+                    admin_result_sender.try_send(Ok(())).unwrap();
+                }
+            }
+        }
+    });
+
     // Log processing to metrics
     if let Some(metrics_dir) = metrics_opts.metrics_dir.as_ref() {
         if let Some(log_dir) = log_opts.log_dir {
@@ -58,7 +85,7 @@ pub fn start_server(
 
     // Block server
     futures::executor::block_on(start_server_async(
-        initialize_result,
+        initialize_result.peermerge,
         cache,
         port_opts,
         http_opts,
@@ -70,7 +97,7 @@ pub fn start_server(
 }
 
 async fn start_server_async(
-    initialize_result: InitializeResult,
+    peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
     cache: Option<Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>>,
     port_opts: PortOpts,
     http_opts: HttpOpts,
@@ -78,7 +105,7 @@ async fn start_server_async(
     performance_opts: PerformanceOpts,
 ) -> Result<()> {
     if let Some(http_port) = port_opts.http_port {
-        let initial_state = State::new(initialize_result.peermerge.clone());
+        let initial_state = State::new(peermerge.clone());
         let main_server = http_main_server(
             initial_state,
             cache,
@@ -119,7 +146,7 @@ async fn start_server_async(
             );
 
             if let Some(tcp_port) = port_opts.tcp_port {
-                let tcp_listener = listen(initialize_result, tcp_port);
+                let tcp_listener = listen(peermerge, tcp_port);
                 futures::try_join!(main_listener, redirect_listener, tcp_listener)?;
             } else {
                 futures::try_join!(main_listener, redirect_listener)?;
@@ -127,7 +154,7 @@ async fn start_server_async(
         } else {
             let main_listener = main_server.listen(format!("0.0.0.0:{}", &http_port));
             if let Some(tcp_port) = port_opts.tcp_port {
-                let tcp_listener = listen(initialize_result, tcp_port);
+                let tcp_listener = listen(peermerge, tcp_port);
                 futures::try_join!(main_listener, tcp_listener)?;
             } else {
                 main_listener.await?;
@@ -135,7 +162,7 @@ async fn start_server_async(
         }
     } else {
         if let Some(tcp_port) = port_opts.tcp_port {
-            listen(initialize_result, tcp_port).await?;
+            listen(peermerge, tcp_port).await?;
         } else {
             anyhow::bail!("Either --tcp-port or --http-port is mandatory");
         };

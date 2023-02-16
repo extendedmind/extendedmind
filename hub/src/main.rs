@@ -1,10 +1,12 @@
 use anyhow::Result;
+use async_std::task;
 use clap::{Parser, Subcommand};
+use futures::stream::StreamExt;
 use std::{path::PathBuf, process};
 
 use crate::{
     admin::execute_admin_command,
-    common::{BackupOpts, GlobalOpts},
+    common::{AdminCommand, BackupOpts, GlobalOpts},
     init::initialize,
     listen::listen,
 };
@@ -79,13 +81,34 @@ fn main() -> Result<()> {
             let initialize_result =
                 initialize(&data_root_dir, admin_socket_file, backup_opts, vec![])?;
 
+            // Listen to admin commands
+            let mut admin_command_receiver = initialize_result.admin_command_receiver;
+            let admin_result_sender = initialize_result.admin_result_sender;
+            let mut peermerge_for_task = initialize_result.peermerge.clone();
+            task::spawn(async move {
+                while let Some(event) = admin_command_receiver.next().await {
+                    match event {
+                        AdminCommand::Register { peermerge_doc_url } => {
+                            peermerge_for_task
+                                .attach_proxy_document_disk(&peermerge_doc_url)
+                                .await;
+                            admin_result_sender.try_send(Ok(())).unwrap();
+                        }
+                        AdminCommand::BustCache { .. } => {
+                            // Nothing to do, just exit
+                            admin_result_sender.try_send(Ok(())).unwrap();
+                        }
+                    }
+                }
+            });
+
             // Block on server
-            futures::executor::block_on(listen(initialize_result, tcp_port))?;
+            futures::executor::block_on(listen(initialize_result.peermerge, tcp_port))?;
         }
         Command::Register { peermerge_doc_url } => {
             let result = futures::executor::block_on(execute_admin_command(
                 admin_socket_file,
-                common::AdminCommand::Register { peermerge_doc_url },
+                AdminCommand::Register { peermerge_doc_url },
             ))?;
             process::exit(result.into());
         }

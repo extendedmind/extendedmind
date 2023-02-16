@@ -91,6 +91,11 @@ pub enum Command {
         #[clap(flatten)]
         backup_opts: BackupOpts,
     },
+    /// Register a proxy for a peermerge's document URL
+    Register {
+        #[clap(short, long)]
+        peermerge_doc_url: String,
+    },
     /// Bust cache
     BustCache {},
 }

@@ -14,7 +14,7 @@ set -euo pipefail
 mkdir -p target/logs/metrics
 TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
 ../ui/web/node_modules/.bin/ibazel run //server:extendedmind_server -- \
-    --admin-socket-file ${TARGET_PATH}/extendedmind_server.sock \
+    --admin-socket-file ${TARGET_PATH}/server.sock \
     --verbose true \
     start \
     --data-root-dir ${TARGET_PATH} --http-port 3001 \
