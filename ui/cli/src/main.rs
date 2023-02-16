@@ -1,21 +1,36 @@
 use async_std::task;
-use clap::Parser;
-use extendedmind_core::capnp;
-use extendedmind_ui_common::non_wasm::connect_to_hub;
-use futures::{
-    channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender},
-    prelude::*,
-};
+use clap::{Parser, Subcommand};
+use extendedmind_ui_common::non_wasm::{back_up, create_document};
 use log::*;
 use std::path::PathBuf;
+
+#[derive(Debug, Subcommand)]
+pub enum Command {
+    /// Create a new extendedmind document.
+    Create {
+        #[clap(short, long)]
+        encrypted: bool,
+        #[clap(long)]
+        description: Option<String>,
+    },
+    /// Back up to remote
+    BackUp {
+        #[clap(long)]
+        encryption_key: Option<String>,
+        #[clap(long)]
+        hub_domain: String,
+        #[clap(long)]
+        hub_port: u16,
+    },
+}
 
 #[derive(Parser)]
 #[clap(version = "0.0.1", author = "Timo Tiuraniemi <timo.tiuraniemi@iki.fi>")]
 struct Opts {
+    #[clap(subcommand)]
+    command: Command,
+    #[clap(short, long)]
     data_root_dir: PathBuf,
-    hub_host: String,
-    hub_port: u16,
-    doc_url: String,
 }
 
 fn setup_logging() {
@@ -34,50 +49,53 @@ fn setup_logging() {
     base_config.chain(std_config).apply().unwrap();
 }
 
-async fn run(
+async fn run_create_document(
     data_root_dir: PathBuf,
-    hub_host: String,
-    hub_port: u16,
-    doc_url: String,
+    description: Option<String>,
+    encrypted: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    debug!("Cli run");
-    let (ui_protocol_sender, mut ui_protocol_receiver): (
-        UnboundedSender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
-        UnboundedReceiver<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
-    ) = unbounded();
+    let (_peermerge, _document_id, doc_url, proxy_doc_url, encryption_key) =
+        create_document(data_root_dir, description, encrypted).await?;
+    println!("DOC_URL={}", doc_url);
+    println!("PROXY_DOC_URL={}", proxy_doc_url);
+    if let Some(encryption_key) = encryption_key {
+        println!("ENCRYPTION_KEY={}", encryption_key)
+    }
+    Ok(())
+}
 
-    task::spawn_local(async move {
-        debug!("Connecting to hub");
-        connect_to_hub(
-            data_root_dir,
-            &hub_host,
-            hub_port,
-            &doc_url,
-            ui_protocol_sender,
-        )
-        .await
-        .unwrap();
-    });
-
-    // TODO: Eventually this would be a loop
-    // loop {
-    debug!("Begin listening to ui protocol messages");
-    let message = ui_protocol_receiver.next().await.unwrap();
-    let mut packed_message = Vec::<u8>::new();
-    capnp::serialize_packed::write_message(&mut packed_message, message.borrow_inner()).unwrap();
-    debug!("Got message {:?}", packed_message);
-    // }
-
+async fn run_back_up(
+    data_root_dir: PathBuf,
+    encryption_key: Option<String>,
+    hub_domain: String,
+    hub_port: u16,
+) -> Result<(), Box<dyn std::error::Error>> {
+    debug!("cli: back-up");
+    back_up(data_root_dir, encryption_key, hub_domain, hub_port).await?;
     Ok(())
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_logging();
     let opts: Opts = Opts::parse();
-    task::block_on(run(
-        opts.data_root_dir,
-        opts.hub_host,
-        opts.hub_port,
-        opts.doc_url,
-    ))
+    match opts.command {
+        Command::Create {
+            encrypted,
+            description,
+        } => task::block_on(run_create_document(
+            opts.data_root_dir,
+            description,
+            encrypted,
+        )),
+        Command::BackUp {
+            hub_domain,
+            hub_port,
+            encryption_key,
+        } => task::block_on(run_back_up(
+            opts.data_root_dir,
+            encryption_key,
+            hub_domain,
+            hub_port,
+        )),
+    }
 }

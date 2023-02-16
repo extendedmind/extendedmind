@@ -48,7 +48,7 @@ rust_library(
         "crate-name=cxxbridge-flags",
         "manual",
     ],
-    version = "1.0.90",
+    version = "1.0.91",
 
     # buildifier: leave-alone
     deps = [

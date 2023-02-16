@@ -1,5 +1,5 @@
 use extendedmind_core::{
-    capnp, ui_protocol, DocumentId, FeedDiskPersistence, Peermerge, RandomAccessDisk, StateEvent,
+    capnp, ui_protocol, FeedDiskPersistence, Peermerge, RandomAccessDisk, StateEvent,
     StateEventContent, ROOT,
 };
 use futures::channel::mpsc::{UnboundedReceiver, UnboundedSender};
@@ -8,7 +8,6 @@ use log::*;
 
 pub async fn poll_state_event(
     peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
-    doc_id: DocumentId,
     mut state_event_receiver: UnboundedReceiver<StateEvent>,
     ui_protocol_sender: UnboundedSender<
         capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>,
@@ -20,7 +19,7 @@ pub async fn poll_state_event(
             StateEventContent::DocumentInitialized() => {
                 debug!("StateEvent::DocumentInitialized");
                 let version = peermerge
-                    .get_scalar(&doc_id, ROOT, "version")
+                    .get_scalar(&event.document_id, ROOT, "version")
                     .await
                     .unwrap()
                     .unwrap();

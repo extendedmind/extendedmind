@@ -65,7 +65,7 @@ rust_library(
         "@raze__oid_registry__0_4_0//:oid_registry",
         "@raze__rusticata_macros__4_1_0//:rusticata_macros",
         "@raze__thiserror__1_0_38//:thiserror",
-        "@raze__time__0_3_17//:time",
+        "@raze__time__0_3_18//:time",
     ],
 )
 

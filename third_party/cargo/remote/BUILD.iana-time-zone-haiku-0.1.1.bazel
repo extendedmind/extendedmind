@@ -57,7 +57,7 @@ cargo_build_script(
     version = "0.1.1",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__cxx_build__1_0_90//:cxx_build",
+        "@raze__cxx_build__1_0_91//:cxx_build",
     ],
 )
 
@@ -82,7 +82,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         ":iana_time_zone_haiku_build_script",
-        "@raze__cxx__1_0_90//:cxx",
+        "@raze__cxx__1_0_91//:cxx",
     ],
 )
 

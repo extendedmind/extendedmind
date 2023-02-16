@@ -1,8 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-mkdir -p target
-rm -rf target/true.db
+rm -rf target/data
+mkdir -p target/data
 TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
-PUBLIC_KEY=$(cat ../../hub/target/KEY.txt)
-bazel run //ui/cli:extendedmind_cli -- ${TARGET_PATH} localhost:3002 $PUBLIC_KEY
+bazel run //ui/cli:extendedmind_cli -- \
+    --data-root-dir ${TARGET_PATH}/data \
+    create \
+    --encrypted
+
+
+# --hub-domain localhost
+# --hub-port 3002

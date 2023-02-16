@@ -31,8 +31,8 @@ licenses([
 
 # Generated Targets
 
-rust_library(
-    name = "cxx_build",
+rust_proc_macro(
+    name = "cxxbridge_macro",
     srcs = glob(["**/*.rs"]),
     crate_features = [
     ],
@@ -44,20 +44,15 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=cxx-build",
+        "crate-name=cxxbridge-macro",
         "manual",
     ],
-    version = "1.0.90",
+    version = "1.0.91",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__cc__1_0_79//:cc",
-        "@raze__codespan_reporting__0_11_1//:codespan_reporting",
-        "@raze__once_cell__1_17_1//:once_cell",
         "@raze__proc_macro2__1_0_51//:proc_macro2",
         "@raze__quote__1_0_23//:quote",
-        "@raze__scratch__1_0_3//:scratch",
         "@raze__syn__1_0_107//:syn",
     ],
 )
-

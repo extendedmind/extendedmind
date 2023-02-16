@@ -26,7 +26,7 @@ deps = [
     "//conditions:default": [
         "//third_party/cargo:peermerge_tcp",
     ],
-}),
+})
 
 proc_macro_deps = [
     "//third_party/cargo:async_attributes",
