@@ -4,6 +4,7 @@ set -euo pipefail
 rm -rf target/data
 mkdir -p target/data
 TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
+# cargo run -- \
 bazel run //ui/cli:extendedmind_cli -- \
     --data-root-dir ${TARGET_PATH}/data \
     create \
@@ -14,6 +15,7 @@ export $(grep -v '^#' ${TARGET_PATH}/secrets.txt | xargs)
 
 HUB_SOCKET=$(echo "$(cd "$(dirname "../../hub/target/hub.sock")"; pwd)/$(basename "../../hub/target/hub.sock")")
 SERVER_SOCKET=$(echo "$(cd "$(dirname "../../server/target/server.sock")"; pwd)/$(basename "../../server/target/server.sock")")
+PORT=3000
 if [ -S "$HUB_SOCKET" ]; then
     # Register created doc url to hub
     bazel run //hub:extendedmind_hub_bin -- \
@@ -31,5 +33,11 @@ else
     exit 0
 fi
 
-# --hub-domain localhost
-# --hub-port 3002
+# Backup to hub or server
+# cargo run -- \
+bazel run //ui/cli:extendedmind_cli -- \
+    --data-root-dir ${TARGET_PATH}/data \
+    back-up \
+    --hub-domain localhost \
+    --hub-port ${PORT} \
+    --encryption-key ${ENCRYPTION_KEY}

@@ -13,6 +13,7 @@ use std::path::PathBuf;
 
 pub async fn connect_to_hub(
     peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
+    main_document_id: DocumentId,
     hub_domain: &str,
     hub_port: u16,
     ui_protocol_sender: UnboundedSender<
@@ -38,7 +39,13 @@ pub async fn connect_to_hub(
         .unwrap();
     });
 
-    poll_state_event(peermerge, state_event_receiver, ui_protocol_sender).await;
+    poll_state_event(
+        peermerge,
+        &main_document_id,
+        state_event_receiver,
+        ui_protocol_sender,
+    )
+    .await;
 
     Ok(())
 }
@@ -46,11 +53,19 @@ pub async fn connect_to_hub(
 pub async fn peermerge_state(
     data_root_dir: &PathBuf,
     encryption_key: Option<String>,
-) -> (bool, HashMap<DocumentId, String>) {
+) -> (Option<DocumentId>, HashMap<DocumentId, String>) {
     let document_infos = Peermerge::document_infos_disk(&data_root_dir).await;
     let mut encryption_keys: HashMap<DocumentId, String> = HashMap::new();
     if let Some(document_infos) = document_infos {
+        let mut main_document_id: Option<DocumentId> = None;
         for document_info in document_infos {
+            if document_info.parent_document_id.is_none() && !document_info.doc_url_info.proxy_only
+            {
+                if main_document_id.is_some() {
+                    panic!("Peermerge contains multiple main documents.")
+                }
+                main_document_id = Some(document_info.document_id);
+            }
             if document_info.doc_url_info.encrypted.unwrap_or(false) {
                 if let Some(encryption_key) = encryption_key.as_ref() {
                     encryption_keys.insert(document_info.document_id, encryption_key.clone());
@@ -59,11 +74,14 @@ pub async fn peermerge_state(
                 }
             }
         }
-        (true, encryption_keys)
+        if main_document_id.is_none() {
+            panic!("Peermerge doesn't contain a main document.")
+        }
+        (main_document_id, encryption_keys)
     } else if encryption_key.is_some() {
         panic!("Encryption key given but repository not yet created");
     } else {
-        (false, encryption_keys)
+        (None, encryption_keys)
     }
 }
 
@@ -81,8 +99,8 @@ pub async fn create_document(
     ),
     Box<dyn std::error::Error>,
 > {
-    let (exists, encryption_keys) = peermerge_state(&data_root_dir, None).await;
-    if exists {
+    let (main_document_id, encryption_keys) = peermerge_state(&data_root_dir, None).await;
+    if main_document_id.is_some() {
         panic!("Already created");
     }
     let mut peermerge = get_peermerge(&data_root_dir, encryption_keys).await?;
@@ -117,18 +135,21 @@ pub async fn back_up(
         UnboundedReceiver<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
     ) = unbounded();
 
-    let (exists, encryption_keys) = peermerge_state(&data_root_dir, encryption_key).await;
-    if !exists {
-        panic!("Peermerge not created, can't back up");
-    }
-
+    let (main_document_id, encryption_keys) = peermerge_state(&data_root_dir, encryption_key).await;
+    let main_document_id = main_document_id.expect("Peermerge not created, can't back up");
     let peermerge = get_peermerge(&data_root_dir, encryption_keys).await?;
 
     task::spawn_local(async move {
         debug!("Connecting to hub");
-        connect_to_hub(peermerge, &hub_domain, hub_port, ui_protocol_sender)
-            .await
-            .unwrap();
+        connect_to_hub(
+            peermerge,
+            main_document_id,
+            &hub_domain,
+            hub_port,
+            ui_protocol_sender,
+        )
+        .await
+        .unwrap();
     });
 
     // TODO: Eventually this would be a loop
