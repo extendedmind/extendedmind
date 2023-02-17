@@ -2064,7 +2064,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__hypercore__0_11_1_beta_10",
         remote = "https://github.com/ttiurani/hypercore",
-        commit = "5e4093c8d240f2798592059f32afd063f3b72890",
+        commit = "499a8f3c8766b94f5b1627e1c8252a02b818e78a",
         build_file = Label("//third_party/cargo/remote:BUILD.hypercore-0.11.1-beta.10.bazel"),
         init_submodules = True,
     )
@@ -2712,7 +2712,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__peermerge__0_0_1",
         remote = "https://github.com/extendedmind/peermerge.git",
-        commit = "f9361da5a8bd0f1d2c6cba3a81b1c628c2c96171",
+        commit = "2b1c9a1084f7ad4207b3a97ca125e12b5bdd1499",
         build_file = Label("//third_party/cargo/remote:BUILD.peermerge-0.0.1.bazel"),
         init_submodules = True,
     )
@@ -2721,7 +2721,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__peermerge_tcp__0_0_1",
         remote = "https://github.com/extendedmind/peermerge.git",
-        commit = "f9361da5a8bd0f1d2c6cba3a81b1c628c2c96171",
+        commit = "2b1c9a1084f7ad4207b3a97ca125e12b5bdd1499",
         build_file = Label("//third_party/cargo/remote:BUILD.peermerge-tcp-0.0.1.bazel"),
         init_submodules = True,
     )
@@ -4033,12 +4033,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__time__0_3_18",
-        url = "https://crates.io/api/v1/crates/time/0.3.18/download",
+        name = "raze__time__0_3_19",
+        url = "https://crates.io/api/v1/crates/time/0.3.19/download",
         type = "tar.gz",
-        sha256 = "af0097eaf301d576d0b2aead7a59facab6d53cc636340f0291fab8446a2e8613",
-        strip_prefix = "time-0.3.18",
-        build_file = Label("//third_party/cargo/remote:BUILD.time-0.3.18.bazel"),
+        sha256 = "53250a3b3fed8ff8fd988587d8925d26a83ac3845d9e03b220b37f34c2b8d6c2",
+        strip_prefix = "time-0.3.19",
+        build_file = Label("//third_party/cargo/remote:BUILD.time-0.3.19.bazel"),
     )
 
     maybe(
@@ -4063,12 +4063,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__time_macros__0_2_6",
-        url = "https://crates.io/api/v1/crates/time-macros/0.2.6/download",
+        name = "raze__time_macros__0_2_7",
+        url = "https://crates.io/api/v1/crates/time-macros/0.2.7/download",
         type = "tar.gz",
-        sha256 = "d967f99f534ca7e495c575c62638eebc2898a8c84c119b89e250477bc4ba16b2",
-        strip_prefix = "time-macros-0.2.6",
-        build_file = Label("//third_party/cargo/remote:BUILD.time-macros-0.2.6.bazel"),
+        sha256 = "a460aeb8de6dcb0f381e1ee05f1cd56fcf5a5f6eb8187ff3d8f0b11078d38b7c",
+        strip_prefix = "time-macros-0.2.7",
+        build_file = Label("//third_party/cargo/remote:BUILD.time-macros-0.2.7.bazel"),
     )
 
     maybe(

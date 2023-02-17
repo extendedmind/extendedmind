@@ -1,0 +1,16 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "schema",
+    "core",
+    "hub",
+    "server",
+    "ui/common",
+    "ui/cli",
+    "ui/android/jni",
+]
+
+exclude = [
+    "third_party/cargo"
+]

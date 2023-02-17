@@ -49,7 +49,7 @@ rust_proc_macro(
         "crate-name=time-macros",
         "manual",
     ],
-    version = "0.2.6",
+    version = "0.2.7",
 
     # buildifier: leave-alone
     deps = [

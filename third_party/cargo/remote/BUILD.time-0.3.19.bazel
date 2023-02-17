@@ -48,7 +48,7 @@ rust_library(
     data = [],
     edition = "2021",
     proc_macro_deps = [
-        "@raze__time_macros__0_2_6//:time_macros",
+        "@raze__time_macros__0_2_7//:time_macros",
     ],
     rustc_flags = [
         "--cap-lints=allow",
@@ -58,7 +58,7 @@ rust_library(
         "crate-name=time",
         "manual",
     ],
-    version = "0.3.18",
+    version = "0.3.19",
 
     # buildifier: leave-alone
     deps = [

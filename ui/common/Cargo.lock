@@ -986,7 +986,7 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 [[package]]
 name = "hypercore"
 version = "0.11.1-beta.10"
-source = "git+https://github.com/ttiurani/hypercore?branch=tokio#5e4093c8d240f2798592059f32afd063f3b72890"
+source = "git+https://github.com/ttiurani/hypercore?branch=tokio#499a8f3c8766b94f5b1627e1c8252a02b818e78a"
 dependencies = [
  "anyhow",
  "async-std",
@@ -1228,7 +1228,7 @@ dependencies = [
 [[package]]
 name = "peermerge"
 version = "0.0.1"
-source = "git+https://github.com/extendedmind/peermerge.git?branch=main#f9361da5a8bd0f1d2c6cba3a81b1c628c2c96171"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#45b4283c13adeebc1a02cc0db312f4b6f58ad159"
 dependencies = [
  "anyhow",
  "async-std",
@@ -1248,7 +1248,7 @@ dependencies = [
 [[package]]
 name = "peermerge-tcp"
 version = "0.0.1"
-source = "git+https://github.com/extendedmind/peermerge.git?branch=main#f9361da5a8bd0f1d2c6cba3a81b1c628c2c96171"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#45b4283c13adeebc1a02cc0db312f4b6f58ad159"
 dependencies = [
  "anyhow",
  "async-std",

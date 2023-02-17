@@ -37,6 +37,7 @@ rust_library(
     crate_features = [
         "async-std",
         "async-std-runtime",
+        "log",
     ],
     crate_root = "peermerge-tcp/src/lib.rs",
     data = [],
