@@ -1,12 +1,14 @@
 mod wasm {
     // use crate::connect::connect_active;
-    use crate::connect::poll_engine_event;
-    use async_std::channel::{Receiver, Sender};
+    use crate::connect::poll_state_event;
     use extendedmind_core::{
-        capnp, ui_protocol, Bytes, ChannelWriter, Engine, EngineEvent, Result,
+        capnp, Bytes, ChannelWriter, NameDescription, Peermerge, ProtocolBuilder, Result,
+        StateEvent,
     };
+    use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
+    use futures::stream::IntoAsyncRead;
     use futures::SinkExt;
-    use futures::StreamExt;
+    use futures::{StreamExt, TryStreamExt};
     use log::*;
     use wasm_bindgen::prelude::*;
     use wasm_bindgen_futures::spawn_local;
@@ -19,86 +21,103 @@ mod wasm {
     }
 
     #[wasm_bindgen(js_name = "connectToServer")]
-    pub async fn connect_to_server(address: String, public_key: String) -> Result<(), JsValue> {
+    pub async fn connect_to_server(
+        address: String,
+        doc_url: String,
+        encryption_key: String,
+    ) -> Result<(), JsValue> {
         console_error_panic_hook::set_once();
         console_log::init_with_level(log::Level::Debug).unwrap();
         info!(
-            "call: connect_to_server, address: {}, public_key: {}",
-            &address, &public_key
+            "call: connect_to_server, address: {}, doc_url: {}",
+            &address, &doc_url
         );
 
         debug!("attempting to make websocket connection...");
-        let (_ws_meta, mut ws_stream) =
-            WsMeta::connect(format!("ws://{}/extendedmind/hypercore", address), None)
+        let (_ws_meta, ws_stream) =
+            WsMeta::connect(format!("ws://{}/extendedmind/peermerge", address), None)
                 .await
                 .unwrap();
         debug!("...connection success, splitting stream...");
         let (mut ws_writer, mut ws_reader) = ws_stream.split();
         debug!("...split ready, creating engine...");
-        let engine = Engine::new_memory(true, Some(public_key.as_str())).await;
+        let mut peermerge = Peermerge::new_memory(NameDescription::new("web")).await;
+        let main_document_id = peermerge
+            .attach_writer_document_memory(&doc_url, &Some(encryption_key))
+            .await;
+
+        // let engine = Engine::new_memory(true, Some(public_key.as_str())).await;
         debug!("...engine created, connecting...");
 
         let (ui_protocol_sender, mut ui_protocol_receiver): (
-            Sender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
-            Receiver<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
-        ) = async_std::channel::bounded(1000);
+            UnboundedSender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
+            UnboundedReceiver<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
+        ) = unbounded();
 
         let (outgoing_sender, mut to_wire_receiver): (
-            Sender<Result<Bytes, std::io::Error>>,
-            Receiver<Result<Bytes, std::io::Error>>,
-        ) = async_std::channel::bounded(1000);
+            UnboundedSender<Result<Bytes, std::io::Error>>,
+            UnboundedReceiver<Result<Bytes, std::io::Error>>,
+        ) = unbounded();
 
-        let (from_wire_sender, mut incoming_receiver): (
-            Sender<Result<Bytes, std::io::Error>>,
-            Receiver<Result<Bytes, std::io::Error>>,
-        ) = async_std::channel::bounded(1000);
+        let (from_wire_sender, incoming_receiver): (
+            UnboundedSender<Result<Bytes, std::io::Error>>,
+            UnboundedReceiver<Result<Bytes, std::io::Error>>,
+        ) = unbounded();
 
         spawn_local(async move {
             debug!("Start loop on outgoing WS messages");
-            loop {
-                let outgoing_msg = to_wire_receiver.next().await;
-                let msg = outgoing_msg.unwrap().unwrap();
+            while let Some(Ok(msg)) = to_wire_receiver.next().await {
                 debug!("Outgoing WS message {:?}", &msg);
-                ws_writer.send(WsMessage::Binary(msg.to_vec())).await;
+                ws_writer
+                    .send(WsMessage::Binary(msg.to_vec()))
+                    .await
+                    .unwrap();
             }
         });
 
         spawn_local(async move {
             debug!("Start loop on incoming WS messages");
-            loop {
-                let incoming_msg = ws_reader.next().await;
-                let msg = incoming_msg.unwrap();
+            while let Some(msg) = ws_reader.next().await {
                 debug!("Incoming WS message {:?}", &msg);
                 match msg {
                     WsMessage::Binary(msg_bytes) => {
-                        from_wire_sender.send(Ok(Bytes::from(msg_bytes))).await;
+                        from_wire_sender
+                            .unbounded_send(Ok(Bytes::from(msg_bytes)))
+                            .unwrap();
                     }
-                    WsMessage::Text(msg_text) => {}
+                    WsMessage::Text(_msg_text) => {}
                 };
             }
         });
 
-        let outgoing_sender = ChannelWriter::new(outgoing_sender);
-        let (engine_event_sender, engine_event_receiver): (
-            Sender<EngineEvent>,
-            Receiver<EngineEvent>,
-        ) = async_std::channel::bounded(1000);
-        let engine_event_receiver_for_ui = engine_event_receiver.clone();
+        let (mut state_event_sender, state_event_receiver): (
+            UnboundedSender<StateEvent>,
+            UnboundedReceiver<StateEvent>,
+        ) = unbounded();
+        let mut peermerge_for_task = peermerge.clone();
         spawn_local(async move {
-            debug!("Connecting engine streams");
-            engine
-                .connect_active(
-                    outgoing_sender,
-                    incoming_receiver,
-                    engine_event_sender.clone(),
-                    engine_event_receiver.clone(),
-                )
-                .await;
-            debug!("...connect active ended");
+            debug!("Connecting memory protocol");
+            let receiver: IntoAsyncRead<UnboundedReceiver<Result<Bytes, std::io::Error>>> =
+                incoming_receiver.into_async_read();
+            let sender = ChannelWriter::new(outgoing_sender);
+            let mut protocol = ProtocolBuilder::new(false).connect_rw(receiver, sender);
+            peermerge_for_task
+                .connect_protocol_memory(&mut protocol, &mut state_event_sender)
+                .await
+                .expect("Should not error when exiting");
+
+            debug!("...connect protocol memory ended");
         });
 
         spawn_local(async move {
-            poll_engine_event(engine_event_receiver_for_ui, ui_protocol_sender).await;
+            poll_state_event(
+                peermerge,
+                &main_document_id,
+                state_event_receiver,
+                ui_protocol_sender,
+                false,
+            )
+            .await;
         });
 
         // TODO: Eventually this would be a loop
@@ -107,7 +126,7 @@ mod wasm {
         let mut packed_message = Vec::<u8>::new();
         capnp::serialize_packed::write_message(&mut packed_message, message.borrow_inner())
             .unwrap();
-        js_ui_protocol(packed_message.as_slice()).await;
+        js_ui_protocol(packed_message.as_slice()).await.unwrap();
         // }
 
         Ok(())

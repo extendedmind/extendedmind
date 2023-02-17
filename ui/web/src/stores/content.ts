@@ -13,7 +13,8 @@ const loadUiProtocol = (buffer: ArrayBuffer): UiProtocol => {
 };
 
 const syncWithServer = async (
-    storedHubKey: string,
+    storedDocUrl: string,
+    storedEncryptionKey: string,
     setContent: (newContent: Object) => void,
 ): Promise<void> => {
     window['jsUiProtocol'] = (data: Uint8Array): Promise<void> => {
@@ -31,13 +32,15 @@ const syncWithServer = async (
     const serverWsHost = window?.process?.env?.EXTENDEDMIND_SERVER_PORT
         ? `${window.location.hostname}:${window.process.env.EXTENDEDMIND_SERVER_PORT}`
         : window.location.host;
-    await connectToServer(serverWsHost, storedHubKey);
+    await connectToServer(serverWsHost, storedDocUrl, storedEncryptionKey);
     // Not expected to actually return, but throw an error
 };
 
 export const content = readable(null, function start(setContent: (newContent: Object) => void) {
     hubKey.subscribe((storedHubKey) => {
         if (storedHubKey) {
+
+            // TODO: change to docUrl and encryptionKey
             syncWithServer(storedHubKey, setContent).catch((err) => {
                 console.error('Error polling', err);
             });

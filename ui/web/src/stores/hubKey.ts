@@ -5,6 +5,7 @@ const storedHubKey: string | null = browser ? localStorage.getItem(HUB_KEY_KEY) 
 export const hubKey = writable(storedHubKey);
 
 if (browser) {
+    // TODO: change to docUrl and encryptionKey
     hubKey.subscribe((newHubKeyValue) => {
         if (newHubKeyValue) localStorage.setItem(HUB_KEY_KEY, newHubKeyValue);
     });

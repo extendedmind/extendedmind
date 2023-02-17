@@ -44,6 +44,7 @@ pub async fn connect_to_hub(
         &main_document_id,
         state_event_receiver,
         ui_protocol_sender,
+        true,
     )
     .await;
 
