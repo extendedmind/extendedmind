@@ -3,7 +3,7 @@
     import Header from '$lib/header/Header.svelte';
     import { docUrl, encryptionKey } from '../../stores/credentials';
 
-    let formValues: { docUrlInput: string | null, encryptionKeyInput: string | null } = {
+    let formValues: { docUrlInput: string | null; encryptionKeyInput: string | null } = {
         docUrlInput: $docUrl,
         encryptionKeyInput: $encryptionKey,
     };

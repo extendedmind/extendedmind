@@ -39,10 +39,12 @@ const syncWithServer = async (
 export const content = readable(null, function start(setContent: (newContent: Object) => void) {
     credentials.subscribe((credentials) => {
         if (credentials.docUrl && credentials.encryptionKey) {
-            syncWithServer(credentials.docUrl, credentials.encryptionKey, setContent).catch((err) => {
-                console.error('Error polling', err);
-            });
+            syncWithServer(credentials.docUrl, credentials.encryptionKey, setContent).catch(
+                (err) => {
+                    console.error('Error polling', err);
+                },
+            );
         }
     });
-    return function stop() { };
+    return function stop() {};
 });

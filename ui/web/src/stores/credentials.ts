@@ -5,15 +5,14 @@ const storedDocUrl: string | null = browser ? localStorage.getItem(DOC_URL_KEY) 
 export const docUrl = writable(storedDocUrl);
 
 const ENCRYPTION_KEY_KEY = 'encryptionKey';
-const storedEncryptionKey: string | null = browser ? localStorage.getItem(ENCRYPTION_KEY_KEY) : null;
+const storedEncryptionKey: string | null = browser
+    ? localStorage.getItem(ENCRYPTION_KEY_KEY)
+    : null;
 export const encryptionKey = writable(storedEncryptionKey);
 
-export const credentials = derived(
-    [docUrl, encryptionKey],
-    ([$docUrl, $encryptionKey]) => {
-        return { docUrl: $docUrl, encryptionKey: $encryptionKey }
-    }
-)
+export const credentials = derived([docUrl, encryptionKey], ([$docUrl, $encryptionKey]) => {
+    return { docUrl: $docUrl, encryptionKey: $encryptionKey };
+});
 
 if (browser) {
     docUrl.subscribe((newDocUrl) => {

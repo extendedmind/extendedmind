@@ -20,10 +20,10 @@ const config = {
             assets: outputDirectory,
         }),
         paths: {
-            base: process.env.NODE_ENV == 'development' ?  '' : '/extendedmind',
+            base: process.env.NODE_ENV == 'development' ? '' : '/extendedmind',
         },
         prerender: {
-            default: true
+            default: true,
         },
         vite: () => {
             return {
