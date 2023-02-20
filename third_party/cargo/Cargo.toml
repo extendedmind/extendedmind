@@ -8,9 +8,9 @@ version = "0.0.0"
 path = "fake_lib.rs"
 
 [dependencies]
-peermerge = { git = "https://github.com/extendedmind/peermerge.git", branch = "main", default-features = false, features = ["async-std-runtime", "log"] }
+peermerge = { git = "https://github.com/extendedmind/peermerge.git", branch = "main", default-features = false, features = ["async-std-runtime", "wasm-bindgen", "log"] }
 peermerge-tcp = { git = "https://github.com/extendedmind/peermerge.git", branch = "main", default-features = false, features = ["async-std-runtime", "log"] }
-# peermerge = { path = "../../../peermerge/peermerge", default-features = false, features = ["async-std-runtime", "log"] }
+# peermerge = { path = "../../../peermerge/peermerge", default-features = false, features = ["async-std-runtime","wasm-bindgen", log"] }
 # peermerge-tcp = { path = "../../../peermerge/peermerge-tcp", default-features = false, features = ["async-std-runtime", "log"] }
 duct = "=0.13.4"
 async-tungstenite = { version = "0.13.1", features = ["async-std-runtime"] }

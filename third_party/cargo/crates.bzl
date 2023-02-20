@@ -2012,12 +2012,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__http__0_2_8",
-        url = "https://crates.io/api/v1/crates/http/0.2.8/download",
+        name = "raze__http__0_2_9",
+        url = "https://crates.io/api/v1/crates/http/0.2.9/download",
         type = "tar.gz",
-        sha256 = "75f43d41e26995c17e71ee126451dd3941010b0514a81a9d11f3b341debc2399",
-        strip_prefix = "http-0.2.8",
-        build_file = Label("//third_party/cargo/remote:BUILD.http-0.2.8.bazel"),
+        sha256 = "bd6effc99afb63425aff9b05836f029929e345a6148a14b7ecd5ab67af944482",
+        strip_prefix = "http-0.2.9",
+        build_file = Label("//third_party/cargo/remote:BUILD.http-0.2.9.bazel"),
     )
 
     maybe(
@@ -2712,7 +2712,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__peermerge__0_0_1",
         remote = "https://github.com/extendedmind/peermerge.git",
-        commit = "2b1c9a1084f7ad4207b3a97ca125e12b5bdd1499",
+        commit = "b183849ebcc7756e48c4a1dbcbc1e7ba66e2f800",
         build_file = Label("//third_party/cargo/remote:BUILD.peermerge-0.0.1.bazel"),
         init_submodules = True,
     )
@@ -2721,7 +2721,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__peermerge_tcp__0_0_1",
         remote = "https://github.com/extendedmind/peermerge.git",
-        commit = "2b1c9a1084f7ad4207b3a97ca125e12b5bdd1499",
+        commit = "b183849ebcc7756e48c4a1dbcbc1e7ba66e2f800",
         build_file = Label("//third_party/cargo/remote:BUILD.peermerge-tcp-0.0.1.bazel"),
         init_submodules = True,
     )
@@ -3475,6 +3475,16 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
+        name = "raze__send_wrapper__0_4_0",
+        url = "https://crates.io/api/v1/crates/send_wrapper/0.4.0/download",
+        type = "tar.gz",
+        sha256 = "f638d531eccd6e23b980caf34876660d38e265409d8e99b397ab71eb3612fad0",
+        strip_prefix = "send_wrapper-0.4.0",
+        build_file = Label("//third_party/cargo/remote:BUILD.send_wrapper-0.4.0.bazel"),
+    )
+
+    maybe(
+        http_archive,
         name = "raze__send_wrapper__0_6_0",
         url = "https://crates.io/api/v1/crates/send_wrapper/0.6.0/download",
         type = "tar.gz",
@@ -3665,12 +3675,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__slab__0_4_7",
-        url = "https://crates.io/api/v1/crates/slab/0.4.7/download",
+        name = "raze__slab__0_4_8",
+        url = "https://crates.io/api/v1/crates/slab/0.4.8/download",
         type = "tar.gz",
-        sha256 = "4614a76b2a8be0058caa9dbbaf66d988527d86d003c11a94fbd335d7661edcef",
-        strip_prefix = "slab-0.4.7",
-        build_file = Label("//third_party/cargo/remote:BUILD.slab-0.4.7.bazel"),
+        sha256 = "6528351c9bc8ab22353f9d776db39a20288e8d6c37ef8cfe3317cf875eecfc2d",
+        strip_prefix = "slab-0.4.8",
+        build_file = Label("//third_party/cargo/remote:BUILD.slab-0.4.8.bazel"),
     )
 
     maybe(

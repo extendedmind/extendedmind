@@ -43,6 +43,8 @@ rust_library(
         "Event",
         "EventTarget",
         "MessageEvent",
+        "Performance",
+        "PerformanceTiming",
         "WebSocket",
         "Window",
         "Worker",

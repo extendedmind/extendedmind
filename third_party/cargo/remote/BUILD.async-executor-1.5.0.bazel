@@ -60,7 +60,7 @@ rust_library(
         "@raze__concurrent_queue__2_1_0//:concurrent_queue",
         "@raze__fastrand__1_9_0//:fastrand",
         "@raze__futures_lite__1_12_0//:futures_lite",
-        "@raze__slab__0_4_7//:slab",
+        "@raze__slab__0_4_8//:slab",
     ],
 )
 

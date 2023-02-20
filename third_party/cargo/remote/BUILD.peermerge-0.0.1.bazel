@@ -44,6 +44,8 @@ rust_library(
         "async-std",
         "async-std-runtime",
         "log",
+        "wasm-bindgen",
+        "wasm-bindgen-futures",
     ],
     crate_root = "peermerge/src/lib.rs",
     data = [],
@@ -74,6 +76,7 @@ rust_library(
         "@raze__random_access_memory__2_0_0//:random_access_memory",
         "@raze__random_access_storage__4_0_0//:random_access_storage",
         "@raze__tracing__0_1_37//:tracing",
+        "@raze__wasm_bindgen_futures__0_4_28//:wasm_bindgen_futures",
     ] + selects.with_or({
         # cfg(not(target_arch = "wasm32"))
         (

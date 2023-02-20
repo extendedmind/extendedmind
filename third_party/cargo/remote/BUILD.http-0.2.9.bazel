@@ -31,18 +31,6 @@ licenses([
 
 # Generated Targets
 
-# Unsupported target "header_map" with type "bench" omitted
-
-# Unsupported target "header_name" with type "bench" omitted
-
-# Unsupported target "header_name2" with type "bench" omitted
-
-# Unsupported target "header_value" with type "bench" omitted
-
-# Unsupported target "method" with type "bench" omitted
-
-# Unsupported target "uri" with type "bench" omitted
-
 rust_library(
     name = "http",
     srcs = glob(["**/*.rs"]),
@@ -59,7 +47,7 @@ rust_library(
         "crate-name=http",
         "manual",
     ],
-    version = "0.2.8",
+    version = "0.2.9",
 
     # buildifier: leave-alone
     deps = [

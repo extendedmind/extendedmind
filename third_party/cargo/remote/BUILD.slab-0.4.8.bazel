@@ -56,7 +56,7 @@ cargo_build_script(
         "cargo-raze",
         "manual",
     ],
-    version = "0.4.7",
+    version = "0.4.8",
     visibility = ["//visibility:private"],
     deps = [
         "@raze__autocfg__1_1_0//:autocfg",
@@ -81,7 +81,7 @@ rust_library(
         "crate-name=slab",
         "manual",
     ],
-    version = "0.4.7",
+    version = "0.4.8",
 
     # buildifier: leave-alone
     deps = [

@@ -1877,6 +1877,10 @@ name = "futures-timer"
 version = "3.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e64b03909df88034c26dc1547e8970b91f98bdb65165d6a4e9110d94263dbb2c"
+dependencies = [
+ "gloo-timers",
+ "send_wrapper 0.4.0",
+]
 
 [[package]]
 name = "futures-util"
@@ -1922,8 +1926,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8fc3cb4d91f53b50155bdcfd23f6a4c39ae1969c2ae85982b135750cccaf5fce"
 dependencies = [
  "cfg-if 1.0.0",
+ "js-sys",
  "libc",
  "wasi 0.9.0+wasi-snapshot-preview1",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -2089,9 +2095,9 @@ dependencies = [
 
 [[package]]
 name = "http"
-version = "0.2.8"
+version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75f43d41e26995c17e71ee126451dd3941010b0514a81a9d11f3b341debc2399"
+checksum = "bd6effc99afb63425aff9b05836f029929e345a6148a14b7ecd5ab67af944482"
 dependencies = [
  "bytes 1.4.0",
  "fnv",
@@ -2343,6 +2349,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if 1.0.0",
+ "js-sys",
+ "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
@@ -2815,7 +2824,7 @@ dependencies = [
 [[package]]
 name = "peermerge"
 version = "0.0.1"
-source = "git+https://github.com/extendedmind/peermerge.git?branch=main#2b1c9a1084f7ad4207b3a97ca125e12b5bdd1499"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#b183849ebcc7756e48c4a1dbcbc1e7ba66e2f800"
 dependencies = [
  "anyhow",
  "async-std",
@@ -2830,12 +2839,13 @@ dependencies = [
  "random-access-memory",
  "random-access-storage",
  "tracing",
+ "wasm-bindgen-futures",
 ]
 
 [[package]]
 name = "peermerge-tcp"
 version = "0.0.1"
-source = "git+https://github.com/extendedmind/peermerge.git?branch=main#2b1c9a1084f7ad4207b3a97ca125e12b5bdd1499"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#b183849ebcc7756e48c4a1dbcbc1e7ba66e2f800"
 dependencies = [
  "anyhow",
  "async-std",
@@ -3580,6 +3590,12 @@ checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
 name = "send_wrapper"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f638d531eccd6e23b980caf34876660d38e265409d8e99b397ab71eb3612fad0"
+
+[[package]]
+name = "send_wrapper"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cd0b0ec5f1c1ca621c432a25813d8d60c88abe6d3e08a3eb9cf37d97a0fe3d73"
@@ -3770,9 +3786,9 @@ dependencies = [
 
 [[package]]
 name = "slab"
-version = "0.4.7"
+version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4614a76b2a8be0058caa9dbbaf66d988527d86d003c11a94fbd335d7661edcef"
+checksum = "6528351c9bc8ab22353f9d776db39a20288e8d6c37ef8cfe3317cf875eecfc2d"
 dependencies = [
  "autocfg",
 ]
@@ -4803,7 +4819,7 @@ dependencies = [
  "log",
  "pharos",
  "rustc_version 0.4.0",
- "send_wrapper",
+ "send_wrapper 0.6.0",
  "thiserror",
  "wasm-bindgen",
  "wasm-bindgen-futures",

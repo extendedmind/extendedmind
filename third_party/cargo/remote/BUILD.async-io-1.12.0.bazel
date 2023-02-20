@@ -121,7 +121,7 @@ rust_library(
         "@raze__log__0_4_17//:log",
         "@raze__parking__2_0_0//:parking",
         "@raze__polling__2_5_2//:polling",
-        "@raze__slab__0_4_7//:slab",
+        "@raze__slab__0_4_8//:slab",
         "@raze__socket2__0_4_7//:socket2",
         "@raze__waker_fn__1_1_0//:waker_fn",
     ] + selects.with_or({

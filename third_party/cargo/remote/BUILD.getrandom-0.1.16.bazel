@@ -43,7 +43,10 @@ cargo_build_script(
     build_script_env = {
     },
     crate_features = [
+        "bindgen",
+        "js-sys",
         "std",
+        "wasm-bindgen",
     ],
     crate_root = "build.rs",
     data = glob(["**"]),
@@ -71,6 +74,14 @@ cargo_build_script(
         ): [
         ],
         "//conditions:default": [],
+    }) + selects.with_or({
+        # wasm32-unknown-unknown
+        (
+            "@rules_rust//rust/platform:wasm32-unknown-unknown",
+        ): [
+            "@raze__js_sys__0_3_55//:js_sys",
+        ],
+        "//conditions:default": [],
     }),
 )
 
@@ -80,9 +91,13 @@ rust_library(
     name = "getrandom",
     srcs = glob(["**/*.rs"]),
     aliases = {
+        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen": "bindgen",
     },
     crate_features = [
+        "bindgen",
+        "js-sys",
         "std",
+        "wasm-bindgen",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -113,6 +128,15 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
             "@raze__libc__0_2_139//:libc",
+        ],
+        "//conditions:default": [],
+    }) + selects.with_or({
+        # wasm32-unknown-unknown
+        (
+            "@rules_rust//rust/platform:wasm32-unknown-unknown",
+        ): [
+            "@raze__js_sys__0_3_55//:js_sys",
+            "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
         ],
         "//conditions:default": [],
     }),
