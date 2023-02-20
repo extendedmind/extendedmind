@@ -54,12 +54,16 @@ jest_test(
     jest_config = ":jest.e2e.config.js",
     jest_playwright_config = ":jest-playwright.config.js",
     server_bin = "//server:extendedmind_server",
-    server_port = "8080",
-    hub_data_dir = "../../$(@D)/data",
+    server_http_port = "8080",
+    server_tcp_port = "8081",
+    server_data_dir = "../../$(@D)/server_data",
+    cli_bin = "//ui/cli:extendedmind_cli",
+    cli_data_dir = "../../$(@D)/cli_data",
     dist_dir = ":build",
     deps = [
         "@npm//jest-playwright-preset",
         "@npm//playwright",
+        "@npm//dotenv",
     ],
 )
 

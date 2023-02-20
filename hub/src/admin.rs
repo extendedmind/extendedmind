@@ -44,7 +44,9 @@ pub async fn listen_to_admin_socket(
     admin_command_sender: Sender<AdminCommand>,
     mut admin_response_receiver: Receiver<Result<()>>,
 ) -> Result<()> {
-    let listener = UnixListener::bind(&admin_socket_file).await.unwrap();
+    let listener = UnixListener::bind(&admin_socket_file)
+        .await
+        .expect(format!("Could not create socket to {:?}", admin_socket_file).as_str());
     loop {
         match listener.accept().await {
             Ok((mut socket, addr)) => {

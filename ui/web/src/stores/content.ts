@@ -29,8 +29,8 @@ const syncWithServer = async (
     };
 
     const wasmExports = await init(wasm);
-    const serverWsHost = window?.process?.env?.EXTENDEDMIND_SERVER_PORT
-        ? `${window.location.hostname}:${window.process.env.EXTENDEDMIND_SERVER_PORT}`
+    const serverWsHost = window?.process?.env?.EXTENDEDMIND_SERVER_HTTP_PORT
+        ? `${window.location.hostname}:${window.process.env.EXTENDEDMIND_SERVER_HTTP_PORT}`
         : window.location.host;
     await connectToServer(serverWsHost, storedDocUrl, storedEncryptionKey);
     // Not expected to actually return, but throw an error
@@ -46,5 +46,5 @@ export const content = readable(null, function start(setContent: (newContent: Ob
             );
         }
     });
-    return function stop() {};
+    return function stop() { };
 });

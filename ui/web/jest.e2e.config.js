@@ -15,14 +15,25 @@ module.exports = async () => {
 
     const playwrightConfig = getExtraArg('--playwright-config', true, 'jest-playwright.config.js');
     const serverBin = getExtraArg('--server-bin', true);
-    const serverPort = getExtraArg('--server-port');
-    const hubDataDir = getExtraArg('--hub-data-dir', true);
+    const serverHttpPort = getExtraArg('--server-http-port');
+    const serverTcpPort = getExtraArg('--server-tcp-port');
+    const serverDataDir = getExtraArg('--server-data-dir', true);
+    const cliBin = getExtraArg('--cli-bin', true);
+    const cliDataDir = getExtraArg('--cli-data-dir', true);
     const distDir = getExtraArg('--dist-dir', true);
+
+    // Socket files need to be in the temporary dir because of socket file name length restrictions,
+    // see: https://bazel.build/reference/test-encyclopedia#test-interaction-filesystem
+    let randomSeed = (Math.random() + 1).toString(36).substring(7);
 
     process.env.JEST_PLAYWRIGHT_CONFIG = playwrightConfig;
     process.env.EXTENDEDMIND_SERVER_BIN = serverBin;
-    process.env.EXTENDEDMIND_SERVER_PORT = serverPort;
-    process.env.EXTENDEDMIND_HUB_DATA_DIR = hubDataDir;
+    process.env.EXTENDEDMIND_SERVER_HTTP_PORT = serverHttpPort;
+    process.env.EXTENDEDMIND_SERVER_TCP_PORT = serverTcpPort;
+    process.env.EXTENDEDMIND_SERVER_DATA_DIR = serverDataDir;
+    process.env.EXTENDEDMIND_SERVER_SOCKET = `${process.env.TMPDIR}/${randomSeed}.sock`;
+    process.env.EXTENDEDMIND_CLI_BIN = cliBin;
+    process.env.EXTENDEDMIND_CLI_DATA_DIR = cliDataDir;
     process.env.EXTENDEDMIND_UI_WEB_DIST = distDir;
 
     return {

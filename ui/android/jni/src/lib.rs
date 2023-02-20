@@ -48,8 +48,8 @@ pub extern "C" fn Java_org_extendedmind_android_Application_00024Companion_conne
     env: JNIEnv,
     _class: JClass,
     data_root_dir: JString,
-    hub_url: JString,
-    hub_public_key: JString,
+    hub_url: JString,        // FIXME: This should be domain + port
+    hub_public_key: JString, // FIXME: This should be encryption key
 ) -> jbyteArray {
     let data_root_dir: String = env
         .get_string(data_root_dir)
@@ -60,6 +60,7 @@ pub extern "C" fn Java_org_extendedmind_android_Application_00024Companion_conne
         .get_string(hub_url)
         .expect("Couldn't get java string!")
         .into();
+    // FIXME: This should be doc_url and encryption_key
     let hub_public_key: String = env
         .get_string(hub_public_key)
         .expect("Couldn't get java string!")
@@ -72,9 +73,16 @@ pub extern "C" fn Java_org_extendedmind_android_Application_00024Companion_conne
 
     task::spawn_local(async move {
         debug!("Connecting to hub");
-        connect_to_hub(data_root_dir, &hub_url, &hub_public_key, ui_protocol_sender)
-            .await
-            .unwrap();
+        // FIXME: Connect with peermerge
+        // connect_to_hub(
+        //     data_root_dir,
+        //     &hub_url,
+        //     &hub_public_key,
+        //     &hub_public_key,
+        //     ui_protocol_sender,
+        // )
+        // .await
+        // .unwrap();
     });
 
     // TODO: Eventually this would be a loop with callbacks
