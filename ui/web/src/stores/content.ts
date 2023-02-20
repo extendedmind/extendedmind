@@ -3,7 +3,7 @@ import { UiProtocol } from '../lib/schema/ui_protocol.capnp';
 import wasm from '../lib/ui-common/extendedmind_ui_common_wasm_bg.wasm';
 import init, { connectToServer } from '../lib/ui-common/extendedmind_ui_common_wasm';
 import { readable } from 'svelte/store';
-import { hubKey } from './hubKey';
+import { credentials } from './credentials';
 
 const { subscribe } = readable();
 
@@ -37,11 +37,9 @@ const syncWithServer = async (
 };
 
 export const content = readable(null, function start(setContent: (newContent: Object) => void) {
-    hubKey.subscribe((storedHubKey) => {
-        if (storedHubKey) {
-
-            // TODO: change to docUrl and encryptionKey
-            syncWithServer(storedHubKey, setContent).catch((err) => {
+    credentials.subscribe((credentials) => {
+        if (credentials.docUrl && credentials.encryptionKey) {
+            syncWithServer(credentials.docUrl, credentials.encryptionKey, setContent).catch((err) => {
                 console.error('Error polling', err);
             });
         }

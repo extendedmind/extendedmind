@@ -20,8 +20,8 @@ TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
     --verbose true \
     start \
     --data-root-dir ${TARGET_PATH} \
-    --tcp-port 3000 \
     --http-port 3001 \
+    --tcp-port 3002 \
     ${STATIC_OPT} \
     --skip-compress-mime application/wasm \
     --cache-ttl-sec 5 --cache-tti-sec 5 \
@@ -30,4 +30,4 @@ TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
     --log-dir ${TARGET_PATH}/logs --log-precision 18 \
     --metrics-dir ${TARGET_PATH}/logs/metrics --metrics-precision 16 \
     --metrics-endpoint /api/metrics --metrics-secret top \
-    --backup-dir ${TARGET_PATH} --backup-interval-min 1 ${BACKUP_OPTS}
+    --backup-dir ${TARGET_PATH} --backup-interval-min 10 ${BACKUP_OPTS}

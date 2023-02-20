@@ -13,5 +13,5 @@ TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
     --admin-socket-file ${TARGET_PATH}/hub.sock \
     listen \
     --data-root-dir ${TARGET_PATH}/data \
-    --tcp-port 3000 \
+    --tcp-port 3002 \
     --backup-dir ${TARGET_PATH} --backup-interval-min 1 ${BACKUP_OPTS}

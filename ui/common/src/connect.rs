@@ -21,6 +21,11 @@ pub async fn poll_state_event<T, U>(
 {
     debug!("poll_state_event called");
     let mut remaining_feed_discovery_keys = peermerge.feed_discovery_keys(&main_document_id).await;
+    debug!(
+        "poll_state_event, for documentId {:02X?}, feed discovery key count: {}",
+        main_document_id,
+        remaining_feed_discovery_keys.len()
+    );
     while let Some(event) = state_event_receiver.next().await {
         debug!("got state event {:?}", event);
         match event.content {
@@ -38,6 +43,11 @@ pub async fn poll_state_event<T, U>(
                         debug!("StateEvent::RemotePeerSynced ready");
                         let message = create_init_message(&peermerge, main_document_id).await;
                         ui_protocol_sender.unbounded_send(message).unwrap();
+                    } else {
+                        debug!(
+                            "Needs {} more remote peer syncs",
+                            remaining_feed_discovery_keys.len()
+                        )
                     }
                 }
             }

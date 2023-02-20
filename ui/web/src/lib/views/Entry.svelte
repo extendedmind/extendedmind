@@ -1,14 +1,16 @@
 <script lang="ts">
     import Icon from '$lib/Icon.svelte';
     import Header from '$lib/header/Header.svelte';
-    import { hubKey } from '../../stores/hubKey';
+    import { docUrl, encryptionKey } from '../../stores/credentials';
 
-    let formValues: { hubKeyInput: string | null } = {
-        hubKeyInput: $hubKey,
+    let formValues: { docUrlInput: string | null, encryptionKeyInput: string | null } = {
+        docUrlInput: $docUrl,
+        encryptionKeyInput: $encryptionKey,
     };
 
-    function onSubmitHubKey() {
-        $hubKey = formValues.hubKeyInput;
+    function onSubmitCredentials() {
+        $docUrl = formValues.docUrlInput;
+        $encryptionKey = formValues.encryptionKeyInput;
     }
 </script>
 
@@ -19,9 +21,10 @@
 <section>
     <Header />
     <Icon name="logo" />
-    <h1>Enter the hub key</h1>
-    <form on:submit|preventDefault={onSubmitHubKey}>
-        <input name="hubKey" bind:value={formValues.hubKeyInput} />
+    <h1>Enter the document URL and encryption key</h1>
+    <form on:submit|preventDefault={onSubmitCredentials}>
+        <input name="docUrl" bind:value={formValues.docUrlInput} />
+        <input name="encryptionKey" bind:value={formValues.encryptionKeyInput} />
         <button type="submit">submit</button>
     </form>
     <footer>

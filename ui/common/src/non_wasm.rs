@@ -110,7 +110,7 @@ pub async fn create_document(
         |description| NameDescription::new_with_description("extendedmind", &description),
     );
     let document_id = peermerge
-        .create_new_document_disk(document_header, vec![("version", 1)], encrypted)
+        .create_new_document_disk(document_header, vec![("version", 2)], encrypted)
         .await;
     let encryption_key = peermerge.encryption_key(&document_id).await;
     let doc_url = peermerge.doc_url(&document_id).await;

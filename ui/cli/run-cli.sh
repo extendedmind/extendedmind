@@ -15,7 +15,7 @@ export $(grep -v '^#' ${TARGET_PATH}/secrets.txt | xargs)
 
 HUB_SOCKET=$(echo "$(cd "$(dirname "../../hub/target/hub.sock")"; pwd)/$(basename "../../hub/target/hub.sock")")
 SERVER_SOCKET=$(echo "$(cd "$(dirname "../../server/target/server.sock")"; pwd)/$(basename "../../server/target/server.sock")")
-PORT=3000
+PORT=3002
 if [ -S "$HUB_SOCKET" ]; then
     # Register created doc url to hub
     bazel run //hub:extendedmind_hub_bin -- \

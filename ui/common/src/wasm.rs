@@ -29,8 +29,8 @@ mod wasm {
         console_error_panic_hook::set_once();
         console_log::init_with_level(log::Level::Debug).unwrap();
         info!(
-            "call: connect_to_server, address: {}, doc_url: {}",
-            &address, &doc_url
+            "call: connect_to_server, address: {}, doc_url: {}, encryption_key: {}",
+            &address, &doc_url, &encryption_key
         );
 
         debug!("attempting to make websocket connection...");
@@ -100,7 +100,7 @@ mod wasm {
             let receiver: IntoAsyncRead<UnboundedReceiver<Result<Bytes, std::io::Error>>> =
                 incoming_receiver.into_async_read();
             let sender = ChannelWriter::new(outgoing_sender);
-            let mut protocol = ProtocolBuilder::new(false).connect_rw(receiver, sender);
+            let mut protocol = ProtocolBuilder::new(true).connect_rw(receiver, sender);
             peermerge_for_task
                 .connect_protocol_memory(&mut protocol, &mut state_event_sender)
                 .await
