@@ -11,7 +11,7 @@
         "test:unit": "vitest",
         "lint": "prettier --plugin-search-dir . --check . && eslint .",
         "format": "prettier --plugin-search-dir . --write .",
-        "copyExternalDeps": "node copyExternalDeps.js"
+        "copyExternalDeps": "node conf/copyExternalDeps.js"
     },
     "devDependencies": {
         "@bazel/ibazel": "^0.16.2",

@@ -7,9 +7,13 @@ filegroup(
         "package.json",
         "package-lock.json",
         "svelte.config.js",
-        "tools.js",
         "tsconfig.json",
         "vite.config.ts",
+        "conf/tools.js",
+        "conf/tsconfig.svelte-kit.json",
+        "conf/ambient.d.ts",
+        "conf/types/route_meta_data.json",
+        "conf/types/src/routes/$types.d.ts",
     ],
     visibility = ["//visibility:public"],
 )
@@ -79,7 +83,7 @@ genrule(
     cmd = """
     cat <<\\EOF > $@
 #!/bin/bash
-npm run copyExternalDeps
+npm run conf/copyExternalDeps
 EOF
     """,
     executable = True,
