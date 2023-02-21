@@ -48,6 +48,7 @@ vite(
         "@npm//capnp-ts",
         "@npm//vite-plugin-top-level-await",
         "@npm//vite-plugin-wasm",
+        "@npm//vitest",
     ],
 )
 
