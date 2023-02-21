@@ -1,33 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
 
-function workAroundSvelteKitIssue1896(jsFileContent) {
-    // new URL with import.meta.url isn't supported yet so we need to edit the wasm-bindgen
-    // javascript file
-
-    let modifiedJsFileContent = '';
-    const lines = jsFileContent.split(/\r?\n/);
-    let nextLineNeedsCommenting = false;
-    lines.forEach((line) => {
-        if (
-            nextLineNeedsCommenting ||
-            (line.includes('new URL(') && line.includes('import.meta.url);'))
-        ) {
-            modifiedJsFileContent += '// ' + line + '\n';
-            nextLineNeedsCommenting = false;
-        } else if (line.includes('init.__wbindgen_wasm_module = module;')) {
-            modifiedJsFileContent += line + '\n';
-            modifiedJsFileContent += '    } else {wasm = await input(imports);}';
-        } else {
-            modifiedJsFileContent += line + '\n';
-        }
-        if (line.includes('input = fetch(input);')) {
-            nextLineNeedsCommenting = true;
-        }
-    });
-    return modifiedJsFileContent;
-}
-
 export function getExtraArg(argName, resolvePath, defaultValue) {
     const index = process.argv.indexOf(argName);
     let value = defaultValue;
@@ -86,8 +59,12 @@ export function prepareExternalDeps() {
         fs.mkdirSync(wasmOutputDirectory);
     }
     const uiCommonWasmFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonWasmFileName));
-    const uiCommonWasmJsFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonWasmJsFileName));
-    const uiCommonWasmTsFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonWasmTsFileName));
+    const uiCommonWasmJsFilePath = fs.realpathSync(
+        path.join(wasmDirectory, uiCommonWasmJsFileName),
+    );
+    const uiCommonWasmTsFilePath = fs.realpathSync(
+        path.join(wasmDirectory, uiCommonWasmTsFileName),
+    );
     const uiCommonJsFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonJsFileName));
     const uiCommonTsFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonTsFileName));
     fs.writeFileSync(
@@ -104,9 +81,7 @@ export function prepareExternalDeps() {
     );
     fs.writeFileSync(
         path.join(wasmOutputDirectory, uiCommonJsFileName),
-        // workAroundSvelteKitIssue1896(
         fs.readFileSync(uiCommonJsFilePath, { encoding: 'utf8', flag: 'r' }),
-        // ),
     );
     fs.writeFileSync(
         path.join(wasmOutputDirectory, uiCommonTsFileName),

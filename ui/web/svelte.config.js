@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { getExtraArg, prepareExternalDeps } from './tools.js';
 
 const outputDirectory = getExtraArg('--out-dir', true, 'dist/extendedmind');
+
 if (fs.existsSync('svelte.config.js')) {
     prepareExternalDeps();
 }

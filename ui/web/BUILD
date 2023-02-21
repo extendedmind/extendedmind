@@ -1,4 +1,4 @@
-load("@npm//@sveltejs/kit:index.bzl", "svelte_kit")
+load("@npm//vite:index.bzl", "vite")
 load(":jest.bzl", "jest_test")
 
 filegroup(
@@ -9,11 +9,12 @@ filegroup(
         "svelte.config.js",
         "tools.js",
         "tsconfig.json",
+        "vite.config.ts",
     ],
     visibility = ["//visibility:public"],
 )
 
-svelte_kit(
+vite(
     name = "build",
     outs = ["dist"],
     chdir = "ui/web",
@@ -38,11 +39,11 @@ svelte_kit(
         "//ui/web/static",
         "@npm//@sveltejs/adapter-static",
         "@npm//@sveltejs/kit",
-        "@npm//mkdirp",
         "@npm//svelte",
         "@npm//svelte-check",
-        "@npm//svelte-preprocess",
         "@npm//capnp-ts",
+        "@npm//vite-plugin-top-level-await",
+        "@npm//vite-plugin-wasm",
     ],
 )
 

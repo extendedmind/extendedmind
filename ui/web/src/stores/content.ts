@@ -7,11 +7,10 @@ import { credentials } from './credentials';
 const { subscribe } = readable();
 
 function typedArrayToBuffer(array: Uint8Array): ArrayBuffer {
-    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
+    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset);
 }
 
 const loadUiProtocol = (buffer: ArrayBuffer): UiProtocol => {
-    console.log("TRYING TO CREATE CAPNP", buffer, capnp);
     const message = new capnp.Message(buffer);
     return message.getRoot(UiProtocol);
 };
@@ -22,7 +21,6 @@ const syncWithServer = async (
     setContent: (newContent: Object) => void,
 ): Promise<void> => {
     window['jsUiProtocol'] = (data: Uint8Array): Promise<void> => {
-        console.log("GOT DATA FROM js UI protocol", data);
         return new Promise((resolve) => {
             const uiProtocol = loadUiProtocol(typedArrayToBuffer(data));
             const newContent = {

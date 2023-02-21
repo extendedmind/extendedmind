@@ -3,19 +3,20 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Node/Javascript/Typescript/Svelte/Esbuild
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "ee3280a7f58aa5c1caa45cb9e08cbb8f4d74300848c508374daf37314d5390d6",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.5.1/rules_nodejs-5.5.1.tar.gz"],
+    sha256 = "dcc55f810142b6cf46a44d0180a5a7fb923c04a5061e2e8d8eb05ccccc60864b",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.8.0/rules_nodejs-5.8.0.tar.gz"],
 )
 load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
 build_bazel_rules_nodejs_dependencies()
 load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
-
+load("@build_bazel_rules_nodejs//:index.bzl", "npm_install", "node_repositories")
+node_repositories(
+    node_version = "18.12.1",
+    yarn_version = "1.22.19",
+)
 nodejs_register_toolchains(
     name = "nodejs"
 )
-
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_install", "node_repositories")
-
 npm_install(
     name = "npm",
     package_json = "//ui/web:package.json",
