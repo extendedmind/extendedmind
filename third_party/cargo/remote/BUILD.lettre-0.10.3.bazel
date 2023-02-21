@@ -90,7 +90,7 @@ rust_library(
         "crate-name=lettre",
         "manual",
     ],
-    version = "0.10.2",
+    version = "0.10.3",
 
     # buildifier: leave-alone
     deps = [

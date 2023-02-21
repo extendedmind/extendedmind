@@ -53,7 +53,7 @@ rust_library(
     # buildifier: leave-alone
     deps = [
         "@raze__log__0_4_17//:log",
-        "@raze__web_sys__0_3_55//:web_sys",
+        "@raze__web_sys__0_3_60//:web_sys",
     ],
 )
 

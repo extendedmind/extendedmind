@@ -30,41 +30,12 @@ licenses([
 ])
 
 # Generated Targets
-# buildifier: disable=out-of-order-load
-# buildifier: disable=load-on-top
-load(
-    "@rules_rust//cargo:cargo_build_script.bzl",
-    "cargo_build_script",
-)
 
-cargo_build_script(
-    name = "wasm_bindgen_shared_build_script",
-    srcs = glob(["**/*.rs"]),
-    build_script_env = {
-    },
-    crate_features = [
-    ],
-    crate_root = "build.rs",
-    data = glob(["**"]),
-    edition = "2018",
-    links = "wasm_bindgen",
-    rustc_flags = [
-        "--cap-lints=allow",
-    ],
-    tags = [
-        "cargo-raze",
-        "manual",
-    ],
-    version = "0.2.78",
-    visibility = ["//visibility:private"],
-    deps = [
-    ],
-)
-
-rust_library(
-    name = "wasm_bindgen_shared",
+rust_proc_macro(
+    name = "wasm_bindgen_macro",
     srcs = glob(["**/*.rs"]),
     crate_features = [
+        "spans",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -74,14 +45,16 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=wasm-bindgen-shared",
+        "crate-name=wasm-bindgen-macro",
         "manual",
     ],
-    version = "0.2.78",
+    version = "0.2.83",
 
     # buildifier: leave-alone
     deps = [
-        ":wasm_bindgen_shared_build_script",
+        "@raze__quote__1_0_23//:quote",
+        "@raze__wasm_bindgen_macro_support__0_2_83//:wasm_bindgen_macro_support",
     ],
 )
 
+# Unsupported target "ui" with type "test" omitted

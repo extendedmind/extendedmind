@@ -9,7 +9,7 @@
 platform(
 	name = "armeabi_v7a",
 	constraint_values = [
-		"@platforms//cpu:arm", # <- This is armv7 in upstream
+		"@platforms//cpu:armv7", # <- This is armv7 in upstream
 		"@platforms//os:android",
 	],
 )

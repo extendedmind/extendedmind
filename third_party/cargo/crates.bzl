@@ -2280,12 +2280,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__js_sys__0_3_55",
-        url = "https://crates.io/api/v1/crates/js-sys/0.3.55/download",
+        name = "raze__js_sys__0_3_60",
+        url = "https://crates.io/api/v1/crates/js-sys/0.3.60/download",
         type = "tar.gz",
-        sha256 = "7cc9ffccd38c451a86bf13657df244e9c3f37493cce8e5e21e940963777acc84",
-        strip_prefix = "js-sys-0.3.55",
-        build_file = Label("//third_party/cargo/remote:BUILD.js-sys-0.3.55.bazel"),
+        sha256 = "49409df3e3bf0856b916e2ceaca09ee28e6871cf7d9ce97a692cacfdb2a25a47",
+        strip_prefix = "js-sys-0.3.60",
+        build_file = Label("//third_party/cargo/remote:BUILD.js-sys-0.3.60.bazel"),
     )
 
     maybe(
@@ -2320,12 +2320,12 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__lettre__0_10_2",
-        url = "https://crates.io/api/v1/crates/lettre/0.10.2/download",
+        name = "raze__lettre__0_10_3",
+        url = "https://crates.io/api/v1/crates/lettre/0.10.3/download",
         type = "tar.gz",
-        sha256 = "dd84a055407850bcf4791baa77cb4818d37cbb79ad4e60b9b659727b920d2c65",
-        strip_prefix = "lettre-0.10.2",
-        build_file = Label("//third_party/cargo/remote:BUILD.lettre-0.10.2.bazel"),
+        sha256 = "d8033576bf9f051fce6cb92b6264114b4340896c352a9ff38b67bd4cde924635",
+        strip_prefix = "lettre-0.10.3",
+        build_file = Label("//third_party/cargo/remote:BUILD.lettre-0.10.3.bazel"),
     )
 
     maybe(
@@ -2712,7 +2712,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__peermerge__0_0_1",
         remote = "https://github.com/extendedmind/peermerge.git",
-        commit = "b183849ebcc7756e48c4a1dbcbc1e7ba66e2f800",
+        commit = "59f8bb56dc281c9d5684f01aa54537a4f7a6996b",
         build_file = Label("//third_party/cargo/remote:BUILD.peermerge-0.0.1.bazel"),
         init_submodules = True,
     )
@@ -2721,7 +2721,7 @@ def raze_fetch_remote_crates():
         new_git_repository,
         name = "raze__peermerge_tcp__0_0_1",
         remote = "https://github.com/extendedmind/peermerge.git",
-        commit = "b183849ebcc7756e48c4a1dbcbc1e7ba66e2f800",
+        commit = "59f8bb56dc281c9d5684f01aa54537a4f7a6996b",
         build_file = Label("//third_party/cargo/remote:BUILD.peermerge-tcp-0.0.1.bazel"),
         init_submodules = True,
     )
@@ -4453,72 +4453,72 @@ def raze_fetch_remote_crates():
 
     maybe(
         http_archive,
-        name = "raze__wasm_bindgen__0_2_78",
-        url = "https://crates.io/api/v1/crates/wasm-bindgen/0.2.78/download",
+        name = "raze__wasm_bindgen__0_2_83",
+        url = "https://crates.io/api/v1/crates/wasm-bindgen/0.2.83/download",
         type = "tar.gz",
-        sha256 = "632f73e236b219150ea279196e54e610f5dbafa5d61786303d4da54f84e47fce",
-        strip_prefix = "wasm-bindgen-0.2.78",
-        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-0.2.78.bazel"),
+        sha256 = "eaf9f5aceeec8be17c128b2e93e031fb8a4d469bb9c4ae2d7dc1888b26887268",
+        strip_prefix = "wasm-bindgen-0.2.83",
+        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-0.2.83.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "raze__wasm_bindgen_backend__0_2_78",
-        url = "https://crates.io/api/v1/crates/wasm-bindgen-backend/0.2.78/download",
+        name = "raze__wasm_bindgen_backend__0_2_83",
+        url = "https://crates.io/api/v1/crates/wasm-bindgen-backend/0.2.83/download",
         type = "tar.gz",
-        sha256 = "a317bf8f9fba2476b4b2c85ef4c4af8ff39c3c7f0cdfeed4f82c34a880aa837b",
-        strip_prefix = "wasm-bindgen-backend-0.2.78",
-        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-backend-0.2.78.bazel"),
+        sha256 = "4c8ffb332579b0557b52d268b91feab8df3615f265d5270fec2a8c95b17c1142",
+        strip_prefix = "wasm-bindgen-backend-0.2.83",
+        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-backend-0.2.83.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "raze__wasm_bindgen_futures__0_4_28",
-        url = "https://crates.io/api/v1/crates/wasm-bindgen-futures/0.4.28/download",
+        name = "raze__wasm_bindgen_futures__0_4_33",
+        url = "https://crates.io/api/v1/crates/wasm-bindgen-futures/0.4.33/download",
         type = "tar.gz",
-        sha256 = "8e8d7523cb1f2a4c96c1317ca690031b714a51cc14e05f712446691f413f5d39",
-        strip_prefix = "wasm-bindgen-futures-0.4.28",
-        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-futures-0.4.28.bazel"),
+        sha256 = "23639446165ca5a5de86ae1d8896b737ae80319560fbaa4c2887b7da6e7ebd7d",
+        strip_prefix = "wasm-bindgen-futures-0.4.33",
+        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-futures-0.4.33.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "raze__wasm_bindgen_macro__0_2_78",
-        url = "https://crates.io/api/v1/crates/wasm-bindgen-macro/0.2.78/download",
+        name = "raze__wasm_bindgen_macro__0_2_83",
+        url = "https://crates.io/api/v1/crates/wasm-bindgen-macro/0.2.83/download",
         type = "tar.gz",
-        sha256 = "d56146e7c495528bf6587663bea13a8eb588d39b36b679d83972e1a2dbbdacf9",
-        strip_prefix = "wasm-bindgen-macro-0.2.78",
-        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-macro-0.2.78.bazel"),
+        sha256 = "052be0f94026e6cbc75cdefc9bae13fd6052cdcaf532fa6c45e7ae33a1e6c810",
+        strip_prefix = "wasm-bindgen-macro-0.2.83",
+        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-macro-0.2.83.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "raze__wasm_bindgen_macro_support__0_2_78",
-        url = "https://crates.io/api/v1/crates/wasm-bindgen-macro-support/0.2.78/download",
+        name = "raze__wasm_bindgen_macro_support__0_2_83",
+        url = "https://crates.io/api/v1/crates/wasm-bindgen-macro-support/0.2.83/download",
         type = "tar.gz",
-        sha256 = "7803e0eea25835f8abdc585cd3021b3deb11543c6fe226dcd30b228857c5c5ab",
-        strip_prefix = "wasm-bindgen-macro-support-0.2.78",
-        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-macro-support-0.2.78.bazel"),
+        sha256 = "07bc0c051dc5f23e307b13285f9d75df86bfdf816c5721e573dec1f9b8aa193c",
+        strip_prefix = "wasm-bindgen-macro-support-0.2.83",
+        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-macro-support-0.2.83.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "raze__wasm_bindgen_shared__0_2_78",
-        url = "https://crates.io/api/v1/crates/wasm-bindgen-shared/0.2.78/download",
+        name = "raze__wasm_bindgen_shared__0_2_83",
+        url = "https://crates.io/api/v1/crates/wasm-bindgen-shared/0.2.83/download",
         type = "tar.gz",
-        sha256 = "0237232789cf037d5480773fe568aac745bfe2afbc11a863e97901780a6b47cc",
-        strip_prefix = "wasm-bindgen-shared-0.2.78",
-        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-shared-0.2.78.bazel"),
+        sha256 = "1c38c045535d93ec4f0b4defec448e4291638ee608530863b1e2ba115d4fff7f",
+        strip_prefix = "wasm-bindgen-shared-0.2.83",
+        build_file = Label("//third_party/cargo/remote:BUILD.wasm-bindgen-shared-0.2.83.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "raze__web_sys__0_3_55",
-        url = "https://crates.io/api/v1/crates/web-sys/0.3.55/download",
+        name = "raze__web_sys__0_3_60",
+        url = "https://crates.io/api/v1/crates/web-sys/0.3.60/download",
         type = "tar.gz",
-        sha256 = "38eb105f1c59d9eaa6b5cdc92b859d85b926e82cb2e0945cd0c9259faa6fe9fb",
-        strip_prefix = "web-sys-0.3.55",
-        build_file = Label("//third_party/cargo/remote:BUILD.web-sys-0.3.55.bazel"),
+        sha256 = "bcda906d8be16e728fd5adc5b729afad4e444e106ab28cd1c7256e54fa61510f",
+        strip_prefix = "web-sys-0.3.60",
+        build_file = Label("//third_party/cargo/remote:BUILD.web-sys-0.3.60.bazel"),
     )
 
     maybe(

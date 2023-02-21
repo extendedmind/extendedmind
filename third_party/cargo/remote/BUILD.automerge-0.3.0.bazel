@@ -69,7 +69,7 @@ rust_library(
         "@raze__fxhash__0_2_1//:fxhash",
         "@raze__hex__0_4_3//:hex",
         "@raze__itertools__0_10_5//:itertools",
-        "@raze__js_sys__0_3_55//:js_sys",
+        "@raze__js_sys__0_3_60//:js_sys",
         "@raze__leb128__0_2_5//:leb128",
         "@raze__serde__1_0_152//:serde",
         "@raze__sha2__0_10_6//:sha2",
@@ -78,8 +78,8 @@ rust_library(
         "@raze__tinyvec__1_6_0//:tinyvec",
         "@raze__tracing__0_1_37//:tracing",
         "@raze__uuid__1_3_0//:uuid",
-        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
-        "@raze__web_sys__0_3_55//:web_sys",
+        "@raze__wasm_bindgen__0_2_83//:wasm_bindgen",
+        "@raze__web_sys__0_3_60//:web_sys",
     ],
 )
 

@@ -32,23 +32,10 @@ licenses([
 # Generated Targets
 
 rust_library(
-    name = "web_sys",
+    name = "wasm_bindgen_backend",
     srcs = glob(["**/*.rs"]),
     crate_features = [
-        "BinaryType",
-        "Blob",
-        "CloseEvent",
-        "Crypto",
-        "DomException",
-        "Event",
-        "EventTarget",
-        "MessageEvent",
-        "Performance",
-        "PerformanceTiming",
-        "WebSocket",
-        "Window",
-        "Worker",
-        "console",
+        "spans",
     ],
     crate_root = "src/lib.rs",
     data = [],
@@ -58,17 +45,20 @@ rust_library(
     ],
     tags = [
         "cargo-raze",
-        "crate-name=web-sys",
+        "crate-name=wasm-bindgen-backend",
         "manual",
     ],
-    version = "0.3.55",
+    version = "0.2.83",
 
     # buildifier: leave-alone
     deps = [
-        "@raze__js_sys__0_3_55//:js_sys",
-        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
+        "@raze__bumpalo__3_12_0//:bumpalo",
+        "@raze__log__0_4_17//:log",
+        "@raze__once_cell__1_17_1//:once_cell",
+        "@raze__proc_macro2__1_0_51//:proc_macro2",
+        "@raze__quote__1_0_23//:quote",
+        "@raze__syn__1_0_107//:syn",
+        "@raze__wasm_bindgen_shared__0_2_83//:wasm_bindgen_shared",
     ],
 )
 
-
-# Unsupported target "wasm" with type "test" omitted

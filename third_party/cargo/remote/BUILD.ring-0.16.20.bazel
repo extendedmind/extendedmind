@@ -69,7 +69,7 @@ cargo_build_script(
         (
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
         ): [
-            "@raze__web_sys__0_3_55//:web_sys",
+            "@raze__web_sys__0_3_60//:web_sys",
         ],
         "//conditions:default": [],
     }) + selects.with_or({
@@ -80,7 +80,6 @@ cargo_build_script(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
             "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
-            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -92,7 +91,6 @@ cargo_build_script(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
             "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
-            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -143,7 +141,7 @@ rust_library(
         (
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
         ): [
-            "@raze__web_sys__0_3_55//:web_sys",
+            "@raze__web_sys__0_3_60//:web_sys",
         ],
         "//conditions:default": [],
     }) + selects.with_or({
@@ -154,7 +152,6 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
             "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
-            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [
@@ -167,7 +164,6 @@ rust_library(
             "@rules_rust//rust/platform:x86_64-unknown-linux-gnu",
             "@rules_rust//rust/platform:aarch64-linux-android",
             "@rules_rust//rust/platform:aarch64-unknown-linux-gnu",
-            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [

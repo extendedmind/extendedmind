@@ -35,7 +35,7 @@ rust_library(
     name = "instant",
     srcs = glob(["**/*.rs"]),
     aliases = {
-        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen": "wasm_bindgen_rs",
+        "@raze__wasm_bindgen__0_2_83//:wasm_bindgen": "wasm_bindgen_rs",
     },
     crate_features = [
         "js-sys",
@@ -64,9 +64,9 @@ rust_library(
         (
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
         ): [
-            "@raze__js_sys__0_3_55//:js_sys",
-            "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
-            "@raze__web_sys__0_3_55//:web_sys",
+            "@raze__js_sys__0_3_60//:js_sys",
+            "@raze__wasm_bindgen__0_2_83//:wasm_bindgen",
+            "@raze__web_sys__0_3_60//:web_sys",
         ],
         "//conditions:default": [],
     }),

@@ -24,7 +24,7 @@ jobs:
             ~/.cache/bazelisk
             ~/.cache/bazel
             ~/.cache/ms-playwright
-          key: test-${{ runner.os }}-${{ env.cache-name }}-r4
+          key: test-${{ runner.os }}-${{ env.cache-name }}-r5
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Install Android build-tools and NDK

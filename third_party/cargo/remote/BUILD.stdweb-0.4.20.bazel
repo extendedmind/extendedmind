@@ -102,7 +102,7 @@ rust_library(
         (
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
         ): [
-            "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
+            "@raze__wasm_bindgen__0_2_83//:wasm_bindgen",
         ],
         "//conditions:default": [],
     }),

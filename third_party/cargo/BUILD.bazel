@@ -203,7 +203,7 @@ alias(
 
 alias(
     name = "js_sys",
-    actual = "@raze__js_sys__0_3_55//:js_sys",
+    actual = "@raze__js_sys__0_3_60//:js_sys",
     tags = [
         "cargo-raze",
         "manual",
@@ -212,7 +212,7 @@ alias(
 
 alias(
     name = "lettre",
-    actual = "@raze__lettre__0_10_2//:lettre",
+    actual = "@raze__lettre__0_10_3//:lettre",
     tags = [
         "cargo-raze",
         "manual",
@@ -338,7 +338,7 @@ alias(
 
 alias(
     name = "wasm_bindgen",
-    actual = "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
+    actual = "@raze__wasm_bindgen__0_2_83//:wasm_bindgen",
     tags = [
         "cargo-raze",
         "manual",
@@ -347,7 +347,7 @@ alias(
 
 alias(
     name = "wasm_bindgen_futures",
-    actual = "@raze__wasm_bindgen_futures__0_4_28//:wasm_bindgen_futures",
+    actual = "@raze__wasm_bindgen_futures__0_4_33//:wasm_bindgen_futures",
     tags = [
         "cargo-raze",
         "manual",

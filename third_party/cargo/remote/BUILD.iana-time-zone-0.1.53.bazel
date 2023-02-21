@@ -71,15 +71,14 @@ rust_library(
         (
             "@rules_rust//rust/platform:wasm32-unknown-unknown",
         ): [
-            "@raze__js_sys__0_3_55//:js_sys",
-            "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
+            "@raze__js_sys__0_3_60//:js_sys",
+            "@raze__wasm_bindgen__0_2_83//:wasm_bindgen",
         ],
         "//conditions:default": [],
     }) + selects.with_or({
         # cfg(target_os = "android")
         (
             "@rules_rust//rust/platform:aarch64-linux-android",
-            "@rules_rust//rust/platform:arm-linux-androideabi",
             "@rules_rust//rust/platform:i686-linux-android",
             "@rules_rust//rust/platform:x86_64-linux-android",
         ): [

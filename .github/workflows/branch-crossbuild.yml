@@ -21,7 +21,7 @@ jobs:
           path: |
             ~/.cache/bazelisk
             ~/.cache/bazel
-          key: crossbuild_rpi3b-${{ runner.os }}-${{ env.cache-name }}-r4
+          key: crossbuild_rpi3b-${{ runner.os }}-${{ env.cache-name }}-r5
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Install Android build-tools and NDK

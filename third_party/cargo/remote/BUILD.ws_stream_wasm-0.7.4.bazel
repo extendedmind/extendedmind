@@ -57,9 +57,9 @@ cargo_build_script(
     version = "0.7.4",
     visibility = ["//visibility:private"],
     deps = [
-        "@raze__js_sys__0_3_55//:js_sys",
+        "@raze__js_sys__0_3_60//:js_sys",
         "@raze__rustc_version__0_4_0//:rustc_version",
-        "@raze__web_sys__0_3_55//:web_sys",
+        "@raze__web_sys__0_3_60//:web_sys",
     ],
 )
 
@@ -86,14 +86,14 @@ rust_library(
         ":ws_stream_wasm_build_script",
         "@raze__async_io_stream__0_3_3//:async_io_stream",
         "@raze__futures__0_3_26//:futures",
-        "@raze__js_sys__0_3_55//:js_sys",
+        "@raze__js_sys__0_3_60//:js_sys",
         "@raze__log__0_4_17//:log",
         "@raze__pharos__0_5_3//:pharos",
         "@raze__send_wrapper__0_6_0//:send_wrapper",
         "@raze__thiserror__1_0_38//:thiserror",
-        "@raze__wasm_bindgen__0_2_78//:wasm_bindgen",
-        "@raze__wasm_bindgen_futures__0_4_28//:wasm_bindgen_futures",
-        "@raze__web_sys__0_3_55//:web_sys",
+        "@raze__wasm_bindgen__0_2_83//:wasm_bindgen",
+        "@raze__wasm_bindgen_futures__0_4_33//:wasm_bindgen_futures",
+        "@raze__web_sys__0_3_60//:web_sys",
     ],
 )
 

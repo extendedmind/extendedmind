@@ -53,22 +53,17 @@ capnp_java_toolchain()
 # Rust
 http_archive(
     name = "rules_rust",
-    sha256 = "1f7c257298521eea71e956e70c38d7fd9c52ea2d2834c5da7c2616cb162e264b",
-    strip_prefix = "rules_rust-2ecf4a99b8c90e451d14cb16924fea833acabd49",
-    urls = [
-        # Change to rules_rust upstream with one extra commit
-        "https://github.com/ttiurani/rules_rust/archive/2ecf4a99b8c90e451d14cb16924fea833acabd49.tar.gz",
-    ],
+    sha256 = "2466e5b2514772e84f9009010797b9cd4b51c1e6445bbd5b5e24848d90e6fb2e",
+    urls = ["https://github.com/bazelbuild/rules_rust/releases/download/0.18.0/rules_rust-v0.18.0.tar.gz"],
 )
-
 load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains", "rust_repository_set")
 rules_rust_dependencies()
 RUST_VERSION = "1.67.0"
-rust_register_toolchains(version = RUST_VERSION, edition="2021", rustfmt_version = RUST_VERSION)
+rust_register_toolchains(versions = [RUST_VERSION], edition="2021", rustfmt_version = RUST_VERSION)
 rust_repository_set(
     name = "extendedmind_rust_apple_x86_64",
     edition = "2021",
-    version = RUST_VERSION,
+    versions = [RUST_VERSION],
     rustfmt_version = RUST_VERSION,
     exec_triple = "x86_64-apple-darwin",
     extra_target_triples=[
@@ -84,7 +79,7 @@ rust_repository_set(
         # would also work. Then rules_rust could perhaps map armv7 to that thumbv7neon for rust
         # builds. With this, it seems the build isn't for Neon ARM which is much faster than just
         # arm.
-        "arm-linux-androideabi",
+        "armv7-linux-androideabi",
         "aarch64-linux-android",
         "i686-linux-android",
         "x86_64-linux-android",
@@ -94,11 +89,11 @@ rust_repository_set(
 rust_repository_set(
     name = "extendedmind_rust_linux_x86_64",
     edition = "2021",
-    version = RUST_VERSION,
+    versions = [RUST_VERSION],
     rustfmt_version = RUST_VERSION,
     exec_triple = "x86_64-unknown-linux-gnu",
     extra_target_triples=[
-        "arm-linux-androideabi",
+        "armv7-linux-androideabi",
         "aarch64-linux-android",
         "i686-linux-android",
         "x86_64-linux-android",
@@ -112,8 +107,8 @@ rust_wasm_bindgen_repositories()
 load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
 raze_fetch_remote_crates()
 
-CARGO_RAZE_VERSION = "0c9dd254cb2854f304a3c0abedeb8f15b28c3b23"
-CARGO_RAZE_SHA256 = "4ec348e9c9afb1be04b951a24b94d6d941310bcb8c10db5f17fb329f134b1c73"
+CARGO_RAZE_VERSION = "52d330754bfc21c2e877794639481a4fcce7d4d0"
+CARGO_RAZE_SHA256 = "4f6e5f0ff57a122fd4a26a86dffcdbe9218becd3f558565828f44709a0157b99"
 
 http_archive(
     name = "cargo_raze",
@@ -121,7 +116,7 @@ http_archive(
     url = "https://github.com/ttiurani/cargo-raze/archive/%s.tar.gz" % CARGO_RAZE_VERSION,
     sha256 = CARGO_RAZE_SHA256
 )
-# # Example on using local version of cargo raze for hacking:
+# Example on using local version of cargo raze for hacking:
 # local_repository(
 #     name = "cargo_raze",
 #     path = "[path to]/cargo-raze",
@@ -158,8 +153,8 @@ register_rpi_toolchain()
 #    export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/21.4.7075529"
 #
 
-RULES_KOTLIN_VERSION = "v1.5.0"
-RULES_KOTLIN_SHA256 = "12d22a3d9cbcf00f2e2d8f0683ba87d3823cb8c7f6837568dd7e48846e023307"
+RULES_KOTLIN_VERSION = "v1.7.1"
+RULES_KOTLIN_SHA256 = "fd92a98bd8a8f0e1cdcb490b93f5acef1f1727ed992571232d33de42395ca9b3"
 http_archive(
     name = "io_bazel_rules_kotlin",
     url = "https://github.com/bazelbuild/rules_kotlin/releases/download/%s/rules_kotlin_release.tgz" % RULES_KOTLIN_VERSION,
