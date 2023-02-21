@@ -52,7 +52,7 @@ rust_shared_library(
 
 rust_wasm_bindgen(
     name = "extendedmind_ui_common_wasm",
-    target = "web",
+    target = "bundler",
     wasm_file = ":extendedmind_ui_common_shared",
 )
 

@@ -1,13 +1,17 @@
 import * as capnp from 'capnp-ts';
 import { UiProtocol } from '../lib/schema/ui_protocol.capnp';
-import wasm from '../lib/ui-common/extendedmind_ui_common_wasm_bg.wasm';
-import init, { connectToServer } from '../lib/ui-common/extendedmind_ui_common_wasm';
+import { connectToServer } from '../lib/ui-common/extendedmind_ui_common_wasm';
 import { readable } from 'svelte/store';
 import { credentials } from './credentials';
 
 const { subscribe } = readable();
 
+function typedArrayToBuffer(array: Uint8Array): ArrayBuffer {
+    return array.buffer.slice(array.byteOffset, array.byteLength + array.byteOffset)
+}
+
 const loadUiProtocol = (buffer: ArrayBuffer): UiProtocol => {
+    console.log("TRYING TO CREATE CAPNP", buffer, capnp);
     const message = new capnp.Message(buffer);
     return message.getRoot(UiProtocol);
 };
@@ -18,8 +22,9 @@ const syncWithServer = async (
     setContent: (newContent: Object) => void,
 ): Promise<void> => {
     window['jsUiProtocol'] = (data: Uint8Array): Promise<void> => {
+        console.log("GOT DATA FROM js UI protocol", data);
         return new Promise((resolve) => {
-            const uiProtocol = loadUiProtocol(data);
+            const uiProtocol = loadUiProtocol(typedArrayToBuffer(data));
             const newContent = {
                 diary: uiProtocol.getPayload().getInit().getVersion(),
             };
@@ -28,7 +33,6 @@ const syncWithServer = async (
         });
     };
 
-    const wasmExports = await init(wasm);
     const serverWsHost = window?.process?.env?.EXTENDEDMIND_SERVER_HTTP_PORT
         ? `${window.location.hostname}:${window.process.env.EXTENDEDMIND_SERVER_HTTP_PORT}`
         : window.location.host;

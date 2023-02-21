@@ -78,12 +78,16 @@ export function prepareExternalDeps() {
     );
     const wasmOutputDirectory = path.join('.', 'src/lib/ui-common');
     const uiCommonWasmFileName = 'extendedmind_ui_common_wasm_bg.wasm';
+    const uiCommonWasmJsFileName = 'extendedmind_ui_common_wasm_bg.js';
+    const uiCommonWasmTsFileName = 'extendedmind_ui_common_wasm_bg.wasm.d.ts';
     const uiCommonJsFileName = 'extendedmind_ui_common_wasm.js';
     const uiCommonTsFileName = 'extendedmind_ui_common_wasm.d.ts';
     if (!fs.existsSync(wasmOutputDirectory)) {
         fs.mkdirSync(wasmOutputDirectory);
     }
     const uiCommonWasmFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonWasmFileName));
+    const uiCommonWasmJsFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonWasmJsFileName));
+    const uiCommonWasmTsFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonWasmTsFileName));
     const uiCommonJsFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonJsFileName));
     const uiCommonTsFilePath = fs.realpathSync(path.join(wasmDirectory, uiCommonTsFileName));
     fs.writeFileSync(
@@ -91,10 +95,18 @@ export function prepareExternalDeps() {
         fs.readFileSync(uiCommonWasmFilePath, { flag: 'r' }),
     );
     fs.writeFileSync(
+        path.join(wasmOutputDirectory, uiCommonWasmJsFileName),
+        fs.readFileSync(uiCommonWasmJsFilePath, { flag: 'r' }),
+    );
+    fs.writeFileSync(
+        path.join(wasmOutputDirectory, uiCommonWasmTsFileName),
+        fs.readFileSync(uiCommonWasmTsFilePath, { flag: 'r' }),
+    );
+    fs.writeFileSync(
         path.join(wasmOutputDirectory, uiCommonJsFileName),
-        workAroundSvelteKitIssue1896(
-            fs.readFileSync(uiCommonJsFilePath, { encoding: 'utf8', flag: 'r' }),
-        ),
+        // workAroundSvelteKitIssue1896(
+        fs.readFileSync(uiCommonJsFilePath, { encoding: 'utf8', flag: 'r' }),
+        // ),
     );
     fs.writeFileSync(
         path.join(wasmOutputDirectory, uiCommonTsFileName),

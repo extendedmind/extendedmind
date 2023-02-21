@@ -21,9 +21,13 @@ beforeAll(async () => {
         }
         const serverDefaultOpts = `--admin-socket-file ${process.env.EXTENDEDMIND_SERVER_SOCKET}`;
         const serverRegisterOpts = `--peermerge-doc-url ${process.env.PROXY_DOC_URL}`;
-        await exec(`${process.env.EXTENDEDMIND_SERVER_BIN} ${serverDefaultOpts} register ${serverRegisterOpts}`);
+        await exec(
+            `${process.env.EXTENDEDMIND_SERVER_BIN} ${serverDefaultOpts} register ${serverRegisterOpts}`,
+        );
         const cliBackupOpts = `--hub-domain localhost --hub-port ${process.env.EXTENDEDMIND_SERVER_TCP_PORT} --encryption-key ${process.env.ENCRYPTION_KEY}`;
-        await exec(`${process.env.EXTENDEDMIND_CLI_BIN} ${cliDefaultOpts} back-up ${cliBackupOpts}`);
+        await exec(
+            `${process.env.EXTENDEDMIND_CLI_BIN} ${cliDefaultOpts} back-up ${cliBackupOpts}`,
+        );
     }
     docUrl = process.env.DOC_URL;
     encryptionKey = process.env.ENCRYPTION_KEY;

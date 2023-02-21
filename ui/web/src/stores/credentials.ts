@@ -1,5 +1,5 @@
 import { writable, derived } from 'svelte/store';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 const DOC_URL_KEY = 'docUrl';
 const storedDocUrl: string | null = browser ? localStorage.getItem(DOC_URL_KEY) : null;
 export const docUrl = writable(storedDocUrl);
