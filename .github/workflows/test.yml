@@ -40,4 +40,4 @@ jobs:
         env:
           ANDROID_NDK_HOME: '/usr/local/lib/android/sdk/ndk/21.4.7075529'
         with:
-          command: 'test //...'
+          command: 'test //... --experimental_use_sandboxfs'
