@@ -1,13 +1,8 @@
 import preprocess from 'svelte-preprocess';
 import adapter from '@sveltejs/adapter-static';
-import * as fs from 'fs';
-import { getExtraArg, prepareExternalDeps } from './conf/tools.js';
+import { getExtraArg } from './conf/tools.js';
 
 const outputDirectory = getExtraArg('--out-dir', true, 'dist/extendedmind');
-
-if (fs.existsSync('svelte.config.js')) {
-    prepareExternalDeps();
-}
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
