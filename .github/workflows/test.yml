@@ -25,12 +25,6 @@ jobs:
             ~/.cache/bazel
             ~/.cache/ms-playwright
           key: test-${{ runner.os }}-${{ env.cache-name }}-r5
-      - name: Install sandboxfs deps
-        run: sudo apt-get install -y libfuse-dev pkg-config
-      - name: Install sandboxfs
-        uses: baptiste0928/cargo-install@v1
-        with:
-          crate: sandboxfs
       - name: Install Android build-tools and NDK
         run: echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "build-tools;30.0.3" "ndk;21.4.7075529"
       - name: Check out the repo
@@ -40,4 +34,4 @@ jobs:
         env:
           ANDROID_NDK_HOME: '/usr/local/lib/android/sdk/ndk/21.4.7075529'
         with:
-          command: 'test //... --experimental_use_sandboxfs'
+          command: 'test //...'
