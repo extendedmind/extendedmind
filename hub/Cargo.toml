@@ -2,10 +2,8 @@
 name = "extendedmind_hub"
 version = "0.0.1"
 edition = "2021"
-licence = "AGPL-3.0-only"
+license = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
-
-# TODO: Build following https://blog.dend.ro/building-rust-for-routers/
 
 [dependencies]
 extendedmind_core = { path = "../core" }
@@ -18,7 +16,9 @@ futures = "^0.3.5"
 async-std = { version = "1.6.2", features = ["unstable"] }
 tar = "0.4.38"
 flate2 = "1.0.24"
-age = { version = "0.9.0", features = ["ssh", "cli-common"] }
+# FIXME: With crate universe, causes crypto_common.0.1.6 to lose the crate features "getrandom" and
+# "rand_core", leaving only "std". Need to file a bug upstream.
+# age = { version = "0.9.0", features = ["ssh", "cli-common"] }
 lettre = { version = "0.10.0-rc.7", default-features = false, features = ["smtp-transport", "hostname", "builder"] }
 async-ctrlc = { version = "1.2.0", features = ["stream", "termination"] }
 clap = { version = "3.0.0-rc.5", features = ["derive"] }

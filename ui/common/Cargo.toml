@@ -5,14 +5,14 @@ path = "src/lib.rs"
 name = "extendedmind_ui_common"
 version = "0.0.1"
 edition = "2021"
-licence = "AGPL-3.0-only"
+license = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
 extendedmind_core = { path = "../../core" }
 log = "0.4.14"
-wasm-bindgen = "=0.2.78"
-wasm-bindgen-futures = "0.4.28"
+wasm-bindgen = "=0.2.83"
+wasm-bindgen-futures = "=0.4.33"
 ws_stream_wasm = "0.7.3"
 futures = "^0.3.5"
 async-std = "1.9.0"

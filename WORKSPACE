@@ -102,30 +102,29 @@ rust_repository_set(
     ],
 )
 
+load("@rules_rust//crate_universe:repositories.bzl", "crate_universe_dependencies")
+crate_universe_dependencies()
+load("@rules_rust//crate_universe:defs.bzl", "crates_repository")
+crates_repository(
+    name = "crate_index",
+    cargo_lockfile = "//:Cargo.lock",
+    lockfile = "//:cargo-bazel-lock.json",
+    manifests = [
+        "//:Cargo.toml",
+        "//schema:Cargo.toml",
+        "//core:Cargo.toml",
+        "//hub:Cargo.toml",
+        "//server:Cargo.toml",
+        "//ui/common:Cargo.toml",
+        "//ui/cli:Cargo.toml",
+        "//ui/android/jni:Cargo.toml",
+    ],
+)
+load("@crate_index//:defs.bzl", "crate_repositories")
+crate_repositories()
+
 load("@rules_rust//wasm_bindgen:repositories.bzl", "rust_wasm_bindgen_repositories")
 rust_wasm_bindgen_repositories()
-
-load("//third_party/cargo:crates.bzl", "raze_fetch_remote_crates")
-raze_fetch_remote_crates()
-
-CARGO_RAZE_VERSION = "52d330754bfc21c2e877794639481a4fcce7d4d0"
-CARGO_RAZE_SHA256 = "4f6e5f0ff57a122fd4a26a86dffcdbe9218becd3f558565828f44709a0157b99"
-
-http_archive(
-    name = "cargo_raze",
-    strip_prefix = "cargo-raze-%s" % CARGO_RAZE_VERSION,
-    url = "https://github.com/ttiurani/cargo-raze/archive/%s.tar.gz" % CARGO_RAZE_VERSION,
-    sha256 = CARGO_RAZE_SHA256
-)
-# Example on using local version of cargo raze for hacking:
-# local_repository(
-#     name = "cargo_raze",
-#     path = "[path to]/cargo-raze",
-# )
-load("@cargo_raze//:repositories.bzl", "cargo_raze_repositories")
-cargo_raze_repositories()
-load("@cargo_raze//:transitive_deps.bzl", "cargo_raze_transitive_deps")
-cargo_raze_transitive_deps()
 
 # CC Toolchains
 load("//third_party/crosstools:deps.bzl", "crosstool_deps")

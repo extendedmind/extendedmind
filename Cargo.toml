@@ -12,5 +12,5 @@ members = [
 ]
 
 exclude = [
-    "third_party/cargo"
+    "third_party/cargo",
 ]

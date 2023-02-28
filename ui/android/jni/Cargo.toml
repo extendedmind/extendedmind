@@ -6,7 +6,7 @@ crate_type = ["staticlib", "dylib"]
 name = "extendedmind_ui_android_jni"
 version = "0.1.0"
 edition = "2018"
-licence = "AGPL-3.0-only"
+license = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
