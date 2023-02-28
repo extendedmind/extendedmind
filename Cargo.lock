@@ -445,7 +445,7 @@ dependencies = [
  "async-io",
  "async-lock",
  "async-process",
- "crossbeam-utils 0.8.14",
+ "crossbeam-utils 0.8.15",
  "futures-channel",
  "futures-core",
  "futures-io",
@@ -968,7 +968,7 @@ version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c278839b831783b70278b14df4d45e1beb1aad306c07bb796637de9a0e323e8e"
 dependencies = [
- "crossbeam-utils 0.8.14",
+ "crossbeam-utils 0.8.15",
 ]
 
 [[package]]
@@ -1062,12 +1062,12 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-channel"
-version = "0.5.6"
+version = "0.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2dd04ddaf88237dc3b8d8f9a3c1004b506b54b3313403944054d23c0870c521"
+checksum = "cf2b3e8478797446514c91ef04bafcb59faba183e621ad488df88983cc14128c"
 dependencies = [
  "cfg-if 1.0.0",
- "crossbeam-utils 0.8.14",
+ "crossbeam-utils 0.8.15",
 ]
 
 [[package]]
@@ -1098,9 +1098,9 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-utils"
-version = "0.8.14"
+version = "0.8.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fb766fa798726286dbbb842f174001dab8abc7b627a1dd86e0b7222a95d929f"
+checksum = "3c063cd8cc95f5c377ed0d4b49a4b21f632396ff690e8470c29b3359b346984b"
 dependencies = [
  "cfg-if 1.0.0",
 ]
@@ -2420,7 +2420,7 @@ dependencies = [
  "async-lock",
  "crossbeam-channel",
  "crossbeam-epoch",
- "crossbeam-utils 0.8.14",
+ "crossbeam-utils 0.8.15",
  "futures-util",
  "num_cpus",
  "once_cell",
