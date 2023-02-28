@@ -12,7 +12,3 @@ members = [
     "ui/cli",
     "ui/android/jni",
 ]
-
-exclude = [
-    "third_party/cargo",
-]
