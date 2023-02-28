@@ -1,5 +1,5 @@
 {
-  "checksum": "ae44383b97748dc0fbdd1cb7fb791165fba560a38e65260796ac2d7a8f397ff4",
+  "checksum": "b2d8a4ce6fcba21366ce2ab1447058bbb13a6d7eb9ce3f6481037f2298f9c060",
   "crates": {
     "addr2line 0.19.0": {
       "name": "addr2line",
@@ -7411,10 +7411,6 @@
               "target": "async_std"
             },
             {
-              "id": "async-tungstenite 0.13.1",
-              "target": "async_tungstenite"
-            },
-            {
               "id": "chrono 0.4.23",
               "target": "chrono"
             },
@@ -7767,10 +7763,6 @@
               "target": "async_std"
             },
             {
-              "id": "async-tungstenite 0.13.1",
-              "target": "async_tungstenite"
-            },
-            {
               "id": "futures 0.3.26",
               "target": "futures"
             },
@@ -7813,9 +7805,89 @@
         "deps": {
           "common": [
             {
+              "id": "futures 0.3.26",
+              "target": "futures"
+            },
+            {
+              "id": "log 0.4.17",
+              "target": "log"
+            }
+          ],
+          "selects": {}
+        },
+        "edition": "2021",
+        "version": "0.0.1"
+      },
+      "license": "AGPL-3.0-only"
+    },
+    "extendedmind_ui_disk 0.0.1": {
+      "name": "extendedmind_ui_disk",
+      "version": "0.0.1",
+      "repository": null,
+      "targets": [
+        {
+          "Library": {
+            "crate_name": "extendedmind_ui_disk",
+            "crate_root": "src/lib.rs",
+            "srcs": [
+              "**/*.rs"
+            ]
+          }
+        }
+      ],
+      "library_target_name": "extendedmind_ui_disk",
+      "common_attrs": {
+        "compile_data_glob": [
+          "**"
+        ],
+        "deps": {
+          "common": [
+            {
               "id": "async-std 1.12.0",
               "target": "async_std"
             },
+            {
+              "id": "futures 0.3.26",
+              "target": "futures"
+            },
+            {
+              "id": "log 0.4.17",
+              "target": "log"
+            },
+            {
+              "id": "peermerge-tcp 0.0.1",
+              "target": "peermerge_tcp"
+            }
+          ],
+          "selects": {}
+        },
+        "edition": "2021",
+        "version": "0.0.1"
+      },
+      "license": "AGPL-3.0-only"
+    },
+    "extendedmind_ui_wasm 0.0.1": {
+      "name": "extendedmind_ui_wasm",
+      "version": "0.0.1",
+      "repository": null,
+      "targets": [
+        {
+          "Library": {
+            "crate_name": "extendedmind_ui_wasm",
+            "crate_root": "src/lib.rs",
+            "srcs": [
+              "**/*.rs"
+            ]
+          }
+        }
+      ],
+      "library_target_name": "extendedmind_ui_wasm",
+      "common_attrs": {
+        "compile_data_glob": [
+          "**"
+        ],
+        "deps": {
+          "common": [
             {
               "id": "console_error_panic_hook 0.1.7",
               "target": "console_error_panic_hook"
@@ -7849,25 +7921,9 @@
               "target": "ws_stream_wasm"
             }
           ],
-          "selects": {
-            "cfg(not(target_arch = \"wasm32\"))": [
-              {
-                "id": "peermerge-tcp 0.0.1",
-                "target": "peermerge_tcp"
-              }
-            ]
-          }
-        },
-        "edition": "2021",
-        "proc_macro_deps": {
-          "common": [
-            {
-              "id": "async-trait 0.1.64",
-              "target": "async_trait"
-            }
-          ],
           "selects": {}
         },
+        "edition": "2021",
         "version": "0.0.1"
       },
       "license": "AGPL-3.0-only"
@@ -23823,7 +23879,9 @@
     "extendedmind_schema_rust 0.0.1": "schema",
     "extendedmind_server 0.0.1": "server",
     "extendedmind_ui_android_jni 0.1.0": "ui/android/jni",
-    "extendedmind_ui_common 0.0.1": "ui/common"
+    "extendedmind_ui_common 0.0.1": "ui/common",
+    "extendedmind_ui_disk 0.0.1": "ui/disk",
+    "extendedmind_ui_wasm 0.0.1": "ui/wasm"
   },
   "conditions": {
     "aarch64-apple-darwin": [

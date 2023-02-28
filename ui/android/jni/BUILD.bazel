@@ -1,23 +1,14 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@rules_rust//rust:defs.bzl", "rust_shared_library", "rustfmt_test")
-
-deps = [
-    "//schema:extendedmind_schema_rust",
-    "//core:extendedmind_core",
-    "//ui/common:extendedmind_ui_common",
-    "//third_party/cargo:jni",
-    "//third_party/cargo:futures",
-    "//third_party/cargo:async_std",
-    "//third_party/cargo:log",
-]
-
-srcs = glob(["src/**"])
+load("@crate_index//:defs.bzl", "all_crate_deps")
 
 rust_shared_library(
     name = "extendedmind_ui_android_jni",
-    deps = deps,
-    srcs = srcs,
+    deps = [
+        "//ui/disk:extendedmind_ui_disk",
+    ] + all_crate_deps(),
+    srcs = glob(["src/**"]),
 )
 
 cc_import(

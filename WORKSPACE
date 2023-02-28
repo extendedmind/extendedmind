@@ -116,6 +116,8 @@ crates_repository(
         "//hub:Cargo.toml",
         "//server:Cargo.toml",
         "//ui/common:Cargo.toml",
+        "//ui/wasm:Cargo.toml",
+        "//ui/disk:Cargo.toml",
         "//ui/cli:Cargo.toml",
         "//ui/android/jni:Cargo.toml",
     ],

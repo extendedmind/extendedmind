@@ -6,11 +6,9 @@ license = "AGPL-3.0-only"
 authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
-extendedmind_core = { path = "../../core" }
-extendedmind_ui_common = { path = "../common" }
+extendedmind_ui_disk = { path = "../disk" }
 futures = "^0.3.5"
 async-std = { version = "1.9.0", features = ["unstable"] }
-async-tungstenite = { version = "0.13.1", features = ["async-std-runtime"] }
 clap = { version = "3.0.0-rc.5", features = ["derive"] }
 fern = "0.6.0"
 log = "0.4.14"

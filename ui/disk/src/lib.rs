@@ -1,7 +1,7 @@
-use crate::connect::poll_state_event;
 use async_std::task;
-use extendedmind_core::{
-    capnp, DocumentId, FeedDiskPersistence, NameDescription, Peermerge, RandomAccessDisk, Result,
+use extendedmind_ui_common::connect::poll_state_event;
+use extendedmind_ui_common::extendedmind_core::{
+    DocumentId, FeedDiskPersistence, NameDescription, Peermerge, RandomAccessDisk, Result,
     StateEvent,
 };
 use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
@@ -11,14 +11,14 @@ use peermerge_tcp::connect_tcp_client_disk;
 use std::collections::HashMap;
 use std::path::PathBuf;
 
+pub use extendedmind_ui_common::extendedmind_core::{capnp, ui_protocol};
+
 pub async fn connect_to_hub(
     peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
     main_document_id: DocumentId,
     hub_domain: &str,
     hub_port: u16,
-    ui_protocol_sender: UnboundedSender<
-        capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>,
-    >,
+    ui_protocol_sender: UnboundedSender<capnp::message::TypedBuilder<ui_protocol::Owned>>,
 ) -> Result<()> {
     debug!("connect_to_hub called");
 
@@ -132,8 +132,8 @@ pub async fn back_up(
 ) -> Result<(), Box<dyn std::error::Error>> {
     debug!("cli: back-up");
     let (ui_protocol_sender, mut ui_protocol_receiver): (
-        UnboundedSender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
-        UnboundedReceiver<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
+        UnboundedSender<capnp::message::TypedBuilder<ui_protocol::Owned>>,
+        UnboundedReceiver<capnp::message::TypedBuilder<ui_protocol::Owned>>,
     ) = unbounded();
 
     let (main_document_id, encryption_keys) = peermerge_state(&data_root_dir, encryption_key).await;

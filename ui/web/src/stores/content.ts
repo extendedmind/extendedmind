@@ -1,6 +1,6 @@
 import * as capnp from 'capnp-ts';
 import { UiProtocol } from '../lib/schema/ui_protocol.capnp';
-import { connectToServer } from '../lib/ui-common/extendedmind_ui_common_wasm';
+import { connectToServer } from '../lib/ui-common/extendedmind_ui_wasm';
 import { readable } from 'svelte/store';
 import { credentials } from './credentials';
 

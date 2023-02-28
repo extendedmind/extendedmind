@@ -1447,12 +1447,10 @@ name = "extendedmind_cli"
 version = "0.0.1"
 dependencies = [
  "async-std",
- "async-tungstenite",
  "chrono",
  "clap",
  "duct",
- "extendedmind_core",
- "extendedmind_ui_common",
+ "extendedmind_ui_disk",
  "fern",
  "futures",
  "log",
@@ -1530,9 +1528,7 @@ name = "extendedmind_ui_android_jni"
 version = "0.1.0"
 dependencies = [
  "async-std",
- "async-tungstenite",
- "extendedmind_core",
- "extendedmind_ui_common",
+ "extendedmind_ui_disk",
  "futures",
  "jni",
  "log",
@@ -1542,15 +1538,32 @@ dependencies = [
 name = "extendedmind_ui_common"
 version = "0.0.1"
 dependencies = [
+ "extendedmind_core",
+ "futures",
+ "log",
+]
+
+[[package]]
+name = "extendedmind_ui_disk"
+version = "0.0.1"
+dependencies = [
  "async-std",
- "async-trait",
+ "extendedmind_ui_common",
+ "futures",
+ "log",
+ "peermerge-tcp",
+]
+
+[[package]]
+name = "extendedmind_ui_wasm"
+version = "0.0.1"
+dependencies = [
  "console_error_panic_hook",
  "console_log",
- "extendedmind_core",
+ "extendedmind_ui_common",
  "futures",
  "js-sys",
  "log",
- "peermerge-tcp",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "ws_stream_wasm",

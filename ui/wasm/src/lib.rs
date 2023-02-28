@@ -1,9 +1,9 @@
 mod wasm {
     // use crate::connect::connect_active;
-    use crate::connect::poll_state_event;
-    use extendedmind_core::{
-        capnp, Bytes, ChannelWriter, NameDescription, Peermerge, ProtocolBuilder, Result,
-        StateEvent,
+    use extendedmind_ui_common::connect::poll_state_event;
+    use extendedmind_ui_common::extendedmind_core::{
+        capnp, ui_protocol, Bytes, ChannelWriter, NameDescription, Peermerge, ProtocolBuilder,
+        Result, StateEvent,
     };
     use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
     use futures::stream::IntoAsyncRead;
@@ -50,8 +50,8 @@ mod wasm {
         debug!("...engine created, connecting...");
 
         let (ui_protocol_sender, mut ui_protocol_receiver): (
-            UnboundedSender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
-            UnboundedReceiver<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
+            UnboundedSender<capnp::message::TypedBuilder<ui_protocol::Owned>>,
+            UnboundedReceiver<capnp::message::TypedBuilder<ui_protocol::Owned>>,
         ) = unbounded();
 
         let (outgoing_sender, mut to_wire_receiver): (

@@ -1,8 +1,7 @@
-use async_std::channel::{Receiver, Sender};
 use async_std::task;
-use extendedmind_core::capnp;
-use extendedmind_ui_common::non_wasm::connect_to_hub;
-use futures::prelude::*;
+use extendedmind_ui_disk::{capnp, connect_to_hub, ui_protocol};
+use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
+use futures::stream::StreamExt;
 use jni::objects::{JClass, JObject, JString, JValue};
 use jni::sys::jbyteArray;
 use jni::JNIEnv;
@@ -67,9 +66,9 @@ pub extern "C" fn Java_org_extendedmind_android_Application_00024Companion_conne
         .into();
 
     let (ui_protocol_sender, mut ui_protocol_receiver): (
-        Sender<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
-        Receiver<capnp::message::TypedBuilder<extendedmind_core::ui_protocol::Owned>>,
-    ) = async_std::channel::bounded(1000);
+        UnboundedSender<capnp::message::TypedBuilder<ui_protocol::Owned>>,
+        UnboundedReceiver<capnp::message::TypedBuilder<ui_protocol::Owned>>,
+    ) = unbounded();
 
     task::spawn_local(async move {
         debug!("Connecting to hub");

@@ -1,6 +1,6 @@
 use async_std::task;
 use clap::{Parser, Subcommand};
-use extendedmind_ui_common::non_wasm::{back_up, create_document};
+use extendedmind_ui_disk::{back_up, create_document};
 use log::*;
 use std::{io::Write, path::PathBuf};
 

@@ -33,12 +33,12 @@ vite(
         "--schema-dir",
         "../../$(@D)/../../schema/src",
         "--wasm-dir",
-        "../../$(@D)/../common",
+        "../../$(@D)/../wasm",
     ],
     data = [
         ":conf",
         "//schema:extendedmind_schema_capnp_ts_sources",
-        "//ui/common:extendedmind_ui_common_wasm",
+        "//ui/wasm:extendedmind_ui_wasm",
         "//ui/web/src",
         "//ui/web/static",
         "@npm//@sveltejs/adapter-static",
@@ -78,7 +78,7 @@ genrule(
     visibility = ["//visibility:public"],
     srcs = [
         "//schema:extendedmind_schema_capnp_ts_sources",
-        "//ui/common:extendedmind_ui_common_wasm",
+        "//ui/wasm:extendedmind_ui_wasm",
     ],
     outs = ["external-deps-refresh.sh"],
     cmd = """

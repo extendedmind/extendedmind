@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rustfmt_test")
+load("@crate_index//:defs.bzl", "all_crate_deps")
 
 platform(
 	name = "arm64_linux_rpi3b",
@@ -12,30 +13,10 @@ platform(
 
 rust_binary(
     name = "extendedmind_server",
-    deps = ["//hub:extendedmind_hub",
-            "//third_party/cargo:fern",
-            "//third_party/cargo:log",
-            "//third_party/cargo:anyhow",
-            "//third_party/cargo:chrono",
-            "//third_party/cargo:futures",
-            "//third_party/cargo:tide",
-            "//third_party/cargo:tide_websockets",
-            "//third_party/cargo:tide_compress",
-            "//third_party/cargo:tide_rustls",
-            "//third_party/cargo:tide_acme",
-            "//third_party/cargo:thread_priority",
-            "//third_party/cargo:serde",
-            "//third_party/cargo:moka",
-            "//third_party/cargo:wildmatch",
-            "//third_party/cargo:html_escape",
-            "//third_party/cargo:async_std",
-            "//third_party/cargo:async_ctrlc",
-            "//third_party/cargo:clap",
-    ],
-    proc_macro_deps = [
-        "//third_party/cargo:derivative",
-        "//third_party/cargo:async_trait",
-    ],
+    deps = [
+        "//hub:extendedmind_hub",
+    ] + all_crate_deps(),
+    proc_macro_deps = all_crate_deps(proc_macro = True),
     srcs = glob(["src/**"]),
 )
 
