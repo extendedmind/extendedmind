@@ -1,8 +1,7 @@
 use crate::common::{
     get_stem_from_path, BackupOpts, TIMESTAMP_SECONDS_FORMAT, TIMESTAMP_SECONDS_FORMAT_LEN,
 };
-// TODO: Re-enable age
-// use age::cli_common::file_io;
+use age::cli_common::file_io;
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
 use chrono::prelude::*;
@@ -127,77 +126,77 @@ fn create_backup(source_dirs: Vec<PathBuf>, backup_dir: PathBuf, backup_opts: Ba
             a.finish().unwrap();
         }
 
-        // if let Some(backup_ssh_recipients_file) = backup_opts.backup_ssh_recipients_file.as_ref() {
-        //     // Encrypt backup with a file containing one or more SSH keys
-        //     let backup_ssh_recipients_file_str = backup_ssh_recipients_file
-        //         .clone()
-        //         .to_str()
-        //         .unwrap()
-        //         .to_string();
-        //     log::debug!(
-        //         "Attempt to encrypt backup to SSH recipients listed in {}",
-        //         backup_ssh_recipients_file_str.clone()
-        //     );
-        //     let mut recipients: Vec<Box<dyn age::Recipient + Send>> = vec![];
-        //     let buf = BufReader::new(File::open(&backup_ssh_recipients_file).unwrap());
-        //     for (line_number, line) in buf.lines().enumerate() {
-        //         let line = line.unwrap();
-        //         if line.is_empty() || line.find('#') == Some(0) {
-        //             continue;
-        //         }
-        //         match line.parse::<age::ssh::Recipient>() {
-        //             Ok(recipient) => {
-        //                 log::debug!("Adding SSH recipient {}", &recipient);
-        //                 recipients.push(Box::new(recipient));
-        //             }
-        //             Err(_) => {
-        //                 log::error!(
-        //                     "Error reading line {} in backup SSH recipients file {}",
-        //                     line_number,
-        //                     backup_ssh_recipients_file_str
-        //                 );
-        //             }
-        //         }
-        //     }
-        //     if !recipients.is_empty() {
-        //         let encrypted_backup_file_str = format!("{}.age", &backup_file_str);
-        //         {
-        //             log::debug!("Encrypting backup file {}", backup_file_str.clone());
-        //             let encryptor = age::Encryptor::with_recipients(recipients).unwrap();
-        //             let mut input = File::open(&backup_file_str).unwrap();
-        //             let output = file_io::OutputWriter::new(
-        //                 Some(encrypted_backup_file_str.clone()),
-        //                 file_io::OutputFormat::Binary,
-        //                 0o666,
-        //                 false,
-        //             )
-        //             .unwrap();
-        //             let mut output = encryptor.wrap_output(output).unwrap();
-        //             std::io::copy(&mut input, &mut output).unwrap();
-        //             output.finish().unwrap();
-        //             log::debug!("Encrypted backup to {}", &encrypted_backup_file_str);
-        //         }
-        //         let encrypted_backup_file_name_str = format!("{}.age", &backup_file_name_str);
-        //         match send_backup_email(
-        //             encrypted_backup_file_str,
-        //             encrypted_backup_file_name_str,
-        //             timestamp_seconds.to_string(),
-        //             backup_opts,
-        //         ) {
-        //             Some(()) => {
-        //                 log::debug!("Backup email sent successfully");
-        //             }
-        //             None => {
-        //                 log::debug!("Skipped sending email");
-        //             }
-        //         }
-        //     } else {
-        //         log::error!(
-        //             "Could not find any recipients from backup SSH recipients file {}",
-        //             backup_ssh_recipients_file_str.clone()
-        //         );
-        //     }
-        // };
+        if let Some(backup_ssh_recipients_file) = backup_opts.backup_ssh_recipients_file.as_ref() {
+            // Encrypt backup with a file containing one or more SSH keys
+            let backup_ssh_recipients_file_str = backup_ssh_recipients_file
+                .clone()
+                .to_str()
+                .unwrap()
+                .to_string();
+            log::debug!(
+                "Attempt to encrypt backup to SSH recipients listed in {}",
+                backup_ssh_recipients_file_str.clone()
+            );
+            let mut recipients: Vec<Box<dyn age::Recipient + Send>> = vec![];
+            let buf = BufReader::new(File::open(&backup_ssh_recipients_file).unwrap());
+            for (line_number, line) in buf.lines().enumerate() {
+                let line = line.unwrap();
+                if line.is_empty() || line.find('#') == Some(0) {
+                    continue;
+                }
+                match line.parse::<age::ssh::Recipient>() {
+                    Ok(recipient) => {
+                        log::debug!("Adding SSH recipient {}", &recipient);
+                        recipients.push(Box::new(recipient));
+                    }
+                    Err(_) => {
+                        log::error!(
+                            "Error reading line {} in backup SSH recipients file {}",
+                            line_number,
+                            backup_ssh_recipients_file_str
+                        );
+                    }
+                }
+            }
+            if !recipients.is_empty() {
+                let encrypted_backup_file_str = format!("{}.age", &backup_file_str);
+                {
+                    log::debug!("Encrypting backup file {}", backup_file_str.clone());
+                    let encryptor = age::Encryptor::with_recipients(recipients).unwrap();
+                    let mut input = File::open(&backup_file_str).unwrap();
+                    let output = file_io::OutputWriter::new(
+                        Some(encrypted_backup_file_str.clone()),
+                        file_io::OutputFormat::Binary,
+                        0o666,
+                        false,
+                    )
+                    .unwrap();
+                    let mut output = encryptor.wrap_output(output).unwrap();
+                    std::io::copy(&mut input, &mut output).unwrap();
+                    output.finish().unwrap();
+                    log::debug!("Encrypted backup to {}", &encrypted_backup_file_str);
+                }
+                let encrypted_backup_file_name_str = format!("{}.age", &backup_file_name_str);
+                match send_backup_email(
+                    encrypted_backup_file_str,
+                    encrypted_backup_file_name_str,
+                    timestamp_seconds.to_string(),
+                    backup_opts,
+                ) {
+                    Some(()) => {
+                        log::debug!("Backup email sent successfully");
+                    }
+                    None => {
+                        log::debug!("Skipped sending email");
+                    }
+                }
+            } else {
+                log::error!(
+                    "Could not find any recipients from backup SSH recipients file {}",
+                    backup_ssh_recipients_file_str.clone()
+                );
+            }
+        };
     });
 }
 
