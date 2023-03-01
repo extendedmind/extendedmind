@@ -2,13 +2,10 @@ use crate::common::{
     get_stem_from_path, BackupOpts, TIMESTAMP_SECONDS_FORMAT, TIMESTAMP_SECONDS_FORMAT_LEN,
 };
 use age::cli_common::file_io;
-use async_std::sync::{Arc, Mutex};
-use async_std::task;
 use chrono::prelude::*;
 use extendedmind_core::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
 use flate2::write::GzEncoder;
 use flate2::Compression;
-use futures::stream::StreamExt;
 use lettre::message::{Attachment, Body, Message};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::transport::smtp::SmtpTransport;
@@ -17,10 +14,13 @@ use std::fs::File;
 use std::io::BufRead;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicBool;
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 use std::{fs::read_dir, io::BufReader};
 use thread_priority::{set_current_thread_priority, ThreadPriority};
+use tokio::time::Interval;
+use tokio::{sync::Mutex, task, time::interval};
 
 pub const BACKUP_FILE_PREFIX: &str = "hub_backup_";
 pub const DEFAULT_BACKUP_INTERVAL_MIN: u32 = 1440;
@@ -37,13 +37,13 @@ pub fn start_backup_poll(
         return;
     }
     task::spawn(async move {
-        let mut interval = async_std::stream::interval(Duration::from_secs(1));
+        let mut interval = interval(Duration::from_secs(1));
         let mut next_backup_timestamp = get_next_backup_timestamp_on_launch(
             backup_dir.clone(),
             backup_opts.backup_interval_min,
         );
         // TODO: Instead of abort, use !peermerge.closed()
-        while interval.next().await.is_some() && !*abort.as_ref().lock().await.get_mut() {
+        while wait_and_check_abort(&mut interval, &abort).await {
             if is_now_after(next_backup_timestamp) {
                 log::info!("Creating backup");
                 create_backup(source_dirs.clone(), backup_dir.clone(), backup_opts.clone());
@@ -51,6 +51,11 @@ pub fn start_backup_poll(
             }
         }
     });
+}
+
+async fn wait_and_check_abort(interval: &mut Interval, abort: &Arc<Mutex<AtomicBool>>) -> bool {
+    interval.tick().await;
+    !*abort.as_ref().lock().await.get_mut()
 }
 
 fn get_next_backup_timestamp(backup_interval_min: Option<u32>) -> i64 {

@@ -1,8 +1,8 @@
-use async_std::task;
 use extendedmind_core::{FeedDiskPersistence, Peermerge, RandomAccessDisk, StateEvent};
 use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
 use futures::stream::StreamExt;
 use peermerge_tcp::connect_tcp_server_disk;
+use tokio::task;
 
 pub async fn listen(
     peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,

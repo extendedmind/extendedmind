@@ -1,34 +1,30 @@
 use anyhow::Result;
 use async_ctrlc::CtrlC;
-use async_std::sync::{Arc, Mutex};
-use async_std::task;
 use extendedmind_core::{FeedDiskPersistence, NameDescription, Peermerge, RandomAccessDisk};
 use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::process;
 use std::sync::atomic::AtomicBool;
+use std::sync::Arc;
 use std::time::Duration;
+use tokio::{runtime::Runtime, sync::Mutex, task, time::sleep};
 
 use crate::admin::listen_to_admin_socket;
 use crate::backup::start_backup_poll;
 use crate::common::{AdminCommand, BackupOpts};
 
 pub struct InitializeResult {
-    pub peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
     pub admin_command_receiver: UnboundedReceiver<AdminCommand>,
     pub admin_result_sender: UnboundedSender<Result<()>>,
 }
 
 pub fn initialize(
-    data_root_dir: &PathBuf,
+    peermerge: &Peermerge<RandomAccessDisk, FeedDiskPersistence>,
     admin_socket_file: PathBuf,
     backup_opts: BackupOpts,
     backup_source_dirs: Vec<PathBuf>,
 ) -> Result<InitializeResult> {
-    // Create/open peermerge blocking
-    let peermerge = futures::executor::block_on(get_peermerge(data_root_dir))?;
-
     // Create channels for admin signals
     let (admin_command_sender, admin_command_receiver): (
         UnboundedSender<AdminCommand>,
@@ -60,7 +56,7 @@ pub fn initialize(
         *abort_writer.as_ref().lock().await = AtomicBool::new(true);
         // Wait 200ms before killing, to allow time for file saving and closing sockets
         log::info!("(4/5) Sleeping for 200ms");
-        task::sleep(Duration::from_millis(200)).await;
+        sleep(Duration::from_millis(200)).await;
         log::info!("(5/5) Exiting process with 0");
         process::exit(0);
     });
@@ -89,13 +85,12 @@ pub fn initialize(
     }
 
     Ok(InitializeResult {
-        peermerge,
         admin_command_receiver,
         admin_result_sender,
     })
 }
 
-async fn get_peermerge(
+pub async fn get_peermerge(
     data_root_dir: &PathBuf,
 ) -> Result<Peermerge<RandomAccessDisk, FeedDiskPersistence>> {
     let peermerge = if Peermerge::document_infos_disk(data_root_dir)

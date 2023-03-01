@@ -1,11 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
+RUST_BACKTRACE=1
 rm -rf target/data
 mkdir -p target/data
 TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
-# cargo run -- \
-bazel run //ui/cli:extendedmind_cli -- \
+# bazel run //ui/cli:extendedmind_cli -- \
+cargo run -- \
     --data-root-dir ${TARGET_PATH}/data \
     create \
     --encrypted \
@@ -34,8 +35,8 @@ else
 fi
 
 # Backup to hub or server
-# cargo run -- \
-bazel run //ui/cli:extendedmind_cli -- \
+# bazel run //ui/cli:extendedmind_cli -- \
+cargo run -- \
     --data-root-dir ${TARGET_PATH}/data \
     back-up \
     --hub-domain localhost \

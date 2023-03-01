@@ -1,13 +1,13 @@
 use anyhow::Result;
-use async_std::task;
 use clap::{Parser, Subcommand};
 use futures::stream::StreamExt;
 use std::{path::PathBuf, process};
+use tokio::{self, task};
 
 use crate::{
     admin::execute_admin_command,
     common::{AdminCommand, BackupOpts, GlobalOpts},
-    init::initialize,
+    init::{get_peermerge, initialize},
     listen::listen,
 };
 
@@ -66,11 +66,11 @@ fn setup_logging(verbose: bool) {
     base_config.chain(std_config).apply().unwrap();
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     let opts: Opts = Opts::parse();
     setup_logging(opts.global_opts.verbose.unwrap_or(false));
     let admin_socket_file = opts.global_opts.admin_socket_file;
-
     match opts.command {
         Command::Listen {
             data_root_dir,
@@ -78,13 +78,13 @@ fn main() -> Result<()> {
             backup_opts,
         } => {
             // Initialize
-            let initialize_result =
-                initialize(&data_root_dir, admin_socket_file, backup_opts, vec![])?;
+            let peermerge = get_peermerge(&data_root_dir).await?;
+            let initialize_result = initialize(&peermerge, admin_socket_file, backup_opts, vec![])?;
 
             // Listen to admin commands
             let mut admin_command_receiver = initialize_result.admin_command_receiver;
             let admin_result_sender = initialize_result.admin_result_sender;
-            let mut peermerge_for_task = initialize_result.peermerge.clone();
+            let mut peermerge_for_task = peermerge.clone();
             task::spawn(async move {
                 while let Some(event) = admin_command_receiver.next().await {
                     match event {
@@ -103,13 +103,14 @@ fn main() -> Result<()> {
             });
 
             // Block on server
-            futures::executor::block_on(listen(initialize_result.peermerge, tcp_port))?;
+            listen(peermerge, tcp_port).await?;
         }
         Command::Register { peermerge_doc_url } => {
-            let result = futures::executor::block_on(execute_admin_command(
+            let result = execute_admin_command(
                 admin_socket_file,
                 AdminCommand::Register { peermerge_doc_url },
-            ))?;
+            )
+            .await?;
             process::exit(result.into());
         }
     }

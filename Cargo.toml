@@ -5,7 +5,6 @@ members = [
     "schema",
     "core",
     "hub",
-    "server",
     "ui/common",
     "ui/wasm",
     "ui/disk",

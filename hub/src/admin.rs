@@ -1,11 +1,11 @@
 use anyhow::Result;
-use async_std::{
-    io::{ReadExt, WriteExt},
-    os::unix::net::{UnixListener, UnixStream},
-};
 use futures::channel::mpsc::{UnboundedReceiver, UnboundedSender};
 use futures::stream::StreamExt;
 use std::path::PathBuf;
+use tokio::{
+    io::{AsyncReadExt, AsyncWriteExt},
+    net::{UnixListener, UnixStream},
+};
 
 use crate::common::AdminCommand;
 
@@ -45,7 +45,6 @@ pub async fn listen_to_admin_socket(
     mut admin_response_receiver: UnboundedReceiver<Result<()>>,
 ) -> Result<()> {
     let listener = UnixListener::bind(&admin_socket_file)
-        .await
         .expect(format!("Could not create socket to {:?}", admin_socket_file).as_str());
     loop {
         match listener.accept().await {

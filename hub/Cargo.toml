@@ -8,7 +8,7 @@ authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 [dependencies]
 extendedmind_core = { path = "../core" }
 peermerge-tcp = { git = "https://github.com/extendedmind/peermerge.git", branch = "main", default-features = false, features = ["tokio-runtime", "log"] }
-tokio = { version = "1.25.0", features = ["rt"] }
+tokio = { version = "1.25.0", features = ["rt", "rt-multi-thread", "time", "net", "macros"] }
 fern = "0.6.0"
 log = "0.4.11"
 anyhow = "1.0.33"

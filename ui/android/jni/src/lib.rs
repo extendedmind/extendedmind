@@ -1,4 +1,3 @@
-use async_std::task;
 use extendedmind_ui_disk::{capnp, connect_to_hub, ui_protocol};
 use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
 use futures::stream::StreamExt;
@@ -9,6 +8,7 @@ use log::*;
 use std::ffi::CString;
 use std::os::raw::c_char;
 use std::path::PathBuf;
+use tokio::{runtime::Runtime, task};
 
 pub type Callback = unsafe extern "C" fn(*const c_char) -> ();
 
@@ -70,7 +70,7 @@ pub extern "C" fn Java_org_extendedmind_android_Application_00024Companion_conne
         UnboundedReceiver<capnp::message::TypedBuilder<ui_protocol::Owned>>,
     ) = unbounded();
 
-    task::spawn_local(async move {
+    task::spawn(async move {
         debug!("Connecting to hub");
         // FIXME: Connect with peermerge
         // connect_to_hub(
@@ -88,7 +88,8 @@ pub extern "C" fn Java_org_extendedmind_android_Application_00024Companion_conne
     // loop {
     debug!("Begin listening to ui protocol messages");
     let mut packed_message = Vec::<u8>::new();
-    task::block_on(async {
+    let rt = Runtime::new().unwrap();
+    rt.block_on(async {
         let message = ui_protocol_receiver.next().await.unwrap();
         capnp::serialize_packed::write_message(&mut packed_message, message.borrow_inner())
             .unwrap();

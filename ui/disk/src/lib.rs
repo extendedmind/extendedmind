@@ -1,4 +1,3 @@
-use async_std::task;
 use extendedmind_ui_common::connect::poll_state_event;
 use extendedmind_ui_common::extendedmind_core::{
     DocumentId, FeedDiskPersistence, NameDescription, Peermerge, RandomAccessDisk, Result,
@@ -10,6 +9,7 @@ use log::*;
 use peermerge_tcp::connect_tcp_client_disk;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use tokio::task;
 
 pub use extendedmind_ui_common::extendedmind_core::{capnp, ui_protocol};
 
@@ -140,7 +140,7 @@ pub async fn back_up(
     let main_document_id = main_document_id.expect("Peermerge not created, can't back up");
     let peermerge = get_peermerge(&data_root_dir, encryption_keys).await?;
 
-    task::spawn_local(async move {
+    task::spawn(async move {
         debug!("Connecting to hub");
         connect_to_hub(
             peermerge,

@@ -1,4 +1,3 @@
-use async_std::task;
 use clap::{Parser, Subcommand};
 use extendedmind_ui_disk::{back_up, create_document};
 use log::*;
@@ -97,7 +96,8 @@ async fn run_back_up(
     Ok(())
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     setup_logging();
     let opts: Opts = Opts::parse();
     match opts.command {
@@ -105,21 +105,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             description,
             encrypted,
             output,
-        } => task::block_on(run_create_document(
-            opts.data_root_dir,
-            description,
-            encrypted,
-            output,
-        )),
+        } => run_create_document(opts.data_root_dir, description, encrypted, output).await,
         Command::BackUp {
             hub_domain,
             hub_port,
             encryption_key,
-        } => task::block_on(run_back_up(
-            opts.data_root_dir,
-            encryption_key,
-            hub_domain,
-            hub_port,
-        )),
+        } => run_back_up(opts.data_root_dir, encryption_key, hub_domain, hub_port).await,
     }
 }
