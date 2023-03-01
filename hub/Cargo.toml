@@ -7,13 +7,13 @@ authors = ["Timo Tiuraniemi <timo.tiuraniemi@iki.fi>"]
 
 [dependencies]
 extendedmind_core = { path = "../core" }
-peermerge-tcp = { git = "https://github.com/extendedmind/peermerge.git", branch = "main", default-features = false, features = ["async-std-runtime", "log"] }
+peermerge-tcp = { git = "https://github.com/extendedmind/peermerge.git", branch = "main", default-features = false, features = ["tokio-runtime", "log"] }
+tokio = { version = "1.25.0", features = ["rt"] }
 fern = "0.6.0"
 log = "0.4.11"
 anyhow = "1.0.33"
 chrono = { version = "0.4.19" }
 futures = "^0.3.5"
-async-std = { version = "1.9.0", features = ["unstable"] }
 tar = "0.4.38"
 flate2 = "1.0.24"
 age = { version = "0.9.0", features = ["ssh", "cli-common"] }

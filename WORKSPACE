@@ -117,7 +117,7 @@ crates_repository(
         "//schema:Cargo.toml",
         "//core:Cargo.toml",
         "//hub:Cargo.toml",
-        "//server:Cargo.toml",
+        # "//server:Cargo.toml",
         "//ui/common:Cargo.toml",
         "//ui/wasm:Cargo.toml",
         "//ui/disk:Cargo.toml",

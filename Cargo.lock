@@ -290,16 +290,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "async-attributes"
-version = "1.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3203e79f4dd9bdda415ed03cf14dae5a2bf775c683a00f94e9cd1faf0f596e5"
-dependencies = [
- "quote",
- "syn",
-]
-
-[[package]]
 name = "async-channel"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -308,6 +298,19 @@ dependencies = [
  "concurrent-queue",
  "event-listener",
  "futures-core",
+]
+
+[[package]]
+name = "async-compat"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b48b4ff0c2026db683dea961cd8ea874737f56cffca86fa84415eaddc51c00d"
+dependencies = [
+ "futures-core",
+ "futures-io",
+ "once_cell",
+ "pin-project-lite 0.2.9",
+ "tokio",
 ]
 
 [[package]]
@@ -513,7 +516,6 @@ version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "62565bb4402e926b29953c785397c6dc0391b7b446e45008b0049eb43cec6f5d"
 dependencies = [
- "async-attributes",
  "async-channel",
  "async-global-executor",
  "async-io",
@@ -1612,7 +1614,6 @@ checksum = "0206175f82b8d6bf6652ff7d71a1e27fd2e4efde587fd368662814d6ec1d9ce0"
 name = "extendedmind_cli"
 version = "0.0.1"
 dependencies = [
- "async-std",
  "chrono",
  "clap",
  "duct",
@@ -1620,6 +1621,7 @@ dependencies = [
  "fern",
  "futures",
  "log",
+ "tokio",
 ]
 
 [[package]]
@@ -1627,7 +1629,6 @@ name = "extendedmind_core"
 version = "0.0.1"
 dependencies = [
  "anyhow",
- "async-std",
  "bytes 0.5.6",
  "extendedmind_schema_rust",
  "futures",
@@ -1641,7 +1642,6 @@ dependencies = [
  "age",
  "anyhow",
  "async-ctrlc",
- "async-std",
  "chrono",
  "clap",
  "extendedmind_core",
@@ -1653,6 +1653,7 @@ dependencies = [
  "peermerge-tcp",
  "tar",
  "thread-priority",
+ "tokio",
 ]
 
 [[package]]
@@ -1694,11 +1695,11 @@ dependencies = [
 name = "extendedmind_ui_android_jni"
 version = "0.1.0"
 dependencies = [
- "async-std",
  "extendedmind_ui_disk",
  "futures",
  "jni",
  "log",
+ "tokio",
 ]
 
 [[package]]
@@ -1714,11 +1715,11 @@ dependencies = [
 name = "extendedmind_ui_disk"
 version = "0.0.1"
 dependencies = [
- "async-std",
  "extendedmind_ui_common",
  "futures",
  "log",
  "peermerge-tcp",
+ "tokio",
 ]
 
 [[package]]
@@ -3035,7 +3036,6 @@ version = "0.0.1"
 source = "git+https://github.com/extendedmind/peermerge.git?branch=main#59f8bb56dc281c9d5684f01aa54537a4f7a6996b"
 dependencies = [
  "anyhow",
- "async-std",
  "automerge",
  "chacha20poly1305 0.10.1",
  "dashmap",
@@ -3046,6 +3046,7 @@ dependencies = [
  "random-access-disk",
  "random-access-memory",
  "random-access-storage",
+ "tokio",
  "tracing",
  "wasm-bindgen-futures",
 ]
@@ -3056,11 +3057,12 @@ version = "0.0.1"
 source = "git+https://github.com/extendedmind/peermerge.git?branch=main#59f8bb56dc281c9d5684f01aa54537a4f7a6996b"
 dependencies = [
  "anyhow",
- "async-std",
+ "async-compat",
  "futures",
  "peermerge",
  "random-access-disk",
  "random-access-memory",
+ "tokio",
  "tracing",
 ]
 
@@ -3409,11 +3411,11 @@ version = "2.0.0"
 source = "git+https://github.com/ttiurani/random-access-disk?branch=tokio#30441f636725309a29b03bed76a9616e1ee06c18"
 dependencies = [
  "anyhow",
- "async-std",
  "async-trait",
  "libc",
  "mkdirp",
  "random-access-storage",
+ "tokio",
 ]
 
 [[package]]
@@ -4514,7 +4516,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c8e00990ebabbe4c14c08aca901caed183ecd5c09562a12c824bb53d3c3fd3af"
 dependencies = [
  "autocfg",
+ "bytes 1.4.0",
  "libc",
+ "memchr",
  "mio",
  "pin-project-lite 0.2.9",
  "socket2",

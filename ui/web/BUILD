@@ -52,26 +52,26 @@ vite(
     ],
 )
 
-jest_test(
-    name = "integration_test",
-    srcs = [
-        "//ui/web/tests",
-    ],
-    jest_config = ":jest.e2e.config.js",
-    jest_playwright_config = ":jest-playwright.config.js",
-    server_bin = "//server:extendedmind_server",
-    server_http_port = "8080",
-    server_tcp_port = "8081",
-    server_data_dir = "../../$(@D)/server_data",
-    cli_bin = "//ui/cli:extendedmind_cli",
-    cli_data_dir = "../../$(@D)/cli_data",
-    dist_dir = ":build",
-    deps = [
-        "@npm//jest-playwright-preset",
-        "@npm//playwright",
-        "@npm//dotenv",
-    ],
-)
+# jest_test(
+#     name = "integration_test",
+#     srcs = [
+#         "//ui/web/tests",
+#     ],
+#     jest_config = ":jest.e2e.config.js",
+#     jest_playwright_config = ":jest-playwright.config.js",
+#     server_bin = "//server:extendedmind_server",
+#     server_http_port = "8080",
+#     server_tcp_port = "8081",
+#     server_data_dir = "../../$(@D)/server_data",
+#     cli_bin = "//ui/cli:extendedmind_cli",
+#     cli_data_dir = "../../$(@D)/cli_data",
+#     dist_dir = ":build",
+#     deps = [
+#         "@npm//jest-playwright-preset",
+#         "@npm//playwright",
+#         "@npm//dotenv",
+#     ],
+# )
 
 genrule(
     name = "external-deps-refresh",
