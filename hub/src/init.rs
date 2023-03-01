@@ -1,9 +1,9 @@
 use anyhow::Result;
 use async_ctrlc::CtrlC;
-use async_std::channel::{unbounded, Receiver, Sender};
 use async_std::sync::{Arc, Mutex};
 use async_std::task;
 use extendedmind_core::{FeedDiskPersistence, NameDescription, Peermerge, RandomAccessDisk};
+use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::process;
@@ -16,8 +16,8 @@ use crate::common::{AdminCommand, BackupOpts};
 
 pub struct InitializeResult {
     pub peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
-    pub admin_command_receiver: Receiver<AdminCommand>,
-    pub admin_result_sender: Sender<Result<()>>,
+    pub admin_command_receiver: UnboundedReceiver<AdminCommand>,
+    pub admin_result_sender: UnboundedSender<Result<()>>,
 }
 
 pub fn initialize(
@@ -31,11 +31,13 @@ pub fn initialize(
 
     // Create channels for admin signals
     let (admin_command_sender, admin_command_receiver): (
-        Sender<AdminCommand>,
-        Receiver<AdminCommand>,
+        UnboundedSender<AdminCommand>,
+        UnboundedReceiver<AdminCommand>,
     ) = unbounded();
-    let (admin_result_sender, admin_result_receiver): (Sender<Result<()>>, Receiver<Result<()>>) =
-        unbounded();
+    let (admin_result_sender, admin_result_receiver): (
+        UnboundedSender<Result<()>>,
+        UnboundedReceiver<Result<()>>,
+    ) = unbounded();
 
     // Listen to ctrlc in a separate task
     let ctrlc = CtrlC::new().expect("cannot create Ctrl+C handler?");

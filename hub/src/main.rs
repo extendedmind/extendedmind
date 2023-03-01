@@ -92,11 +92,11 @@ fn main() -> Result<()> {
                             peermerge_for_task
                                 .attach_proxy_document_disk(&peermerge_doc_url)
                                 .await;
-                            admin_result_sender.try_send(Ok(())).unwrap();
+                            admin_result_sender.unbounded_send(Ok(())).unwrap();
                         }
                         AdminCommand::BustCache { .. } => {
                             // Nothing to do, just exit
-                            admin_result_sender.try_send(Ok(())).unwrap();
+                            admin_result_sender.unbounded_send(Ok(())).unwrap();
                         }
                     }
                 }

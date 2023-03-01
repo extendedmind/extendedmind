@@ -1,9 +1,9 @@
 use anyhow::Result;
 use async_std::{
-    channel::{Receiver, Sender},
     io::{ReadExt, WriteExt},
     os::unix::net::{UnixListener, UnixStream},
 };
+use futures::channel::mpsc::{UnboundedReceiver, UnboundedSender};
 use futures::stream::StreamExt;
 use std::path::PathBuf;
 
@@ -41,8 +41,8 @@ pub async fn execute_admin_command(
 
 pub async fn listen_to_admin_socket(
     admin_socket_file: PathBuf,
-    admin_command_sender: Sender<AdminCommand>,
-    mut admin_response_receiver: Receiver<Result<()>>,
+    admin_command_sender: UnboundedSender<AdminCommand>,
+    mut admin_response_receiver: UnboundedReceiver<Result<()>>,
 ) -> Result<()> {
     let listener = UnixListener::bind(&admin_socket_file)
         .await
@@ -79,7 +79,7 @@ pub async fn listen_to_admin_socket(
                     }
                 };
                 log::info!("Received admin command {:?}", &admin_command);
-                admin_command_sender.try_send(admin_command).unwrap();
+                admin_command_sender.unbounded_send(admin_command).unwrap();
                 match admin_response_receiver.next().await {
                     Some(Ok(..)) => {
                         socket.write_all(&[0 as u8]).await.unwrap();
