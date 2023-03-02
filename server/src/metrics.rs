@@ -14,7 +14,7 @@ use std::thread;
 use std::time;
 use std::time::Duration;
 use thread_priority::{set_current_thread_priority, ThreadPriority};
-use tide::{Body, Response};
+// use tide::{Body, Response};
 use wildmatch::WildMatch;
 
 // This is the number of characters taken from timestamp to create new metrics file. E.g.
@@ -269,16 +269,16 @@ impl ProduceMetrics {
         self.cache.get(&query)
     }
 
-    fn get_ok_response_from_body(&self, body: Body) -> Response {
-        let response_builder = tide::Response::builder(200).body(body);
-        if self.skip_compression {
-            response_builder
-                .header("Cache-Control", "no-transform")
-                .build()
-        } else {
-            response_builder.build()
-        }
-    }
+    // fn get_ok_response_from_body(&self, body: Body) -> Response {
+    //     let response_builder = tide::Response::builder(200).body(body);
+    //     if self.skip_compression {
+    //         response_builder
+    //             .header("Cache-Control", "no-transform")
+    //             .build()
+    //     } else {
+    //         response_builder.build()
+    //     }
+    // }
 
     async fn insert_metrics_response_to_cache(
         &self,
@@ -304,112 +304,112 @@ impl Default for MetricsParams {
     }
 }
 
-#[async_trait::async_trait]
-impl<State> tide::Endpoint<State> for ProduceMetrics
-where
-    State: Clone + Send + Sync + 'static,
-{
-    async fn call(&self, req: tide::Request<State>) -> tide::Result {
-        let MetricsParams { limit, secret } = req.query().unwrap_or_default();
-        let correct_secret = if let Some(metrics_secret) = &self.metrics_secret {
-            if let Some(secret) = secret {
-                secret.eq(metrics_secret)
-            } else {
-                false
-            }
-        } else {
-            false
-        };
-        let limit: usize = if let Some(limit) = limit {
-            if correct_secret {
-                limit
-            } else {
-                DEFAULT_METRICS_LIMIT
-            }
-        } else {
-            DEFAULT_METRICS_LIMIT
-        };
-        let query = format!("limit={}&correct_secret={}", limit, correct_secret);
-        let url_path = &req.url().path();
-        let cached_metrics_response = self.get_metrics_response_from_cache(query.clone());
-        return if let Some(cached_metrics_response) = cached_metrics_response {
-            // The body for the URL was found from the cache, return it without any file IO
-            log::debug!("Metrics cache hit: {}", &url_path);
-            let body = tide::Body::from_json(&cached_metrics_response).unwrap();
-            Ok(self.get_ok_response_from_body(body))
-        } else {
-            // Read the file from the file system
-            log::debug!("Metrics cache miss: {}", &url_path);
+// #[async_trait::async_trait]
+// impl<State> tide::Endpoint<State> for ProduceMetrics
+// where
+//     State: Clone + Send + Sync + 'static,
+// {
+//     async fn call(&self, req: tide::Request<State>) -> tide::Result {
+//         let MetricsParams { limit, secret } = req.query().unwrap_or_default();
+//         let correct_secret = if let Some(metrics_secret) = &self.metrics_secret {
+//             if let Some(secret) = secret {
+//                 secret.eq(metrics_secret)
+//             } else {
+//                 false
+//             }
+//         } else {
+//             false
+//         };
+//         let limit: usize = if let Some(limit) = limit {
+//             if correct_secret {
+//                 limit
+//             } else {
+//                 DEFAULT_METRICS_LIMIT
+//             }
+//         } else {
+//             DEFAULT_METRICS_LIMIT
+//         };
+//         let query = format!("limit={}&correct_secret={}", limit, correct_secret);
+//         let url_path = &req.url().path();
+//         let cached_metrics_response = self.get_metrics_response_from_cache(query.clone());
+//         return if let Some(cached_metrics_response) = cached_metrics_response {
+//             // The body for the URL was found from the cache, return it without any file IO
+//             log::debug!("Metrics cache hit: {}", &url_path);
+//             let body = tide::Body::from_json(&cached_metrics_response).unwrap();
+//             Ok(self.get_ok_response_from_body(body))
+//         } else {
+//             // Read the file from the file system
+//             log::debug!("Metrics cache miss: {}", &url_path);
 
-            let mut paths = read_dir(self.metrics_dir.to_str().unwrap())
-                .unwrap()
-                .map(|res| res.map(|e| e.path()))
-                .filter(|path| {
-                    if let Ok(path) = path {
-                        return path.is_file() && path.extension() == Some(OsStr::new("metrics"));
-                    }
-                    false
-                })
-                .collect::<Result<Vec<_>, std::io::Error>>()
-                .unwrap();
-            paths.sort();
+//             let mut paths = read_dir(self.metrics_dir.to_str().unwrap())
+//                 .unwrap()
+//                 .map(|res| res.map(|e| e.path()))
+//                 .filter(|path| {
+//                     if let Ok(path) = path {
+//                         return path.is_file() && path.extension() == Some(OsStr::new("metrics"));
+//                     }
+//                     false
+//                 })
+//                 .collect::<Result<Vec<_>, std::io::Error>>()
+//                 .unwrap();
+//             paths.sort();
 
-            let end_timestamp = get_timestamp_diff(&get_stem_from_path(&paths[paths.len() - 1]), 1);
-            let limit: i64 = limit.try_into().unwrap();
-            let start_timestamp = get_timestamp_diff(&end_timestamp, limit * -1);
+//             let end_timestamp = get_timestamp_diff(&get_stem_from_path(&paths[paths.len() - 1]), 1);
+//             let limit: i64 = limit.try_into().unwrap();
+//             let start_timestamp = get_timestamp_diff(&end_timestamp, limit * -1);
 
-            let mut metrics: Vec<MetricsRange> = vec![];
-            for path in paths {
-                let stem = get_stem_from_path(&path);
-                if stem >= start_timestamp {
-                    let mut entries: Vec<MetricsEntry> = vec![];
-                    let metrics_file = File::open(&path).unwrap();
-                    let metrics_reader = BufReader::new(metrics_file);
-                    for line in metrics_reader.lines() {
-                        let line = line.unwrap();
-                        let split = line.split(" ");
-                        let metric: Vec<&str> = split.collect();
-                        let status = metric[0].parse::<usize>().unwrap();
-                        let url_path: String = metric[1].to_string();
-                        let count = trim_newline(metric[2]).parse::<usize>().unwrap();
-                        let immutable: bool = match &self.immutable_path_wildmatch {
-                            Some(immutable_path) => immutable_path
-                                .iter()
-                                .find(|wildmatch_path| wildmatch_path.matches(&url_path))
-                                .is_some(),
-                            None => false,
-                        };
-                        if correct_secret || status == 200 {
-                            entries.push(MetricsEntry {
-                                path: url_path,
-                                status,
-                                count,
-                                immutable,
-                            })
-                        }
-                    }
-                    metrics.push(MetricsRange {
-                        end: get_timestamp_diff(&stem, 1),
-                        start: stem,
-                        entries,
-                    })
-                }
-            }
+//             let mut metrics: Vec<MetricsRange> = vec![];
+//             for path in paths {
+//                 let stem = get_stem_from_path(&path);
+//                 if stem >= start_timestamp {
+//                     let mut entries: Vec<MetricsEntry> = vec![];
+//                     let metrics_file = File::open(&path).unwrap();
+//                     let metrics_reader = BufReader::new(metrics_file);
+//                     for line in metrics_reader.lines() {
+//                         let line = line.unwrap();
+//                         let split = line.split(" ");
+//                         let metric: Vec<&str> = split.collect();
+//                         let status = metric[0].parse::<usize>().unwrap();
+//                         let url_path: String = metric[1].to_string();
+//                         let count = trim_newline(metric[2]).parse::<usize>().unwrap();
+//                         let immutable: bool = match &self.immutable_path_wildmatch {
+//                             Some(immutable_path) => immutable_path
+//                                 .iter()
+//                                 .find(|wildmatch_path| wildmatch_path.matches(&url_path))
+//                                 .is_some(),
+//                             None => false,
+//                         };
+//                         if correct_secret || status == 200 {
+//                             entries.push(MetricsEntry {
+//                                 path: url_path,
+//                                 status,
+//                                 count,
+//                                 immutable,
+//                             })
+//                         }
+//                     }
+//                     metrics.push(MetricsRange {
+//                         end: get_timestamp_diff(&stem, 1),
+//                         start: stem,
+//                         entries,
+//                     })
+//                 }
+//             }
 
-            let metrics_response: MetricsResponse = MetricsResponse {
-                start: start_timestamp,
-                end: end_timestamp,
-                metrics,
-            };
+//             let metrics_response: MetricsResponse = MetricsResponse {
+//                 start: start_timestamp,
+//                 end: end_timestamp,
+//                 metrics,
+//             };
 
-            self.insert_metrics_response_to_cache(query, metrics_response.clone())
-                .await;
+//             self.insert_metrics_response_to_cache(query, metrics_response.clone())
+//                 .await;
 
-            let body = tide::Body::from_json(&metrics_response).unwrap();
-            Ok(self.get_ok_response_from_body(body))
-        };
-    }
-}
+//             let body = tide::Body::from_json(&metrics_response).unwrap();
+//             Ok(self.get_ok_response_from_body(body))
+//         };
+//     }
+// }
 
 fn get_timestamp_diff(timestamp: &str, delta: i64) -> String {
     match timestamp.len() {

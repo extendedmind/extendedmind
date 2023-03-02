@@ -1,5 +1,5 @@
+use axum::http::{HeaderValue, Method};
 use extendedmind_hub::extendedmind_core::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
-use tide::http::{headers::HeaderValues, Method};
 use wildmatch::WildMatch;
 
 // Identifies that the log entry belongs in the access log. Needs to be separate from actual paths,
@@ -22,7 +22,7 @@ impl State {
 
 pub fn log_access(method: &Method, url_path: &str, code: &str, extra: Option<&str>) {
     // This value should be
-    if method == &Method::Get {
+    if method == Method::GET {
         log::info!(
             "{} {} {} {}",
             crate::common::ACCESS_LOG_IDENTIFIER,
@@ -37,7 +37,7 @@ pub fn log_access(method: &Method, url_path: &str, code: &str, extra: Option<&st
 
 pub fn is_inline_css(
     url_path: &str,
-    referer_header_value: Option<&HeaderValues>,
+    referer_header_value: Option<&HeaderValue>,
     inline_css_wildmatch: &Option<Vec<WildMatch>>,
     inline_css_skip_referer_wildmatch: &Option<Vec<WildMatch>>,
 ) -> bool {
@@ -54,8 +54,7 @@ pub fn is_inline_css(
                 .iter()
                 .find(|referer| {
                     if let Some(referer_header_value) = referer_header_value {
-                        let referer_header_value = &referer_header_value[0].to_string();
-                        referer.matches(referer_header_value)
+                        referer.matches(referer_header_value.to_str().unwrap())
                     } else {
                         false
                     }

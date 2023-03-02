@@ -11,15 +11,16 @@ fi
 
 set -euo pipefail
 
+mkdir -p target/data
 mkdir -p target/logs/metrics
 TARGET_PATH=$(echo "$(cd "$(dirname "target")"; pwd -P)/$(basename "target")")
 # bazel run //server:extendedmind_server -- \
-# cargo run -- \
-../ui/web/node_modules/.bin/ibazel run //server:extendedmind_server -- \
+# ../ui/web/node_modules/.bin/ibazel run //server:extendedmind_server -- \
+cargo run -- \
     --admin-socket-file ${TARGET_PATH}/server.sock \
     --verbose true \
     start \
-    --data-root-dir ${TARGET_PATH} \
+    --data-root-dir ${TARGET_PATH}/data \
     --http-port 3001 \
     --tcp-port 3002 \
     ${STATIC_OPT} \

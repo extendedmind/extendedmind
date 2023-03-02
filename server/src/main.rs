@@ -15,7 +15,8 @@ use logging::{setup_logging, LogMethod};
 use opts::{Command, Opts};
 use server::start_server;
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     // Read in command line arguments and setup logging
     let opts: Opts = Opts::parse();
     let admin_socket_file = opts.global_opts.admin_socket_file;
@@ -51,13 +52,15 @@ fn main() -> Result<()> {
                 port_opts,
                 http_opts,
                 performance_opts,
-            )?;
+            )
+            .await?;
         }
         Command::Register { peermerge_doc_url } => {
-            let result = futures::executor::block_on(execute_admin_command(
+            let result = execute_admin_command(
                 admin_socket_file,
                 AdminCommand::Register { peermerge_doc_url },
-            ))?;
+            )
+            .await?;
             process::exit(result.into());
         }
         Command::BustCache { .. } => {
@@ -68,10 +71,8 @@ fn main() -> Result<()> {
                 None,
             );
             log::debug!("enter: server in client mode, command BustCache");
-            let result = futures::executor::block_on(execute_admin_command(
-                admin_socket_file,
-                AdminCommand::BustCache {},
-            ))?;
+            let result =
+                execute_admin_command(admin_socket_file, AdminCommand::BustCache {}).await?;
             process::exit(result.into());
         }
     }

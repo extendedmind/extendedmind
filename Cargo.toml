@@ -5,13 +5,10 @@ members = [
     "schema",
     "core",
     "hub",
+    "server",
     "ui/common",
     "ui/wasm",
     "ui/disk",
     "ui/cli",
     "ui/android/jni",
-]
-
-exclude = [
-    "server",
 ]
