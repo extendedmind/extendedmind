@@ -2,27 +2,21 @@ use chrono::prelude::*;
 use extendedmind_hub::common::{
     get_stem_from_path, TIMESTAMP_DAYS_FORMAT, TIMESTAMP_MINUTES_FORMAT, TIMESTAMP_SECONDS_FORMAT,
 };
-use moka::future::Cache;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::collections::HashMap;
-use std::convert::TryInto;
 use std::ffi::OsStr;
 use std::fs::{read_dir, File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
 use std::thread;
 use std::time;
-use std::time::Duration;
 use thread_priority::{set_current_thread_priority, ThreadPriority};
-// use tide::{Body, Response};
-use wildmatch::WildMatch;
+
+use crate::common::{MetricsResponse, MetricsState, DEFAULT_METRICS_INTERVAL_SECONDS};
 
 // This is the number of characters taken from timestamp to create new metrics file. E.g.
 // from "2022-05-30_17.06.03", 13 means "2022-05-30.metrics".
 const DEFAULT_METRICS_FILE_PRECISION: u8 = 10;
-
-// The default time to sleep when trying to refresh metrics
-const DEFAULT_METRICS_INTERVAL_SECONDS: u64 = 60;
 
 // Show 30 by default, maps to showing one month with DEFAULT_METRICS_FILE_PRECISION
 const DEFAULT_METRICS_LIMIT: usize = 30;
@@ -197,74 +191,7 @@ pub fn process_metrics(metrics_dir: PathBuf, metrics_precision: Option<u8>, log_
     });
 }
 
-#[derive(Serialize, Clone)]
-struct MetricsResponse {
-    start: String,
-    end: String,
-    metrics: Vec<MetricsRange>,
-}
-
-#[derive(Serialize, Clone)]
-struct MetricsRange {
-    start: String,
-    end: String,
-    entries: Vec<MetricsEntry>,
-}
-
-#[derive(Serialize, Clone)]
-struct MetricsEntry {
-    path: String,
-    status: usize,
-    count: usize,
-    immutable: bool,
-}
-
-#[derive(Clone)]
-pub struct ProduceMetrics {
-    metrics_dir: PathBuf,
-    metrics_secret: Option<String>,
-    immutable_path_wildmatch: Option<Vec<WildMatch>>,
-    cache: Cache<String, MetricsResponse>,
-    skip_compression: bool,
-}
-
-impl ProduceMetrics {
-    pub fn new(
-        metrics_endpoint: String,
-        metrics_dir: PathBuf,
-        metrics_secret: Option<String>,
-        immutable_path: Option<Vec<String>>,
-        skip_compression: bool,
-    ) -> Self {
-        let cache_ttl_sec = DEFAULT_METRICS_INTERVAL_SECONDS;
-        log::info!(
-            "Setting up cache for metrics endpoint at {} with time-to-live: {}s",
-            &metrics_endpoint,
-            &cache_ttl_sec,
-        );
-        let cache = Cache::builder()
-            .time_to_live(Duration::from_secs(cache_ttl_sec))
-            .build();
-
-        let immutable_path_wildmatch = match immutable_path {
-            Some(immutable_path) => Some(
-                immutable_path
-                    .iter()
-                    .map(|path| WildMatch::new(path))
-                    .collect(),
-            ),
-            None => None,
-        };
-
-        Self {
-            metrics_dir,
-            metrics_secret,
-            immutable_path_wildmatch,
-            cache,
-            skip_compression,
-        }
-    }
-
+impl MetricsState {
     fn get_metrics_response_from_cache(&self, query: String) -> Option<MetricsResponse> {
         self.cache.get(&query)
     }

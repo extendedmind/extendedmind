@@ -1,23 +1,16 @@
 use anyhow::Result;
-use axum::http::{HeaderMap, HeaderValue, StatusCode};
 use extendedmind_hub::common::{AdminCommand, BackupOpts};
 use extendedmind_hub::extendedmind_core::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
 use extendedmind_hub::init::{get_peermerge, initialize};
 use extendedmind_hub::listen::listen;
 use futures::stream::StreamExt;
-use mime_guess::Mime;
-use moka::sync::Cache;
 use std::path::PathBuf;
 use tokio::task;
-// use tide::http::headers::{HeaderName, HeaderValues};
-// use tide::http::Mime;
-// use tide::StatusCode;
-// use tide_acme::rustls_acme::caches::DirCache;
-// use tide_acme::{AcmeConfig, TideRustlsExt};
+use wildmatch::WildMatch;
 
 // Internal
-use crate::common::State;
-use crate::http::cache::{create_response_cache, ResponseCache};
+use crate::common::{MetricsState, ResponseCache, ServerState};
+use crate::http::cache::create_response_cache;
 use crate::http::serve::{serve_main_http, serve_main_https, serve_redirect_http_to_https};
 use crate::metrics::process_metrics;
 use crate::opts::{HttpOpts, LogOpts, MetricsOpts, PerformanceOpts, PortOpts};
@@ -90,29 +83,16 @@ pub async fn start_server(
     }
 
     // Block server
-    start_server_async(
-        peermerge,
+    let server_state = init_server_state(
+        peermerge.clone(),
         cache,
-        port_opts,
-        http_opts,
-        metrics_opts,
-        performance_opts,
-    )
-    .await?;
+        &http_opts,
+        &metrics_opts,
+        &performance_opts,
+    );
 
-    Ok(())
-}
-
-async fn start_server_async(
-    peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
-    cache: Option<ResponseCache>,
-    port_opts: PortOpts,
-    http_opts: HttpOpts,
-    metrics_opts: MetricsOpts,
-    performance_opts: PerformanceOpts,
-) -> Result<()> {
+    // Block server
     if let Some(http_port) = port_opts.http_port {
-        let initial_state = State::new(peermerge.clone());
         if let Some(https_port) = port_opts.https_port {
             if http_opts.domain.is_none()
                 || http_opts.acme_dir.is_none()
@@ -153,8 +133,7 @@ async fn start_server_async(
             // }
         } else {
             let main_listener = serve_main_http(
-                initial_state,
-                cache,
+                server_state,
                 http_port,
                 http_opts,
                 metrics_opts,
@@ -176,4 +155,83 @@ async fn start_server_async(
     }
 
     Ok(())
+}
+
+fn init_server_state(
+    peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
+    cache: Option<ResponseCache>,
+    http_opts: &HttpOpts,
+    metrics_opts: &MetricsOpts,
+    performance_opts: &PerformanceOpts,
+) -> ServerState {
+    let skip_compress_mime = performance_opts.skip_compress_mime.clone();
+    let inline_css_wildmatch = match performance_opts.inline_css_path.as_ref() {
+        Some(inline_css_path) => {
+            log::info!("Inlining CSS for paths {:?}", &inline_css_path);
+            Some(
+                inline_css_path
+                    .iter()
+                    .map(|path| WildMatch::new(path))
+                    .collect(),
+            )
+        }
+        None => None,
+    };
+    let inline_css_skip_referer_wildmatch = match performance_opts.inline_css_skip_referer.as_ref()
+    {
+        Some(inline_css_skip_referer) => {
+            log::info!(
+                "Skip inlining CSS for Referer header url {:?}",
+                &inline_css_skip_referer
+            );
+            Some(
+                inline_css_skip_referer
+                    .iter()
+                    .map(|referer| WildMatch::new(referer))
+                    .collect(),
+            )
+        }
+        None => None,
+    };
+
+    let metrics_skip_compress: bool = metrics_opts.metrics_skip_compress.unwrap_or(false)
+        || match &skip_compress_mime {
+            Some(skip_compress_mime) => {
+                skip_compress_mime.contains(&"application/json".to_string())
+            }
+            None => false,
+        };
+
+    let (skip_cache_paths, metrics_state): (Option<Vec<String>>, Option<MetricsState>) =
+        if let Some(metrics_endpoint) = metrics_opts.metrics_endpoint.as_ref() {
+            if let Some(metrics_dir) = metrics_opts.metrics_dir.as_ref() {
+                let metrics_state = MetricsState::new(
+                    metrics_endpoint.clone(),
+                    metrics_dir.clone(),
+                    metrics_opts.metrics_secret.clone(),
+                    metrics_skip_compress,
+                );
+                (
+                    Some(vec![metrics_endpoint.to_string()]),
+                    Some(metrics_state),
+                )
+            } else {
+                (None, None)
+            }
+        } else {
+            (None, None)
+        };
+    ServerState::new(
+        peermerge,
+        http_opts.static_root_dir.clone(),
+        skip_compress_mime,
+        inline_css_wildmatch.clone(),
+        inline_css_skip_referer_wildmatch.clone(),
+        performance_opts.immutable_path.clone(),
+        http_opts.hsts_max_age,
+        http_opts.hsts_preload.unwrap_or(false),
+        cache,
+        skip_cache_paths,
+        metrics_state,
+    )
 }

@@ -9,9 +9,7 @@ use moka::future::Cache;
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::common::{is_inline_css, log_access, StaticFilesState};
-
-pub type ResponseCache = Cache<String, (StatusCode, Vec<u8>, HeaderMap<HeaderValue>)>;
+use crate::common::{is_inline_css, log_access, ResponseCache, ServerState};
 
 // Guesstimate one entry has overhead of six 64bit pointers and 128 bytes of headers
 const CACHE_ENTRY_OVERHEAD: u32 = 6 * 8 + 128;
@@ -40,7 +38,6 @@ pub fn create_response_cache(
                     let len: u64 = key.len().try_into().unwrap_or(u32::MAX) as u64
                         + CACHE_ENTRY_OVERHEAD as u64
                         + value.1.len().try_into().unwrap_or(u32::MAX) as u64;
-                    println!("Weighing as {}", len);
                     if len > u32::MAX.into() {
                         u32::MAX
                     } else {
@@ -58,7 +55,7 @@ pub fn get_cache_key(url_path: &str, accept_encoding: &str, inline_css: bool) ->
 }
 
 pub async fn cache_middleware<B>(
-    axum::extract::State(state): axum::extract::State<Arc<StaticFilesState>>,
+    axum::extract::State(state): axum::extract::State<Arc<ServerState>>,
     request: Request<B>,
     next: Next<B>,
 ) -> Response<BoxBody> {

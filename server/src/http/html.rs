@@ -6,84 +6,18 @@ use std::sync::Arc;
 use std::{ffi::OsStr, io};
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
-use wildmatch::WildMatch;
 
-use super::cache::ResponseCache;
-use crate::common::{is_inline_css, log_access, StaticFilesState};
+use crate::common::{is_inline_css, log_access, ServerState};
 
 const CSS_NEEDLE: &str = "<link rel=\"stylesheet\" href=\"/";
 const CSS_ELEMENT_START: &str = "<style>";
 const CSS_ELEMENT_END: &str = "</style>";
 
-impl StaticFilesState {
-    pub fn new(
-        prefix: String,
-        dir: PathBuf,
-        skip_compress_mime: Option<Vec<String>>,
-        inline_css_wildmatch: Option<Vec<WildMatch>>,
-        inline_css_skip_referer_wildmatch: Option<Vec<WildMatch>>,
-        immutable_path: Option<Vec<String>>,
-        hsts_max_age: Option<u64>,
-        hsts_preload: bool,
-        cache: Option<ResponseCache>,
-        skip_cache_paths: Option<Vec<String>>,
-    ) -> Self {
-        if let Some(paths) = &immutable_path {
-            log::info!("Using immutable response headers for paths {:?}", &paths);
-        }
-
-        let immutable_path_wildmatch = match immutable_path {
-            Some(immutable_path) => Some(
-                immutable_path
-                    .iter()
-                    .map(|path| WildMatch::new(path))
-                    .collect(),
-            ),
-            None => None,
-        };
-
-        if let Some(max_age) = hsts_max_age {
-            log::info!(
-                "Setting HSTS max-age to: {}, {}",
-                &max_age,
-                if hsts_preload {
-                    "preloading"
-                } else {
-                    "not preloading"
-                }
-            );
-        }
-
-        let skip_cache_wildmatch = match skip_cache_paths {
-            Some(skip_cache_path) => Some(
-                skip_cache_path
-                    .iter()
-                    .map(|path| WildMatch::new(path))
-                    .collect(),
-            ),
-            None => None,
-        };
-
-        Self {
-            prefix,
-            dir,
-            skip_compress_mime,
-            inline_css_wildmatch,
-            inline_css_skip_referer_wildmatch,
-            immutable_path_wildmatch,
-            hsts_max_age,
-            hsts_preload,
-            cache,
-            skip_cache_wildmatch,
-        }
-    }
-
+impl ServerState {
     async fn get_file_path_from_url_path(&self, url_path: &str) -> Option<PathBuf> {
-        let path = url_path
-            .strip_prefix(&self.prefix.trim_end_matches('*'))
-            .unwrap();
-        let path = path.trim_start_matches('/');
-        let mut file_path = self.dir.clone();
+        let dir = self.static_root_dir.as_ref().unwrap();
+        let path = url_path.trim_start_matches('/');
+        let mut file_path = dir.clone();
         for p in Path::new(path) {
             if p == OsStr::new(".") {
                 continue;
@@ -126,8 +60,7 @@ impl StaticFilesState {
         }
 
         // NB: Important for security!
-        log::debug!("FPTS: {:?}, SD: {:?}", file_path_to_search, self.dir);
-        if !file_path_to_search.starts_with(&self.dir) {
+        if !file_path_to_search.starts_with(&dir) {
             None
         } else {
             Some(file_path_to_search)
@@ -249,7 +182,7 @@ fn get_path_with_extension(path: &PathBuf, extension: &str) -> PathBuf {
 }
 
 pub async fn handle_static_files(
-    axum::extract::State(state): axum::extract::State<Arc<StaticFilesState>>,
+    axum::extract::State(state): axum::extract::State<Arc<ServerState>>,
     request: Request<Body>,
 ) -> Response<Full<Bytes>> {
     let url_path = request.uri().path();
