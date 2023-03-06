@@ -10,8 +10,8 @@ use axum::{
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::compression::CompressionLayer;
 
-use crate::common::ServerState;
 use crate::opts::{HttpOpts, MetricsOpts, PerformanceOpts};
+use crate::{common::ServerState, metrics::handle_metrics};
 
 use super::cache::cache_middleware;
 use super::html::handle_static_files;
@@ -23,24 +23,16 @@ pub struct Ports {
 }
 
 pub async fn serve_main_https(
+    server_state: ServerState,
     https_port: u16,
     domain: String,
     acme_dir: String,
     acme_email: String,
-    http_opts: HttpOpts,
-    metrics_opts: MetricsOpts,
-    performance_opts: PerformanceOpts,
 ) -> std::io::Result<()> {
     Ok(())
 }
 
-pub async fn serve_main_http(
-    server_state: ServerState,
-    http_port: u16,
-    http_opts: HttpOpts,
-    metrics_opts: MetricsOpts,
-    performance_opts: PerformanceOpts,
-) -> std::io::Result<()> {
+pub async fn serve_main_http(server_state: ServerState, http_port: u16) -> std::io::Result<()> {
     let addr = SocketAddr::from(([0, 0, 0, 0], http_port));
     if let Some(static_root_dir) = server_state.static_root_dir.as_ref() {
         if !static_root_dir.is_dir() {
@@ -50,10 +42,20 @@ pub async fn serve_main_http(
             );
         }
         let has_cache = server_state.cache.is_some();
+
+        // Setup basic routing
         let app = Router::new()
             .route("/*path", get(handle_static_files))
-            .route("/", get(handle_static_files))
-            .layer(CompressionLayer::new().br(true).deflate(true).gzip(true));
+            .route("/", get(handle_static_files));
+
+        // Setup metrics
+        let app = if let Some(metrics_state) = server_state.metrics_state.as_ref() {
+            app.route(&metrics_state.metrics_endpoint, get(handle_metrics))
+        } else {
+            app
+        };
+
+        let app = app.layer(CompressionLayer::new().br(true).deflate(true).gzip(true));
 
         let app = if has_cache {
             app.route_layer(axum::middleware::from_fn_with_state(

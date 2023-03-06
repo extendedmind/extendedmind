@@ -132,13 +132,7 @@ pub async fn start_server(
             //     futures::try_join!(main_listener, redirect_listener)?;
             // }
         } else {
-            let main_listener = serve_main_http(
-                server_state,
-                http_port,
-                http_opts,
-                metrics_opts,
-                performance_opts,
-            );
+            let main_listener = serve_main_http(server_state, http_port);
             if let Some(tcp_port) = port_opts.tcp_port {
                 let tcp_listener = listen(peermerge, tcp_port);
                 tokio::try_join!(main_listener, tcp_listener)?;

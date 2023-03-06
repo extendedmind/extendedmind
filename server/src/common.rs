@@ -99,6 +99,7 @@ impl ServerState {
 
 #[derive(Debug, Clone)]
 pub struct MetricsState {
+    pub metrics_endpoint: String,
     pub metrics_dir: PathBuf,
     pub metrics_secret: Option<String>,
     pub cache: Cache<String, MetricsResponse>,
@@ -145,6 +146,7 @@ impl MetricsState {
             .build();
 
         Self {
+            metrics_endpoint,
             metrics_dir,
             metrics_secret,
             cache,
