@@ -1,21 +1,28 @@
 use anyhow::Result;
+use axum::body::{Body, Bytes, Full};
 use axum::{
     extract::Host,
     handler::HandlerWithoutStateExt,
-    http::{StatusCode, Uri},
+    http::{HeaderMap, HeaderValue, Request, Response, StatusCode, Uri},
     response::Redirect,
     routing::get,
     BoxError, Router,
 };
+use mime_guess::Mime;
+use moka::sync::Cache;
 use std::{net::SocketAddr, sync::Arc};
+use tower::ServiceBuilder;
+use tower_http::compression::CompressionLayer;
 use wildmatch::WildMatch;
 
+use crate::common::StaticFilesState;
 use crate::{
     common::State,
     opts::{HttpOpts, MetricsOpts, PerformanceOpts},
 };
 
-use super::html::{handle_static_files, StaticFilesState};
+use super::cache::{cache_middleware, ResponseCache};
+use super::html::handle_static_files;
 
 #[derive(Clone, Copy)]
 pub struct Ports {
@@ -37,6 +44,7 @@ pub async fn serve_main_https(
 
 pub async fn serve_main_http(
     initial_state: State,
+    cache: Option<ResponseCache>,
     http_port: u16,
     http_opts: HttpOpts,
     metrics_opts: MetricsOpts,
@@ -79,6 +87,24 @@ pub async fn serve_main_http(
             None => false,
         };
 
+    let skip_cache_paths: Option<Vec<String>> =
+        if let Some(metrics_endpoint) = metrics_opts.metrics_endpoint {
+            if let Some(metrics_dir) = metrics_opts.metrics_dir {
+                // app.at(&metrics_endpoint).get(ProduceMetrics::new(
+                //     metrics_endpoint.clone(),
+                //     metrics_dir,
+                //     metrics_opts.metrics_secret,
+                //     performance_opts.immutable_path,
+                //     metrics_skip_compress,
+                // ));
+                Some(vec![metrics_endpoint])
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
     let addr = SocketAddr::from(([0, 0, 0, 0], http_port));
     if let Some(static_root_dir) = http_opts.static_root_dir {
         if !static_root_dir.is_dir() {
@@ -87,6 +113,7 @@ pub async fn serve_main_http(
                 static_root_dir,
             );
         }
+        let has_cache = cache.is_some();
         let static_file_state = Arc::new(StaticFilesState::new(
             "*".to_string(),
             static_root_dir,
@@ -96,11 +123,23 @@ pub async fn serve_main_http(
             performance_opts.immutable_path.clone(),
             http_opts.hsts_max_age,
             http_opts.hsts_preload.unwrap_or(false),
+            cache,
+            skip_cache_paths,
         ));
         let app = Router::new()
             .route("/*path", get(handle_static_files))
             .route("/", get(handle_static_files))
-            .with_state(static_file_state);
+            .layer(CompressionLayer::new().br(true).deflate(true).gzip(true));
+
+        let app = if has_cache {
+            app.route_layer(axum::middleware::from_fn_with_state(
+                static_file_state.clone(),
+                cache_middleware,
+            ))
+        } else {
+            app
+        };
+        let app = app.with_state(static_file_state);
 
         axum::Server::bind(&addr)
             .serve(app.into_make_service())

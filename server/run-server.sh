@@ -25,7 +25,7 @@ cargo run -- \
     --tcp-port 3002 \
     ${STATIC_OPT} \
     --skip-compress-mime application/wasm \
-    --cache-ttl-sec 5 --cache-tti-sec 5 \
+    --cache-ttl-sec 60 --cache-tti-sec 60 --cache-max-size 60000 \
     --inline-css-path /blog/* --immutable-path /_app/*.css --immutable-path /_app/*.js \
     --inline-css-skip-referer http://localhost* \
     --log-dir ${TARGET_PATH}/logs --log-precision 18 \

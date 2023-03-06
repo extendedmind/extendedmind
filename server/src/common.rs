@@ -1,6 +1,10 @@
+use std::path::PathBuf;
+
 use axum::http::{HeaderValue, Method};
 use extendedmind_hub::extendedmind_core::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
 use wildmatch::WildMatch;
+
+use crate::http::cache::ResponseCache;
 
 // Identifies that the log entry belongs in the access log. Needs to be separate from actual paths,
 // hence the space.
@@ -18,6 +22,20 @@ impl State {
     pub fn new(peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>) -> Self {
         Self { peermerge }
     }
+}
+
+#[derive(Clone, Debug)]
+pub struct StaticFilesState {
+    pub prefix: String,
+    pub dir: PathBuf,
+    pub skip_compress_mime: Option<Vec<String>>,
+    pub inline_css_wildmatch: Option<Vec<WildMatch>>,
+    pub inline_css_skip_referer_wildmatch: Option<Vec<WildMatch>>,
+    pub immutable_path_wildmatch: Option<Vec<WildMatch>>,
+    pub hsts_max_age: Option<u64>,
+    pub hsts_preload: bool,
+    pub skip_cache_wildmatch: Option<Vec<WildMatch>>,
+    pub cache: Option<ResponseCache>,
 }
 
 pub fn log_access(method: &Method, url_path: &str, code: &str, extra: Option<&str>) {

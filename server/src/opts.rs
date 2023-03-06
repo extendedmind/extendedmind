@@ -65,6 +65,8 @@ pub struct PerformanceOpts {
     #[clap(long)]
     pub cache_tti_sec: Option<u64>,
     #[clap(long)]
+    pub cache_max_size: Option<u64>,
+    #[clap(long)]
     pub inline_css_path: Option<Vec<String>>,
     #[clap(long)]
     pub inline_css_skip_referer: Option<Vec<String>>,

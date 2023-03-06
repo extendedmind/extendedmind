@@ -1,5 +1,4 @@
-use axum::body::Body;
-use axum::body::{Bytes, Full};
+use axum::body::{Body, Bytes, Full};
 use axum::http::{header, HeaderValue, Request, Response, StatusCode};
 use mime_guess::Mime;
 use std::path::{Path, PathBuf};
@@ -9,23 +8,12 @@ use tokio::fs::File;
 use tokio::io::AsyncReadExt;
 use wildmatch::WildMatch;
 
-use crate::common::{is_inline_css, log_access};
+use super::cache::ResponseCache;
+use crate::common::{is_inline_css, log_access, StaticFilesState};
 
 const CSS_NEEDLE: &str = "<link rel=\"stylesheet\" href=\"/";
 const CSS_ELEMENT_START: &str = "<style>";
 const CSS_ELEMENT_END: &str = "</style>";
-
-#[derive(Clone, Debug)]
-pub struct StaticFilesState {
-    prefix: String,
-    dir: PathBuf,
-    skip_compress_mime: Option<Vec<String>>,
-    inline_css_wildmatch: Option<Vec<WildMatch>>,
-    inline_css_skip_referer_wildmatch: Option<Vec<WildMatch>>,
-    immutable_path_wildmatch: Option<Vec<WildMatch>>,
-    hsts_max_age: Option<u64>,
-    hsts_preload: bool,
-}
 
 impl StaticFilesState {
     pub fn new(
@@ -37,6 +25,8 @@ impl StaticFilesState {
         immutable_path: Option<Vec<String>>,
         hsts_max_age: Option<u64>,
         hsts_preload: bool,
+        cache: Option<ResponseCache>,
+        skip_cache_paths: Option<Vec<String>>,
     ) -> Self {
         if let Some(paths) = &immutable_path {
             log::info!("Using immutable response headers for paths {:?}", &paths);
@@ -64,6 +54,16 @@ impl StaticFilesState {
             );
         }
 
+        let skip_cache_wildmatch = match skip_cache_paths {
+            Some(skip_cache_path) => Some(
+                skip_cache_path
+                    .iter()
+                    .map(|path| WildMatch::new(path))
+                    .collect(),
+            ),
+            None => None,
+        };
+
         Self {
             prefix,
             dir,
@@ -73,6 +73,8 @@ impl StaticFilesState {
             immutable_path_wildmatch,
             hsts_max_age,
             hsts_preload,
+            cache,
+            skip_cache_wildmatch,
         }
     }
 
@@ -140,12 +142,6 @@ impl StaticFilesState {
         contents: Vec<u8>,
     ) -> (Vec<u8>, Mime) {
         let mime_type = mime_guess::from_path(file_path).first_or_text_plain();
-        log::debug!(
-            "### {:?} MIME TYPE {} {}",
-            file_path,
-            mime_type,
-            mime_type.essence_str()
-        );
         if mime_type.essence_str() == "text/html"
             && is_inline_css(
                 url_path,

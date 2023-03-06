@@ -1,10 +1,12 @@
 use anyhow::Result;
+use axum::http::{HeaderMap, HeaderValue, StatusCode};
 use extendedmind_hub::common::{AdminCommand, BackupOpts};
 use extendedmind_hub::extendedmind_core::{FeedDiskPersistence, Peermerge, RandomAccessDisk};
 use extendedmind_hub::init::{get_peermerge, initialize};
 use extendedmind_hub::listen::listen;
 use futures::stream::StreamExt;
-use moka::future::Cache;
+use mime_guess::Mime;
+use moka::sync::Cache;
 use std::path::PathBuf;
 use tokio::task;
 // use tide::http::headers::{HeaderName, HeaderValues};
@@ -15,7 +17,7 @@ use tokio::task;
 
 // Internal
 use crate::common::State;
-// use crate::http::{create_cache, http_main_server, http_redirect_server};
+use crate::http::cache::{create_response_cache, ResponseCache};
 use crate::http::serve::{serve_main_http, serve_main_https, serve_redirect_http_to_https};
 use crate::metrics::process_metrics;
 use crate::opts::{HttpOpts, LogOpts, MetricsOpts, PerformanceOpts, PortOpts};
@@ -46,10 +48,11 @@ pub async fn start_server(
     )?;
 
     // Create cache
-    // let cache = create_cache(
-    //     performance_opts.cache_ttl_sec,
-    //     performance_opts.cache_tti_sec,
-    // );
+    let cache = create_response_cache(
+        performance_opts.cache_ttl_sec,
+        performance_opts.cache_tti_sec,
+        performance_opts.cache_max_size,
+    );
 
     // Listen to admin commands
     let mut admin_command_receiver = initialize_result.admin_command_receiver;
@@ -89,7 +92,7 @@ pub async fn start_server(
     // Block server
     start_server_async(
         peermerge,
-        // cache,
+        cache,
         port_opts,
         http_opts,
         metrics_opts,
@@ -102,7 +105,7 @@ pub async fn start_server(
 
 async fn start_server_async(
     peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
-    // cache: Option<Cache<String, (StatusCode, Mime, Vec<u8>, Vec<(HeaderName, HeaderValues)>)>>,
+    cache: Option<ResponseCache>,
     port_opts: PortOpts,
     http_opts: HttpOpts,
     metrics_opts: MetricsOpts,
@@ -151,6 +154,7 @@ async fn start_server_async(
         } else {
             let main_listener = serve_main_http(
                 initial_state,
+                cache,
                 http_port,
                 http_opts,
                 metrics_opts,

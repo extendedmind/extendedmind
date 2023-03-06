@@ -23,6 +23,7 @@
 // mod cache;
 // pub use cache::create_cache;
 // use cache::CacheMiddleware;
+pub mod cache;
 mod html;
 pub mod serve;
 
