@@ -131,6 +131,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "alloc-no-stdlib"
+version = "2.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cc7bb162ec39d46ab1ca8c77bf72e890535becd1751bb45f64c597edb4c8c6b3"
+
+[[package]]
+name = "alloc-stdlib"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "94fb8275041c72129eb51b7d0322c29b8387a0386127718b096429201a5d6ece"
+dependencies = [
+ "alloc-no-stdlib",
+]
+
+[[package]]
 name = "android_system_properties"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -180,6 +195,20 @@ dependencies = [
  "futures-core",
  "futures-io",
  "once_cell",
+ "pin-project-lite",
+ "tokio",
+]
+
+[[package]]
+name = "async-compression"
+version = "0.3.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "942c7cd7ae39e91bde4820d74132e9862e62c2f386c3aa90ccf55949f5bad63a"
+dependencies = [
+ "brotli",
+ "flate2",
+ "futures-core",
+ "memchr",
  "pin-project-lite",
  "tokio",
 ]
@@ -245,12 +274,11 @@ dependencies = [
 
 [[package]]
 name = "async-lock"
-version = "2.6.0"
+version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c8101efe8695a6c17e02911402145357e718ac92d3ff88ae8419e84b1707b685"
+checksum = "fa24f727524730b077666307f2734b4a1a1c57acb79193127dcc8914d5242dd7"
 dependencies = [
  "event-listener",
- "futures-lite",
 ]
 
 [[package]]
@@ -287,9 +315,9 @@ checksum = "7a40729d2133846d9ed0ea60a8b9541bccddab49cd30f0715a1da672fe9a2524"
 
 [[package]]
 name = "async-trait"
-version = "0.1.64"
+version = "0.1.65"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cd7fce9ba8c3c042128ce72d8b2ddbf3a05747efb67ea0313c635e10bda47a2"
+checksum = "095183a3539c7c7649b2beb87c2d3f0591f3a7fed07761cc546d244e27e0238c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -355,9 +383,9 @@ dependencies = [
 
 [[package]]
 name = "axum"
-version = "0.6.9"
+version = "0.6.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6137c6234afb339e75e764c866e3594900f0211e1315d33779f269bbe2ec6967"
+checksum = "8582122b8edba2af43eaf6b80dbfd33f421b5a0eb3a3113d21bc096ac5b44faf"
 dependencies = [
  "async-trait",
  "axum-core",
@@ -388,9 +416,9 @@ dependencies = [
 
 [[package]]
 name = "axum-core"
-version = "0.3.2"
+version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cae3e661676ffbacb30f1a824089a8c9150e71017f7e1e38f2aa32009188d34"
+checksum = "b2f958c80c248b34b9a877a643811be8dbca03ca5ba827f2b63baf3a81e5fc4e"
 dependencies = [
  "async-trait",
  "bytes 1.4.0",
@@ -561,6 +589,27 @@ checksum = "e412e2cd0f2b2d93e02543ceae7917b3c70331573df19ee046bcbc35e45e87d7"
 dependencies = [
  "byteorder",
  "cipher 0.4.3",
+]
+
+[[package]]
+name = "brotli"
+version = "3.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a1a0b1dbcc8ae29329621f8d4f0d835787c1c38bb1401979b49d13b0b305ff68"
+dependencies = [
+ "alloc-no-stdlib",
+ "alloc-stdlib",
+ "brotli-decompressor",
+]
+
+[[package]]
+name = "brotli-decompressor"
+version = "2.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4b6561fd3f895a11e8f72af2cb7d22e08366bebc2b6b57f7744c4bda27034744"
+dependencies = [
+ "alloc-no-stdlib",
+ "alloc-stdlib",
 ]
 
 [[package]]
@@ -1316,7 +1365,6 @@ dependencies = [
  "fern",
  "futures",
  "html-escape",
- "http-body",
  "log",
  "mime_guess",
  "moka",
@@ -1324,6 +1372,7 @@ dependencies = [
  "thread-priority",
  "tokio",
  "tower",
+ "tower-http",
  "wildmatch",
 ]
 
@@ -1415,9 +1464,9 @@ dependencies = [
 
 [[package]]
 name = "fiat-crypto"
-version = "0.1.17"
+version = "0.1.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a214f5bb88731d436478f3ae1f8a277b62124089ba9fb67f4f93fb100ef73c90"
+checksum = "54b2f3c51e4dd999930845da5d10a48775b8fe4ca9f4f9ec1f9161f334da5dfe"
 
 [[package]]
 name = "filetime"
@@ -2619,7 +2668,7 @@ dependencies = [
 [[package]]
 name = "peermerge"
 version = "0.0.1"
-source = "git+https://github.com/extendedmind/peermerge.git?branch=main#59f8bb56dc281c9d5684f01aa54537a4f7a6996b"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#fd150e8f3e0d37710b16f59d3a00c938cc0001fc"
 dependencies = [
  "anyhow",
  "automerge",
@@ -2640,7 +2689,7 @@ dependencies = [
 [[package]]
 name = "peermerge-tcp"
 version = "0.0.1"
-source = "git+https://github.com/extendedmind/peermerge.git?branch=main#59f8bb56dc281c9d5684f01aa54537a4f7a6996b"
+source = "git+https://github.com/extendedmind/peermerge.git?branch=main#fd150e8f3e0d37710b16f59d3a00c938cc0001fc"
 dependencies = [
  "anyhow",
  "async-compat",
@@ -3087,9 +3136,9 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "0.36.8"
+version = "0.36.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f43abb88211988493c1abb44a70efa56ff0ce98f233b7b276146f1f3f7ba9644"
+checksum = "fd5c6ff11fecd55b40746d1995a02f2eb375bf8c00d192d521ee09f42bef37bc"
 dependencies = [
  "bitflags",
  "errno",
@@ -3128,9 +3177,9 @@ checksum = "5583e89e108996506031660fe09baa5011b9dd0341b89029313006d1fb508d70"
 
 [[package]]
 name = "ryu"
-version = "1.0.12"
+version = "1.0.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b4b9743ed687d4b4bcedf9ff5eaa7398495ae14e61cba0a295704edbc7decde"
+checksum = "f91339c0467de62360649f8d3e185ca8de4224ff281f66000de5eb2a77a79041"
 
 [[package]]
 name = "salsa20"
@@ -3185,9 +3234,9 @@ checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
 
 [[package]]
 name = "scratch"
-version = "1.0.3"
+version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ddccb15bcce173023b3fedd9436f882a0739b8dfb45e4f6b6002bee5929f61b2"
+checksum = "5d5e082f6ea090deaf0e6dd04b68360fd5cddb152af6ce8927c9d25db299f98c"
 
 [[package]]
 name = "scrypt"
@@ -3303,9 +3352,9 @@ dependencies = [
 
 [[package]]
 name = "serde_path_to_error"
-version = "0.1.9"
+version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26b04f22b563c91331a10074bda3dd5492e3cc39d56bd557e91c0af42b6c7341"
+checksum = "db0969fff533976baadd92e08b1d102c5a3d8a8049eadfd69d4d1e3c5b2ed189"
 dependencies = [
  "serde",
 ]
@@ -3433,9 +3482,9 @@ dependencies = [
 
 [[package]]
 name = "socket2"
-version = "0.4.7"
+version = "0.4.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02e2d2db9033d13a1567121ddd7a095ee144db4e1ca1b1bda3419bc0da294ebd"
+checksum = "64a4a911eed85daf18834cfaa86a79b7d266ff93ff5ba14005426219480ed662"
 dependencies = [
  "libc",
  "winapi",
@@ -3637,9 +3686,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.25.0"
+version = "1.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c8e00990ebabbe4c14c08aca901caed183ecd5c09562a12c824bb53d3c3fd3af"
+checksum = "03201d01c3c27a29c8a5cee5b55a93ddae1ccf6f08f65365c2c918f8c1b76f64"
 dependencies = [
  "autocfg",
  "bytes 1.4.0",
@@ -3650,7 +3699,7 @@ dependencies = [
  "pin-project-lite",
  "socket2",
  "tokio-macros",
- "windows-sys 0.42.0",
+ "windows-sys 0.45.0",
 ]
 
 [[package]]
@@ -3709,6 +3758,7 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d1d42a9b3f3ec46ba828e8d376aec14592ea199f70a06a548587ecd1c4ab658"
 dependencies = [
+ "async-compression",
  "bitflags",
  "bytes 1.4.0",
  "futures-core",
@@ -3717,6 +3767,8 @@ dependencies = [
  "http-body",
  "http-range-header",
  "pin-project-lite",
+ "tokio",
+ "tokio-util",
  "tower",
  "tower-layer",
  "tower-service",
@@ -3840,9 +3892,9 @@ checksum = "d54675592c1dbefd78cbd98db9bacd89886e1ca50692a0692baefffdeb92dd58"
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.6"
+version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84a22b9f218b40614adcb3f4ff08b703773ad44fa9423e4e0d346d5db86e4ebc"
+checksum = "775c11906edafc97bc378816b94585fbd9a054eabaf86fdd0ced94af449efab7"
 
 [[package]]
 name = "unicode-normalization"

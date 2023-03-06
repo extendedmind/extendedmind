@@ -8,7 +8,7 @@ use std::process;
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use std::time::Duration;
-use tokio::{runtime::Runtime, sync::Mutex, task, time::sleep};
+use tokio::{sync::Mutex, task, time::sleep};
 
 use crate::admin::listen_to_admin_socket;
 use crate::backup::start_backup_poll;
