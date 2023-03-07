@@ -128,33 +128,16 @@ pub async fn start_server(
                     }
                 }
             });
+
             let main_listener = serve_main_https(server_state, https_port, acceptor);
+            let redirect_listener = serve_redirect_http_to_https(http_port, https_port);
 
-            // let redirect_server = http_redirect_server(
-            //     format!("https://{}:{}", &domain, &https_port).as_str(),
-            //     http_opts.hsts_permanent_redirect.unwrap_or(false),
-            // )
-            // .unwrap();
-            // let redirect_listener = redirect_server.listen(format!("0.0.0.0:{}", &http_port));
-            // let main_listener = main_server.listen(
-            //     tide_rustls::TlsListener::build()
-            //         .addrs(format!("0.0.0.0:{}", &https_port))
-            //         .tcp_nodelay(true)
-            //         .tcp_ttl(60)
-            //         .acme(
-            //             AcmeConfig::new(vec![domain])
-            //                 .contact_push(format!("mailto:{}", acme_email))
-            //                 .cache(DirCache::new(acme_dir))
-            //                 .directory_lets_encrypt(http_opts.acme_production.unwrap_or(false)),
-            //         ),
-            // );
-
-            // if let Some(tcp_port) = port_opts.tcp_port {
-            //     let tcp_listener = listen(peermerge, tcp_port);
-            //     futures::try_join!(main_listener, redirect_listener, tcp_listener)?;
-            // } else {
-            //     futures::try_join!(main_listener, redirect_listener)?;
-            // }
+            if let Some(tcp_port) = port_opts.tcp_port {
+                let tcp_listener = listen(peermerge, tcp_port);
+                tokio::try_join!(main_listener, redirect_listener, tcp_listener)?;
+            } else {
+                tokio::try_join!(main_listener, redirect_listener)?;
+            }
         } else {
             let main_listener = serve_main_http(server_state, http_port);
             if let Some(tcp_port) = port_opts.tcp_port {

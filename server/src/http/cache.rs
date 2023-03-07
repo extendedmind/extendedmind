@@ -59,7 +59,6 @@ pub async fn cache_middleware<B>(
     request: Request<B>,
     next: Next<B>,
 ) -> Response<BoxBody> {
-    let cache = state.cache.clone().unwrap();
     let url_path: String = request.uri().path().to_string();
     let method = request.method();
     let skip_cache: bool = {
@@ -98,8 +97,9 @@ pub async fn cache_middleware<B>(
         Some(get_cache_key(&url_path, &accept_encoding, inline_css))
     };
 
-    if let Some(cache_key) = &cache_key {
+    let cache = if let Some(cache_key) = &cache_key {
         // Try to find this request from the cache
+        let cache = state.cache.clone().unwrap();
         let cached_response = cache.get(&cache_key.clone());
         if let Some((status, body_as_bytes, headers)) = cached_response {
             log::debug!("Cache hit: {}", cache_key);
@@ -112,12 +112,16 @@ pub async fn cache_middleware<B>(
             log_access(method, &url_path, &status.to_string(), Some("cached"));
             return response.map(axum::body::boxed);
         }
-    }
+        Some(cache)
+    } else {
+        None
+    };
 
     // Execute downstream handlers
     let mut response: Response<BoxBody> = next.run(request).await.into();
 
     if let Some(cache_key) = cache_key {
+        let cache = cache.unwrap();
         let status = response.status();
         if !status.is_success() {
             return response;
