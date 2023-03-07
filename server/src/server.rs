@@ -4,12 +4,16 @@ use extendedmind_hub::extendedmind_core::{FeedDiskPersistence, Peermerge, Random
 use extendedmind_hub::init::{get_peermerge, initialize};
 use extendedmind_hub::listen::listen;
 use futures::stream::StreamExt;
+use rustls_acme::caches::DirCache;
+use rustls_acme::futures_rustls::rustls::ServerConfig;
+use rustls_acme::AcmeConfig;
 use std::path::PathBuf;
+use std::sync::Arc;
 use tokio::task;
 use wildmatch::WildMatch;
 
 // Internal
-use crate::common::{MetricsState, ResponseCache, ServerState};
+use crate::common::{MetricsState, ResponseCache, ServerState, WEBSOCKET_PATH};
 use crate::http::cache::create_response_cache;
 use crate::http::serve::{serve_main_http, serve_main_https, serve_redirect_http_to_https};
 use crate::metrics::process_metrics;
@@ -51,7 +55,7 @@ pub async fn start_server(
     let mut admin_command_receiver = initialize_result.admin_command_receiver;
     let admin_result_sender = initialize_result.admin_result_sender;
     let mut peermerge_for_task = peermerge.clone();
-    // let mut cache_for_task = cache.clone();
+    let mut cache_for_task = cache.clone();
     task::spawn(async move {
         while let Some(event) = admin_command_receiver.next().await {
             match event {
@@ -62,9 +66,9 @@ pub async fn start_server(
                     admin_result_sender.unbounded_send(Ok(())).unwrap();
                 }
                 AdminCommand::BustCache { .. } => {
-                    // if let Some(cache) = cache_for_task.as_mut() {
-                    //     cache.invalidate_all();
-                    // }
+                    if let Some(cache) = cache_for_task.as_mut() {
+                        cache.invalidate_all();
+                    }
                     admin_result_sender.unbounded_send(Ok(())).unwrap();
                 }
             }
@@ -105,6 +109,26 @@ pub async fn start_server(
             let domain = http_opts.domain.unwrap();
             let acme_dir = http_opts.acme_dir.unwrap();
             let acme_email = http_opts.acme_email.unwrap();
+
+            let mut acme_state = AcmeConfig::new(vec![domain])
+                .contact_push(format!("mailto:{}", acme_email))
+                .cache(DirCache::new(acme_dir))
+                .directory_lets_encrypt(http_opts.acme_production.unwrap_or(false))
+                .state();
+            let rustls_config = ServerConfig::builder()
+                .with_safe_defaults()
+                .with_no_client_auth()
+                .with_cert_resolver(acme_state.resolver());
+            let acceptor = acme_state.axum_acceptor(Arc::new(rustls_config));
+            tokio::spawn(async move {
+                loop {
+                    match acme_state.next().await.unwrap() {
+                        Ok(ok) => log::debug!("ACME event: {:?}", ok),
+                        Err(err) => log::error!("ACME error: {:?}", err),
+                    }
+                }
+            });
+            let main_listener = serve_main_https(server_state, https_port, acceptor);
 
             // let redirect_server = http_redirect_server(
             //     format!("https://{}:{}", &domain, &https_port).as_str(),
@@ -196,7 +220,8 @@ fn init_server_state(
             None => false,
         };
 
-    let (skip_cache_paths, metrics_state): (Option<Vec<String>>, Option<MetricsState>) =
+    let mut skip_cache_paths: Vec<String> = vec![WEBSOCKET_PATH.to_string()];
+    let metrics_state: Option<MetricsState> =
         if let Some(metrics_endpoint) = metrics_opts.metrics_endpoint.as_ref() {
             if let Some(metrics_dir) = metrics_opts.metrics_dir.as_ref() {
                 let metrics_state = MetricsState::new(
@@ -205,15 +230,13 @@ fn init_server_state(
                     metrics_opts.metrics_secret.clone(),
                     metrics_skip_compress,
                 );
-                (
-                    Some(vec![metrics_endpoint.to_string()]),
-                    Some(metrics_state),
-                )
+                skip_cache_paths.push(metrics_endpoint.to_string());
+                Some(metrics_state)
             } else {
-                (None, None)
+                None
             }
         } else {
-            (None, None)
+            None
         };
     ServerState::new(
         peermerge,
@@ -225,7 +248,7 @@ fn init_server_state(
         http_opts.hsts_max_age,
         http_opts.hsts_preload.unwrap_or(false),
         cache,
-        skip_cache_paths,
+        Some(skip_cache_paths),
         metrics_state,
     )
 }

@@ -13,10 +13,11 @@ anyhow = "1.0.33"
 chrono = { version = "0.4.19" }
 futures = "^0.3.5"
 tokio = { version = "1.25.0", features = ["rt", "rt-multi-thread", "time", "net", "macros"] }
-axum = { version = "0.6.9", features = ["macros"] }
+axum = { version = "0.6.9", features = ["macros", "ws"] }
 axum-server = "0.4.6"
 tower = "0.4.13"
 tower-http = { version = "0.4.0", features = ["compression-br", "compression-deflate", "compression-gzip"] }
+rustls-acme = { version = "0.5.2", features = ["axum", "tokio"] }
 mime_guess = "2.0.4"
 thread-priority = "0.8.2"
 serde = "1.0.137"

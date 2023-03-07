@@ -15,6 +15,8 @@ pub const ACCESS_LOG_IDENTIFIER: &str = "GET _";
 // The default time to sleep when trying to refresh metrics
 pub const DEFAULT_METRICS_INTERVAL_SECONDS: u64 = 60;
 
+pub const WEBSOCKET_PATH: &str = "/extendedmind/peermerge";
+
 /// Use a single state for the entire server that is wrapped in an Arc for cheap cloning.
 #[derive(Clone, Debug)]
 pub struct ServerState {

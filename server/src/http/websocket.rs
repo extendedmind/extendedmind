@@ -1,26 +1,42 @@
-use async_std::task;
-use extendedmind_hub::extendedmind_core::{Bytes, ChannelWriter, ProtocolBuilder, StateEvent};
+use axum::extract::ws::{Message, WebSocket};
+use axum::extract::{ConnectInfo, WebSocketUpgrade};
+use axum::response::IntoResponse;
+use extendedmind_hub::extendedmind_core::{
+    Bytes, ChannelWriter, FeedDiskPersistence, Peermerge, ProtocolBuilder, RandomAccessDisk,
+    StateEvent,
+};
 use futures::channel::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
+use futures::sink::SinkExt;
 use futures::stream::{IntoAsyncRead, StreamExt, TryStreamExt};
 use log::debug;
 use std::io;
-use tide_websockets::{Message, WebSocketConnection};
+use std::net::SocketAddr;
+use std::sync::Arc;
+use tokio::task;
 
-use crate::common::State;
+use crate::common::ServerState;
 
 pub type ChannelSenderReceiver = (
     UnboundedSender<Result<Bytes, io::Error>>,
     UnboundedReceiver<Result<Bytes, io::Error>>,
 );
 
-pub async fn handle_peermerge(
-    req: tide::Request<State>,
-    stream: WebSocketConnection,
-) -> tide::Result<()> {
-    debug!("WS connect to peermerge");
-    // Get handle to async-tungstenite WebSocketStream
-    let ws_writer = stream.clone();
-    let mut ws_reader = stream.clone();
+pub async fn handle_websocket(
+    ws: WebSocketUpgrade,
+    axum::extract::State(state): axum::extract::State<Arc<ServerState>>,
+    ConnectInfo(addr): ConnectInfo<SocketAddr>,
+) -> impl IntoResponse {
+    let peermerge = state.peermerge.clone();
+    ws.on_upgrade(move |socket| handle_websocket_upgrade(socket, addr, peermerge))
+}
+
+async fn handle_websocket_upgrade(
+    socket: WebSocket,
+    who: SocketAddr,
+    peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
+) {
+    debug!("WS connect to peermerge from {}", who);
+    let (mut ws_writer, mut ws_reader) = socket.split();
 
     // Create client and peermerge proxy channels for this connection
     let (client_sender, peermerge_receiver): ChannelSenderReceiver = unbounded();
@@ -33,7 +49,7 @@ pub async fn handle_peermerge(
     ) = unbounded();
 
     // Launch a task for connecting to the protocol
-    let mut peermerge_for_task = req.state().peermerge.clone();
+    let mut peermerge_for_task = peermerge.clone();
     task::spawn(async move {
         let receiver: IntoAsyncRead<UnboundedReceiver<Result<Bytes, io::Error>>> =
             peermerge_receiver.into_async_read();
@@ -67,5 +83,4 @@ pub async fn handle_peermerge(
         debug!("got incoming data, passing to peermerge {:?}", msg.len());
         client_sender.unbounded_send(Ok(Bytes::from(msg))).unwrap();
     }
-    Ok(())
 }

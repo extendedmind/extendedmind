@@ -7,14 +7,18 @@ use axum::{
     routing::get,
     BoxError, Router,
 };
+use rustls_acme::axum::AxumAcceptor;
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::compression::CompressionLayer;
 
-use crate::opts::{HttpOpts, MetricsOpts, PerformanceOpts};
 use crate::{common::ServerState, metrics::handle_metrics};
+use crate::{
+    common::WEBSOCKET_PATH,
+    opts::{HttpOpts, MetricsOpts, PerformanceOpts},
+};
 
-use super::cache::cache_middleware;
 use super::html::handle_static_files;
+use super::{cache::cache_middleware, websocket::handle_websocket};
 
 #[derive(Clone, Copy)]
 pub struct Ports {
@@ -25,9 +29,7 @@ pub struct Ports {
 pub async fn serve_main_https(
     server_state: ServerState,
     https_port: u16,
-    domain: String,
-    acme_dir: String,
-    acme_email: String,
+    axum_acceptor: AxumAcceptor,
 ) -> std::io::Result<()> {
     Ok(())
 }
@@ -43,29 +45,37 @@ pub async fn serve_main_http(server_state: ServerState, http_port: u16) -> std::
         }
         let has_cache = server_state.cache.is_some();
 
-        // Setup basic routing
+        // Basic routing
         let app = Router::new()
             .route("/*path", get(handle_static_files))
             .route("/", get(handle_static_files));
 
-        // Setup metrics
+        // Metrics routing
         let app = if let Some(metrics_state) = server_state.metrics_state.as_ref() {
             app.route(&metrics_state.metrics_endpoint, get(handle_metrics))
         } else {
             app
         };
 
+        // Websocket routing
+        let app = app.route(WEBSOCKET_PATH, get(handle_websocket));
+
+        // Compression
         let app = app.layer(CompressionLayer::new().br(true).deflate(true).gzip(true));
 
+        // Caching
+        let server_state = Arc::new(server_state);
         let app = if has_cache {
             app.route_layer(axum::middleware::from_fn_with_state(
-                Arc::new(server_state.clone()),
+                server_state.clone(),
                 cache_middleware,
             ))
         } else {
             app
         };
-        let app = app.with_state(Arc::new(server_state));
+
+        // State
+        let app = app.with_state(server_state);
 
         axum::Server::bind(&addr)
             .serve(app.into_make_service())
