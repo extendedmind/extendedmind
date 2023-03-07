@@ -109,7 +109,12 @@ pub async fn cache_middleware<B>(
                 response_headers.insert(header.0, header.1.into());
             }
             let response = response.body(Full::from(body_as_bytes)).unwrap();
-            log_access(method, &url_path, &status.to_string(), Some("cached"));
+            log_access(
+                method,
+                &url_path,
+                &status.as_u16().to_string(),
+                Some("cached"),
+            );
             return response.map(axum::body::boxed);
         }
         Some(cache)
