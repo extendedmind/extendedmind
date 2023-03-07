@@ -26,16 +26,17 @@ pub async fn handle_websocket(
     axum::extract::State(state): axum::extract::State<Arc<ServerState>>,
     ConnectInfo(addr): ConnectInfo<SocketAddr>,
 ) -> impl IntoResponse {
+    debug!("WS connect to peermerge from {}", addr);
     let peermerge = state.peermerge.clone();
     ws.on_upgrade(move |socket| handle_websocket_upgrade(socket, addr, peermerge))
 }
 
 async fn handle_websocket_upgrade(
     socket: WebSocket,
-    who: SocketAddr,
+    addr: SocketAddr,
     peermerge: Peermerge<RandomAccessDisk, FeedDiskPersistence>,
 ) {
-    debug!("WS connect to peermerge from {}", who);
+    debug!("WS upgrade to peermerge from {}", addr);
     let (mut ws_writer, mut ws_reader) = socket.split();
 
     // Create client and peermerge proxy channels for this connection

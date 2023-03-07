@@ -44,11 +44,10 @@ pub async fn serve_main_http(server_state: ServerState, http_port: u16) -> std::
             );
         }
         let has_cache = server_state.cache.is_some();
+        let server_state = Arc::new(server_state);
 
-        // Basic routing
-        let app = Router::new()
-            .route("/*path", get(handle_static_files))
-            .route("/", get(handle_static_files));
+        // Websocket routing
+        let app = Router::new().route(WEBSOCKET_PATH, get(handle_websocket));
 
         // Metrics routing
         let app = if let Some(metrics_state) = server_state.metrics_state.as_ref() {
@@ -57,14 +56,15 @@ pub async fn serve_main_http(server_state: ServerState, http_port: u16) -> std::
             app
         };
 
-        // Websocket routing
-        let app = app.route(WEBSOCKET_PATH, get(handle_websocket));
+        // Basic routing
+        let app = app
+            .route("/*path", get(handle_static_files))
+            .route("/", get(handle_static_files));
 
         // Compression
         let app = app.layer(CompressionLayer::new().br(true).deflate(true).gzip(true));
 
         // Caching
-        let server_state = Arc::new(server_state);
         let app = if has_cache {
             app.route_layer(axum::middleware::from_fn_with_state(
                 server_state.clone(),
@@ -78,7 +78,7 @@ pub async fn serve_main_http(server_state: ServerState, http_port: u16) -> std::
         let app = app.with_state(server_state);
 
         axum::Server::bind(&addr)
-            .serve(app.into_make_service())
+            .serve(app.into_make_service_with_connect_info::<SocketAddr>())
             .await
             .unwrap();
     }
